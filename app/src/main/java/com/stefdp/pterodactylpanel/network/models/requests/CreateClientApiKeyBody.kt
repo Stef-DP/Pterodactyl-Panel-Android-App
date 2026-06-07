@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class CreateClientApiKeyBody(
     val description: String,
-    @SerializedName("allowed_ips") val allowedIps: List<String>
+    @SerializedName("allowed_ips") val allowedIps: List<String>? = null
 )

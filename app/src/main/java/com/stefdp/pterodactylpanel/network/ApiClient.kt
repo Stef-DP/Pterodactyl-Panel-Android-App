@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.network
 
 import com.google.gson.GsonBuilder
+import com.stefdp.zipline.DEBUG_NETWORK
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -24,7 +25,9 @@ object PterodactylApiClient {
         val retrofit = Retrofit.Builder()
             .baseUrl(fullUrl)
 
-        // TODO: add debug
+        if (DEBUG_NETWORK) {
+            retrofit.client(okHttpClient)
+        }
 
         retrofit.addConverterFactory(ScalarsConverterFactory.create())
 
