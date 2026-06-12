@@ -10,6 +10,7 @@ data class GetServerBackupsResponse(
 )
 
 data class GetServerBackupsMeta(
+    @SerializedName("backup_count") val backupCount: Long,
     val pagination: GetServerBackupsMetaPagination
 )
 
