@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.models.responses
 import com.google.gson.annotations.SerializedName
 
 data class GetClientAvailablePermissionsResponse(
-	@SerializedName("object") val objectType: String = "system_permissions",
+	val `object`: String = "system_permissions",
 	val attributes: GetClientAvailablePermissionsAttributes,
 )
 

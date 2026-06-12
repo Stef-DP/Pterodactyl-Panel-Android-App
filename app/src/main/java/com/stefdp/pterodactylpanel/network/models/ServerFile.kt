@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.models
 import com.google.gson.annotations.SerializedName
 
 data class ServerFile(
-    @SerializedName("object") val objectType: String = "file_object",
+    val `object`: String = "file_object",
     val attributes: ServerFileAttributes
 )
 

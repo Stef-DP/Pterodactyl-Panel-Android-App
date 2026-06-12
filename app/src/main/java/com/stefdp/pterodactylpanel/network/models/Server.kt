@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.models
 import com.google.gson.annotations.SerializedName
 
 data class Server(
-    @SerializedName("object") val objectType: String = "server",
+    val `object`: String = "server",
     val attributes: ServerAttributes
 )
 
@@ -46,12 +46,12 @@ data class ServerRelationships(
 )
 
 data class ServerRelationShipsAllocations(
-    val objectType: String = "list",
+    val `object`: String = "list",
     val data: List<ServerRelationshipsAllocation>
 )
 
 data class ServerRelationshipsAllocation(
-    @SerializedName("object") val objectType: String = "allocation",
+    val `object`: String = "allocation",
     val attributes: ServerRelationshipsAllocationAttributes
 )
 

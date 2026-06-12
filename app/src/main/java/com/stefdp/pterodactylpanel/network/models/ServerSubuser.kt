@@ -1,0 +1,18 @@
+package com.stefdp.pterodactylpanel.network.models
+
+import com.google.gson.annotations.SerializedName
+
+data class ServerSubuser(
+    val `object`: String = "server_subuser",
+    val attributes: ServerSubuserAttributes
+)
+
+data class ServerSubuserAttributes(
+    val uuid: String,
+    val username: String,
+    val email: String,
+    val image: String,
+    @SerializedName("2fa_enabled") val twoFactorAuthenticationEnabled: Boolean,
+    @SerializedName("created_at") val createdAt: String,
+    val permissions: List<String>,
+)

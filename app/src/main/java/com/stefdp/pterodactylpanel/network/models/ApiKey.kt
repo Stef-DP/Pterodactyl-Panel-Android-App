@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.models
 import com.google.gson.annotations.SerializedName
 
 data class ApiKey(
-    @SerializedName("object") val objectType: String = "api_key",
+    val `object`: String = "api_key",
     val attributes: ApiKeyAttributes
 )
 

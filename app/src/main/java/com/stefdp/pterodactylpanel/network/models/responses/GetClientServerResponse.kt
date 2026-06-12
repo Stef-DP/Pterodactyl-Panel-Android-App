@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import com.stefdp.pterodactylpanel.network.models.ServerAttributes
 
 data class GetClientServerResponse(
-    @SerializedName("object") val objectType: String = "server",
+    val `object`: String = "server",
     val attributes: ServerAttributes,
     val meta: GetClientServerMeta
 )
