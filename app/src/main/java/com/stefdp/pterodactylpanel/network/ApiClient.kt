@@ -1,6 +1,8 @@
 package com.stefdp.pterodactylpanel.network
 
 import com.google.gson.GsonBuilder
+import com.stefdp.pterodactylpanel.network.application.PterodactylApplicationApiService
+import com.stefdp.pterodactylpanel.network.client.PterodactylClientApiService
 import com.stefdp.zipline.DEBUG_NETWORK
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,10 +19,10 @@ object PterodactylApiClient {
         .addInterceptor(loggingInterceptor)
         .build()
 
-    fun getPterodactylApiService(baseUrl: String, includeNull: Boolean): PterodactylApiService {
+    fun getPterodactylClientApiService(baseUrl: String, includeNull: Boolean): PterodactylClientApiService {
         val formattedUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
-        val fullUrl = formattedUrl + "api/"
+        val fullUrl = formattedUrl + "api/client/"
 
         val retrofit = Retrofit.Builder()
             .baseUrl(fullUrl)
@@ -43,6 +45,35 @@ object PterodactylApiClient {
 
         return retrofit
             .build()
-            .create(PterodactylApiService::class.java)
+            .create(PterodactylClientApiService::class.java)
+    }
+
+    fun getPterodactylApplicationApiService(baseUrl: String, includeNull: Boolean): PterodactylApplicationApiService {
+        val formattedUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
+
+        val fullUrl = formattedUrl + "api/application/"
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(fullUrl)
+
+        if (DEBUG_NETWORK) {
+            retrofit.client(okHttpClient)
+        }
+
+        retrofit.addConverterFactory(ScalarsConverterFactory.create())
+
+        if (includeNull) {
+            val gson = GsonBuilder()
+                .serializeNulls()
+                .create()
+
+            retrofit.addConverterFactory(GsonConverterFactory.create(gson))
+        } else {
+            retrofit.addConverterFactory(GsonConverterFactory.create())
+        }
+
+        return retrofit
+            .build()
+            .create(PterodactylApplicationApiService::class.java)
     }
 }
