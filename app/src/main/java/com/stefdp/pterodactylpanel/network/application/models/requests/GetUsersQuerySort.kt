@@ -2,7 +2,7 @@ package com.stefdp.pterodactylpanel.network.application.models.requests
 
 import com.google.gson.annotations.SerializedName
 
-enum class GetApplicationUsersQuerySort(val value: String) {
+enum class GetUsersQuerySort(val value: String) {
     @SerializedName("id")
     ID("id"),
 

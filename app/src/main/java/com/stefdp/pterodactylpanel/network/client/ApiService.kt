@@ -30,7 +30,6 @@ import com.stefdp.pterodactylpanel.network.client.models.requests.DecompressServ
 import com.stefdp.pterodactylpanel.network.client.models.requests.DeleteServerFilesBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.DisableAccount2FABody
 import com.stefdp.pterodactylpanel.network.client.models.requests.EnableAccount2FABody
-import com.stefdp.pterodactylpanel.network.client.models.requests.GetAccountActivityQueryInclude
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetAccountActivityQuerySort
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
 import com.stefdp.pterodactylpanel.network.client.models.requests.RemoveAccountSshKeyBody
@@ -187,7 +186,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Query("filter[event]") filterEvent: String? = null,
         @Query("sort") sort: GetAccountActivityQuerySort? = null,
-        @Query("include") include: GetAccountActivityQueryInclude? = null,
+        @Query("include") include: String? = null, // list of GetAccountActivityQueryInclude separated by ","
         @Query("per_page") perPage: Int? = null,
         @Query("page") page: Int? = null,
     ): Response<GetAccountActivityResponse>
