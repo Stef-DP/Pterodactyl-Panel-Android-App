@@ -58,7 +58,7 @@ data class ApplicationServerRelationships(
     val subusers: ApplicationServerRelationshipsSubusers? = null,
     val nest: ApplicationNest? = null,
     val egg: ApplicationEgg? = null,
-    val variables: ApplicationEggRelationshipsVariables? = null,
+    val variables: ApplicationServerRelationshipsVariables? = null,
     val location: ApplicationLocation? = null,
     val node: ApplicationNode? = null,
     val databases: ApplicationServerRelationshipsDatabases? = null,
@@ -74,7 +74,7 @@ data class ApplicationServerRelationshipsSubusers(
     val data: List<ApplicationServerSubuser>
 )
 
-data class ApplicationEggRelationshipsVariables(
+data class ApplicationServerRelationshipsVariables(
     val `object`: String = "list",
     val data: List<ApplicationServerVariable>
 )

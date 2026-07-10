@@ -12,7 +12,23 @@ data class ApplicationNestAttributes(
     val uuid: String,
     val author: String,
     val name: String,
-    val description: String,
+    val description: String? = null,
     @SerializedName("created_at") val createdAt: String,
-    @SerializedName("updated_at") val updatedAt: String? = null
+    @SerializedName("updated_at") val updatedAt: String? = null,
+    val relationships: ApplicationNestRelationships? = null
+)
+
+data class ApplicationNestRelationships(
+    val eggs: ApplicationNestRelationshipsEggs? = null,
+    val servers: ApplicationNestRelationshipsServers? = null
+)
+
+data class ApplicationNestRelationshipsEggs(
+    val `object`: String = "list",
+    val data: List<ApplicationEgg>
+)
+
+data class ApplicationNestRelationshipsServers(
+    val `object`: String = "list",
+    val data: List<ApplicationServer>
 )

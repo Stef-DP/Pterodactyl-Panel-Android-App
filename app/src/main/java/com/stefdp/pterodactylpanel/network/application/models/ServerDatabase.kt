@@ -17,4 +17,35 @@ data class ApplicationServerDatabaseAttributes(
     @SerializedName("max_connections") val maxConnections: Long,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String? = null,
+    val relationships: ApplicationServerDatabaseRelationships? = null
+)
+
+data class ApplicationServerDatabaseRelationships(
+    val host: ApplicationServerDatabaseRelationshipsHost? = null,
+    val password: ApplicationServerDatabaseRelationshipsPassword? = null
+)
+
+data class ApplicationServerDatabaseRelationshipsHost(
+    val `object`: String = "database_host",
+    val attributes: ApplicationServerDatabaseRelationshipsHostAttributes
+)
+
+data class ApplicationServerDatabaseRelationshipsHostAttributes(
+    val id: Long,
+    val name: String,
+    val host: String,
+    val port: Int,
+    val username: String,
+    val node: Long,
+    @SerializedName("created_at") val createdAt: String,
+    @SerializedName("updated_at") val updatedAt: String? = null
+)
+
+data class ApplicationServerDatabaseRelationshipsPassword(
+    val `object`: String = "database_password",
+    val attributes: ApplicationServerDatabaseRelationshipsPasswordAttributes
+)
+
+data class ApplicationServerDatabaseRelationshipsPasswordAttributes(
+    val password: String
 )

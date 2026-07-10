@@ -12,11 +12,11 @@ enum class ListLocationsQueryInclude(val value: String) {
     override fun toString(): String = value
 
     companion object {
-        fun toQueryString(vararg includes: ListNodesQueryInclude): String {
+        fun toQueryString(vararg includes: ListLocationsQueryInclude): String {
             return includes.joinToString(",") { it.value }
         }
 
-        fun toQueryString(includes: Collection<ListNodesQueryInclude>): String {
+        fun toQueryString(includes: Collection<ListLocationsQueryInclude>): String {
             return includes.joinToString(",") { it.value }
         }
     }

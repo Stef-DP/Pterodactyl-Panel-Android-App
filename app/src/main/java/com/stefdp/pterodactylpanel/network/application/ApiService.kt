@@ -1,13 +1,17 @@
 package com.stefdp.pterodactylpanel.network.application
 
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationEgg
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationLocation
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationNest
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationServerDatabase
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationUser
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateLocationBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateNodeAllocationBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateNodeBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBody
+import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerDatabaseBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateUserBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.GetUsersQuerySort
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListLocationsQuerySort
@@ -23,8 +27,11 @@ import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateUse
 import com.stefdp.pterodactylpanel.network.application.models.responses.GetDeployableNodesResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.GetNodeConfigurationResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListLocationsResponse
+import com.stefdp.pterodactylpanel.network.application.models.responses.ListNestEggsResponse
+import com.stefdp.pterodactylpanel.network.application.models.responses.ListNestsResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListNodeAllocationsResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListNodesResponse
+import com.stefdp.pterodactylpanel.network.application.models.responses.ListServerDatabasesResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListServersResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListUsersResponse
 import retrofit2.Response
@@ -353,4 +360,88 @@ interface PterodactylApplicationApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
     )
+
+    @GET("application/servers/{serverId}/databases")
+    fun listServerDatabases(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: Long,
+        @Query("inclide") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
+    ): Response<ListServerDatabasesResponse>
+
+    @GET("application/servers/{serverId}/databases/{databaseId}")
+    fun listServerDatabases(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: Long,
+        @Path("databaseId") databaseId: Long,
+        @Query("inclide") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
+    ): Response<ApplicationServerDatabase>
+
+    @POST("application/servers/{serverId}/databases")
+    fun createServerDatabase(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: Long,
+        @Body data: CreateServerDatabaseBody
+    ): Response<ApplicationServerDatabase>
+
+    @POST("application/servers/{serverId}/databases/{databaseId}/reset-password")
+    fun resetServerDatabasePassword(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: Long,
+        @Path("databaseId") databaseId: Long,
+    )
+
+    @DELETE("application/servers/{serverId}/databases/{databaseId}")
+    fun deleteServerDatabase(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: Long,
+        @Path("databaseId") databaseId: Long,
+    )
+
+    @GET("application/nests")
+    fun listNests(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Query("include") include: String? = null, // list of ListNestsQueryInclude separated by ","
+        @Query("page") page: Int? = null,
+        @Query("per_page") perPage: Int? = null
+    ): Response<ListNestsResponse>
+
+    @GET("application/nests/{nestId}")
+    fun getNest(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("nestId") nestId: Long,
+        @Query("include") include: String? = null, // list of ListNestsQueryInclude separated by ","
+    ): Response<ApplicationNest>
+
+    @GET("application/nests/{nestId}/eggs")
+    fun listNestEggs(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("nestId") nestId: Long,
+        @Query("include") include: String? = null, // list of ListNestEggsQueryInclude separated by ","
+    ): Response<ListNestEggsResponse>
+
+    @GET("application/nests/{nestId}/eggs/{eggId}")
+    fun getNestEgg(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("nestId") nestId: Long,
+        @Path("eggId") eggId: Long,
+        @Query("include") include: String? = null, // list of ListNestEggsQueryInclude separated by ","
+    ): Response<ApplicationEgg>
 }

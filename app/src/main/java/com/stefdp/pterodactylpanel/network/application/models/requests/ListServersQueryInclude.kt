@@ -36,11 +36,11 @@ enum class ListServersQueryInclude(val value: String) {
     override fun toString(): String = value
 
     companion object {
-        fun toQueryString(vararg includes: ListNodesQueryInclude): String {
+        fun toQueryString(vararg includes: ListServersQueryInclude): String {
             return includes.joinToString(",") { it.value }
         }
 
-        fun toQueryString(includes: Collection<ListNodesQueryInclude>): String {
+        fun toQueryString(includes: Collection<ListServersQueryInclude>): String {
             return includes.joinToString(",") { it.value }
         }
     }

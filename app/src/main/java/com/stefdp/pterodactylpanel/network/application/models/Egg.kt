@@ -22,6 +22,7 @@ data class ApplicationEggAttributes(
     val script: ApplicationEggScript,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String? = null,
+    val relationships: ApplicationEggRelationships? = null
 )
 
 data class ApplicationEggConfig(
@@ -49,4 +50,28 @@ data class ApplicationEggScript(
     val entry: String,
     val container: String,
     val extends: String? = null
+)
+
+data class ApplicationEggRelationships(
+    val nest: ApplicationNest? = null,
+    val servers: ApplicationEggRelationshipsServers? = null,
+    val variables: ApplicationEggRelationshipsVariables? = null,
+    val config: ApplicationEggRelationshipsNull? = null,
+    val script: ApplicationEggRelationshipsNull? = null
+)
+
+data class ApplicationEggRelationshipsServers(
+    val `object`: String = "list",
+    val data: List<ApplicationServer>
+)
+
+data class ApplicationEggRelationshipsVariables(
+    val `object`: String = "list",
+    val data: List<ApplicationServerVariable>
+)
+
+// idk why this exists tbh
+data class ApplicationEggRelationshipsNull(
+    val `object`: String = "null_resource",
+    val attributes: Any? = null
 )

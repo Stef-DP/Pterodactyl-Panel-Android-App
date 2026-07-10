@@ -2,21 +2,21 @@ package com.stefdp.pterodactylpanel.network.application.models.requests
 
 import com.google.gson.annotations.SerializedName
 
-enum class ListNodeAllocationsQueryInclude(val value: String) {
-    @SerializedName("node")
-    NODE("node"),
+enum class ListNestsQueryInclude(val value: String) {
+    @SerializedName("eggs")
+    EGGS("eggs"),
 
-    @SerializedName("server")
-    SERVER("server");
+    @SerializedName("servers")
+    SERVERS("servers");
 
     override fun toString(): String = value
 
     companion object {
-        fun toQueryString(vararg includes: ListNodeAllocationsQueryInclude): String {
+        fun toQueryString(vararg includes: ListNestsQueryInclude): String {
             return includes.joinToString(",") { it.value }
         }
 
-        fun toQueryString(includes: Collection<ListNodeAllocationsQueryInclude>): String {
+        fun toQueryString(includes: Collection<ListNestsQueryInclude>): String {
             return includes.joinToString(",") { it.value }
         }
     }
