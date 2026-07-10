@@ -29,7 +29,7 @@ data class ApplicationNodeAttributes(
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String? = null,
     @SerializedName("allocated_resources") val allocatedResources: ApplicationNodeAttributesAllocatedResources,
-    val relationships: ApplicationNodeRelationships
+    val relationships: ApplicationNodeRelationships? = null
 )
 
 data class ApplicationNodeAttributesAllocatedResources(

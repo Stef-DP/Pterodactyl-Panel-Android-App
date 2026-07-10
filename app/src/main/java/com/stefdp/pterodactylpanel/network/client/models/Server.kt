@@ -27,7 +27,7 @@ data class ServerAttributes(
     @SerializedName("is_suspended") val isSuspended: Boolean,
     @SerializedName("is_installing") val isInstalling: Boolean,
     @SerializedName("is_transferring") val isTransferring: Boolean,
-    val relationships: ServerRelationships,
+    val relationships: ServerRelationships? = null,
 )
 
 data class ServerSftpDetails(
@@ -41,7 +41,7 @@ data class ServerLimits(
     val disk: Int,
     val io: Int,
     val cpu: Int,
-    val threads: Int? = null,
+    val threads: String? = null,
     @SerializedName("oom_disabled") val oomDisabled: Boolean,
 )
 

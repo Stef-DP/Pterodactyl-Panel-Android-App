@@ -11,5 +11,11 @@ data class ApplicationAllocationAttributes(
     val alias: String? = null,
     val port: Int,
     val notes: String? = null,
-    val assigned: Boolean
+    val assigned: Boolean,
+    val relationships: ApplicationAllocationRelationships? = null
+)
+
+data class ApplicationAllocationRelationships(
+    val node: ApplicationNode? = null,
+    val server: ApplicationServer? = null
 )

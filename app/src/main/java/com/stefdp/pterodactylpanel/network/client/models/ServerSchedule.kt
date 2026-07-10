@@ -17,7 +17,7 @@ data class ServerScheduleAttributes(
     @SerializedName("next_run_at") val nextRunAt: String,
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String? = null,
-    val relationships: ServerScheduleRelationships,
+    val relationships: ServerScheduleRelationships? = null,
 )
 
 data class ServerScheduleCron(
