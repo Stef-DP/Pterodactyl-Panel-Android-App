@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,7 +27,7 @@ class WebSocketManager(
     private val gson = Gson()
 
     private val _events = MutableSharedFlow<WSMessage>()
-    val events: SharedFlow<WSMessage> = _events
+    val events: SharedFlow<WSMessage> = _events.asSharedFlow()
 
     var onTokenRequired: (() -> Unit)? = null
 
