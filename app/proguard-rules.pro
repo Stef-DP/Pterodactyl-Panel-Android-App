@@ -19,3 +19,24 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep interface com.stefdp.pterodactylpanel.network.client.** { *; }
+-keep interface com.stefdp.pterodactylpanel.network.application.** { *; }
+
+-keep class com.stefdp.pterodactylpanel.network.application.** { *; }
+-keep class com.stefdp.pterodactylpanel.network.application.models.** { *; }
+
+-keep class com.stefdp.pterodactylpanel.network.client.** { *; }
+-keep class com.stefdp.pterodactylpanel.network.client.models.** { *; }
+
+-keep class com.stefdp.pterodactylpanel.network.websocket.** { *; }
+-keep class com.stefdp.pterodactylpanel.network.websocket.models.** { *; }
+
+-keep class com.stefdp.pterodactylpanel.screens.** { *; }
+-keep interface com.stefdp.pterodactylpanel.screens.** { *; }
+
+-keep class com.stefdp.pterodactylpanel.BuildConfig { *; }
+
+-keep class androidx.lifecycle.ViewTreeLifecycleOwner { *; }
+-keep class androidx.lifecycle.ViewTreeViewModelStoreOwner { *; }
+-keep class androidx.savedstate.ViewTreeSavedStateRegistryOwner { *; }

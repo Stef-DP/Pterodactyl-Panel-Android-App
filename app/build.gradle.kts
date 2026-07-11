@@ -13,7 +13,7 @@ android {
         }
     }
 
-    val baseAppName = "Zipline"
+    val baseAppName = "Pterodactyl Panel"
 
     defaultConfig {
         applicationId = "com.stefdp.pterodactylpanel"
@@ -21,6 +21,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        ndkVersion = "29.0.14206865"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -65,6 +66,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

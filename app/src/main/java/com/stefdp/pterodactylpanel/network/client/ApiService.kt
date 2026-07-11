@@ -54,6 +54,7 @@ import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerSche
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerStartupVariablesResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServersResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountSshKeysResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerWebsocketResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListAccountApiKeysResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerAllocationsResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerDatabasesResponse
@@ -81,9 +82,9 @@ import retrofit2.http.Url
 - https://old-api.redbanana.dev/docs/client-server-schedules/post-update-task
     - old docs backed up by a pterodactyl panel Discord server moderator
 - https://pterodactyl-api-docs.netvpx.com/docs/api/schedules#update-schedule-task
-    - official docs but according to a moderator fo the discord, generated with AI and includes hallucinations
+    - official docs but according to a moderator of the discord, generated with AI and includes hallucinations
 
-i legit don't know which one to follow now 😭
+I legit don't know which one to follow now 😭
 */
 
 interface PterodactylClientApiService {
@@ -221,6 +222,14 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
     ): Response<GetServerResponse>
+
+    @GET("servers/{identifier}/websocker")
+    fun getServerWebsocket(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("identifier") serverId: String,
+    ): Response<GetServerWebsocketResponse>
 
     @GET("servers/{identifier}/resources")
     fun getServerResources(
