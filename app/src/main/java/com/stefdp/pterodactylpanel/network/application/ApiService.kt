@@ -15,10 +15,8 @@ import com.stefdp.pterodactylpanel.network.application.models.requests.CreateSer
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateUserBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.GetUsersQuerySort
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListLocationsQuerySort
-import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQuerySort
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListServersQuerySort
-import com.stefdp.pterodactylpanel.network.application.models.requests.ListUsersQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateNodeBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateServerBuildBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateServerDetailsBody
@@ -283,7 +281,7 @@ interface PterodactylApplicationApiService {
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("externalId") etxernalId: Long,
+        @Path("externalId") externalId: String,
         @Query("include") include: String? = null, // list of ListServersQueryInclude separated by ","
     ): Response<ApplicationServer>
 
@@ -368,17 +366,17 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
-        @Query("inclide") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
+        @Query("include") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
     ): Response<ListServerDatabasesResponse>
 
     @GET("application/servers/{serverId}/databases/{databaseId}")
-    fun listServerDatabases(
+    fun getServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
         @Path("databaseId") databaseId: Long,
-        @Query("inclide") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
+        @Query("include") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
     ): Response<ApplicationServerDatabase>
 
     @POST("application/servers/{serverId}/databases")
