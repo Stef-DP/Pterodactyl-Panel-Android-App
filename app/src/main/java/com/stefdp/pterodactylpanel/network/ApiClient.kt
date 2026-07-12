@@ -19,7 +19,7 @@ object PterodactylApiClient {
         .addInterceptor(loggingInterceptor)
         .build()
 
-    fun getPterodactylClientApiService(baseUrl: String, includeNull: Boolean): PterodactylClientApiService {
+    fun getClientApiService(baseUrl: String, includeNull: Boolean = false): PterodactylClientApiService {
         val formattedUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
         val fullUrl = formattedUrl + "api/client/"
@@ -48,7 +48,7 @@ object PterodactylApiClient {
             .create(PterodactylClientApiService::class.java)
     }
 
-    fun getPterodactylApplicationApiService(baseUrl: String, includeNull: Boolean): PterodactylApplicationApiService {
+    fun getApplicationApiService(baseUrl: String, includeNull: Boolean = false): PterodactylApplicationApiService {
         val formattedUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
         val fullUrl = formattedUrl + "api/application/"

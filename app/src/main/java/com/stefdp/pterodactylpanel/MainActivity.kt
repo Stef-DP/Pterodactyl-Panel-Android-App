@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -39,13 +41,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.screens.HomeScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.utils.NetworkMonitor
 
+val LocalLoggedUser = compositionLocalOf<User?> { null }
+val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Result<User>> {
+    {
+        Result.failure(
+            Exception("Placeholder")
+        )
+    }
+}
+
 class MainActivity : FragmentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

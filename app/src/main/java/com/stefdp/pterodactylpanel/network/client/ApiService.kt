@@ -139,7 +139,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: DisableAccount2FABody
-    )
+    ): Response<Unit>
 
     @PUT("account/email")
     fun updateAccountEmail(
@@ -147,7 +147,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: UpdateAccountEmailBody
-    )
+    ): Response<Unit>
 
     @PUT("account/password")
     fun updateAccountPassword(
@@ -155,7 +155,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: UpdateAccountPasswordBody
-    )
+    ): Response<Unit>
 
     @GET("account/api-keys")
     fun listAccountApiKeys(
@@ -178,7 +178,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") keyId: String,
-    )
+    ): Response<Unit>
 
     @GET("account/activity")
     fun getAccountActivity(
@@ -213,7 +213,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: RemoveAccountSshKeyBody
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}")
     fun getServer(
@@ -246,7 +246,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: SendCommandToServerBody
-    )
+    ): Response<Unit>
 
     @POST("servers/{identifier}/power")
     fun clientSendPowerSignalToServer(
@@ -255,7 +255,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: SendPowerSignalToServerBody
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/databases")
     fun listServerDatabases(
@@ -290,7 +290,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverIdentifier") serverId: String,
         @Path("databaseIdentifier") databaseId: String,
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/files/list")
     fun listServerFiles(
@@ -334,7 +334,7 @@ interface PterodactylClientApiService {
         @Path("identifier") serverId: String,
         @Query("file") file: String,
         @Body fileContents: String,
-    )
+    ): Response<Unit>
 
     @POST("servers/{identifier}/files/create-folder")
     fun createServerFolder(
@@ -343,7 +343,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: CreateServerFolderBody
-    )
+    ): Response<Unit>
 
     @POST("servers/{identifier}/files/copy")
     fun copyServerFile(
@@ -352,7 +352,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: CopyServerFileBody
-    )
+    ): Response<Unit>
 
     @PUT("servers/{identifier}/files/rename")
     fun renameServerFiles(
@@ -361,7 +361,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: RenameServerFilesBody
-    )
+    ): Response<Unit>
 
     @POST("servers/{identifier}/files/compress")
     fun compressServerFiles(
@@ -379,7 +379,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: DecompressServerFileBody
-    )
+    ): Response<Unit>
 
     @POST("servers/{identifier}/files/delete")
     fun deleteServerFiles(
@@ -388,7 +388,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: DeleteServerFilesBody
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/files/upload")
     fun geUploadServerFileUrl(
@@ -415,7 +415,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: UpdateServerFilePermissionsBody
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/schedules")
     fun getServerSchedules(
@@ -460,7 +460,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverIdentifier") serverId: String,
         @Path("scheduleIdentifier") scheduleId: String,
-    )
+    ): Response<Unit>
 
     @POST("servers/{serverIdentifier}/schedules/{scheduleIdentifier}/tasks")
     fun createServerScheduleTask(
@@ -490,7 +490,7 @@ interface PterodactylClientApiService {
         @Path("serverIdentifier") serverId: String,
         @Path("scheduleIdentifier") scheduleId: String,
         @Path("taskIdentifier") taskId: String,
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/network/allocations")
     fun listServerAllocations(
@@ -534,7 +534,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverIdentifier") serverId: String,
         @Path("allocationIdentifier") allocationId: String,
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/users")
     fun listServerUsers(
@@ -579,7 +579,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverIdentifier") serverId: String,
         @Path("userIdentifier") userUuid: String,
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/backups")
     fun getServerBackups(
@@ -633,7 +633,7 @@ interface PterodactylClientApiService {
         @Path("serverIdentifier") serverId: String,
         @Path("backupIdentifier") backupId: String,
         @Body data: RestoreServerBackupBody
-    )
+    ): Response<Unit>
 
     @POST("servers/{serverIdentifier}/backups/{backupIdentifier}/lock")
     fun toggleServerBackupLock(
@@ -651,7 +651,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverIdentifier") serverId: String,
         @Path("backupIdentifier") backupId: String,
-    )
+    ): Response<Unit>
 
     @GET("servers/{identifier}/startup")
     fun getServerStartupVariables(
@@ -677,7 +677,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: RenameServerBody
-    )
+    ): Response<Unit>
 
     @POST("servers/{identifier}/settings/reinstall")
     fun reinstallServer(
@@ -685,7 +685,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
-    )
+    ): Response<Unit>
 
     @PUT("servers/{identifier}/settings/docker-image")
     fun updateServerDockerImage(
@@ -694,5 +694,5 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("identifier") serverId: String,
         @Body data: UpdateServerDockerImageBody
-    )
+    ): Response<Unit>
 }

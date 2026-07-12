@@ -101,7 +101,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("userId") userId: Long
-    )
+    ): Response<Unit>
 
     @GET("application/nodes")
     fun listNodes(
@@ -160,6 +160,7 @@ interface PterodactylApplicationApiService {
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
+        @Path("nodeId") nodeId: Long,
         @Body data: UpdateNodeBody
     ): Response<ApplicationNode>
 
@@ -169,7 +170,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("nodeId") nodeId: Long
-    )
+    ): Response<Unit>
 
     @GET("application/nodes/{nodeId}/allocations")
     fun listNodeAllocations(
@@ -177,7 +178,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("nodeId") nodeId: Long,
-        @Query("include") include: String, //  list of ListNodeAllocationsQueryInclude separated by ","
+        @Query("include") include: String? = null, //  list of ListNodeAllocationsQueryInclude separated by ","
         @Query("filter[ip]") filterIp: String? = null,
         @Query("filter[port]") filterPort: Int? = null,
         @Query("filter[ip_alias") filterIpAlias: String? = null,
@@ -193,7 +194,7 @@ interface PterodactylApplicationApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("nodeId") nodeId: Long,
         @Body data: CreateNodeAllocationBody
-    )
+    ): Response<Unit>
 
     @DELETE("application/nodes/{nodeId}/allocations/{allocationId}")
     fun deleteNodeAllocation(
@@ -202,7 +203,7 @@ interface PterodactylApplicationApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("nodeId") nodeId: Long,
         @Path("allocationId") allocationId: Long
-    )
+    ): Response<Unit>
 
     @GET("application/locations")
     fun listLocations(
@@ -249,7 +250,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("locationId") locationId: Long
-    )
+    ): Response<Unit>
 
     @GET("application/servers")
     fun listServers(
@@ -327,7 +328,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
-    )
+    ): Response<Unit>
 
     @POST("application/servers/{serverId}/unsuspend")
     fun unsuspendServer(
@@ -335,7 +336,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
-    )
+    ): Response<Unit>
 
     @POST("application/servers/{serverId}/reinstall")
     fun reinstallServer(
@@ -343,7 +344,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
-    )
+    ): Response<Unit>
 
     @DELETE("application/servers/{serverId}")
     fun deleteServer(
@@ -351,7 +352,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
-    )
+    ): Response<Unit>
 
     @DELETE("application/servers/{serverId}/force")
     fun forceDeleteServer(
@@ -359,7 +360,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
-    )
+    ): Response<Unit>
 
     @GET("application/servers/{serverId}/databases")
     fun listServerDatabases(
@@ -396,7 +397,7 @@ interface PterodactylApplicationApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
         @Path("databaseId") databaseId: Long,
-    )
+    ): Response<Unit>
 
     @DELETE("application/servers/{serverId}/databases/{databaseId}")
     fun deleteServerDatabase(
@@ -405,7 +406,7 @@ interface PterodactylApplicationApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
         @Path("databaseId") databaseId: Long,
-    )
+    ): Response<Unit>
 
     @GET("application/nests")
     fun listNests(
