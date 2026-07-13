@@ -12,11 +12,8 @@ import com.stefdp.pterodactylpanel.network.client.models.ServerStats
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.SignedUrl
 import com.stefdp.pterodactylpanel.network.client.models.SshKey
-import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerDockerImageBody
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.network.client.models.requests.AddAccountSshKeyBody
-import com.stefdp.pterodactylpanel.network.client.models.requests.SendCommandToServerBody
-import com.stefdp.pterodactylpanel.network.client.models.requests.SendPowerSignalToServerBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.CompressServerFilesBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.CopyServerFileBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.CreateAccountApiKeyBody
@@ -25,7 +22,7 @@ import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerDa
 import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerFolderBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerScheduleBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerScheduleTaskBody
-import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerUserBody
+import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerSubuserBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.DecompressServerFileBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.DeleteServerFilesBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.DisableAccount2FABody
@@ -36,30 +33,33 @@ import com.stefdp.pterodactylpanel.network.client.models.requests.RemoveAccountS
 import com.stefdp.pterodactylpanel.network.client.models.requests.RenameServerBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.RenameServerFilesBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.RestoreServerBackupBody
+import com.stefdp.pterodactylpanel.network.client.models.requests.SendCommandToServerBody
+import com.stefdp.pterodactylpanel.network.client.models.requests.SendPowerSignalToServerBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateAccountEmailBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateAccountPasswordBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerAllocationNotesBody
+import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerDockerImageBody
+import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilesPermissionsBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerScheduleBody
-import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilePermissionsBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerScheduleTaskBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerStartupVariableBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerUserBody
 import com.stefdp.pterodactylpanel.network.client.models.responses.CreateAccountApiKeyResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccount2FAQrCodeResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetAvailablePermissionsResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountActivityResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerBackupsResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerSchedulesResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerStartupVariablesResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetServersResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountSshKeysResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetAvailablePermissionsResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerStartupVariablesResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerWebsocketResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListAccountApiKeysResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerAllocationsResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerBackupsResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerDatabasesResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerFilesResponse
-import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerUsersResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerSchedulesResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerSubusersResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.ListServersResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -89,7 +89,7 @@ I legit don't know which one to follow now 😭
 
 interface PterodactylClientApiService {
     @GET("")
-    fun getServers(
+    fun listServers(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -100,9 +100,9 @@ interface PterodactylClientApiService {
         @Query("filter[external_id]") filterExternalId: String? = null,
         @Query("filter[description]") filterDescription: String? = null,
         @Query("filter[*]") filterAny: String? = null,
-        @Query("type") type: GetServersQueryType,
-        @Query("include") include: String? = null, // list of GetServersQueryInclude separated by ","
-    ): Response<GetServersResponse>
+        @Query("type") type: GetServersQueryType? = null,
+        @Query("include") include: String? = null, // list of ListServersQueryInclude separated by ","
+    ): Response<ListServersResponse>
 
     @GET("permissions")
     fun getAvailablePermissions(
@@ -172,12 +172,12 @@ interface PterodactylClientApiService {
         @Body data: CreateAccountApiKeyBody
     ): Response<CreateAccountApiKeyResponse>
 
-    @DELETE("account/api-keys/{identifier}")
+    @DELETE("account/api-keys/{keyId}")
     fun deleteAccountApiKey(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") keyId: String,
+        @Path("keyId") keyId: String,
     ): Response<Unit>
 
     @GET("account/activity")
@@ -193,7 +193,7 @@ interface PterodactylClientApiService {
     ): Response<GetAccountActivityResponse>
     
     @GET("account/ssh-keys")
-    fun getAccountSshKeys(
+    fun listAccountSshKeys(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -215,107 +215,109 @@ interface PterodactylClientApiService {
         @Body data: RemoveAccountSshKeyBody
     ): Response<Unit>
 
-    @GET("servers/{identifier}")
+    @GET("servers/{serverId}")
     fun getServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
+        @Query("include") include: String? = null, // list of ListServersQueryInclude separated by ","
     ): Response<GetServerResponse>
 
-    @GET("servers/{identifier}/websocker")
+    @GET("servers/{serverId}/websocker")
     fun getServerWebsocket(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
     ): Response<GetServerWebsocketResponse>
 
-    @GET("servers/{identifier}/resources")
+    @GET("servers/{serverId}/resources")
     fun getServerResources(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
     ): Response<ServerStats>
 
-    @POST("servers/{identifier}/command")
-    fun clientSendCommandToServer(
+    @POST("servers/{serverId}/command")
+    fun sendCommandToServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: SendCommandToServerBody
     ): Response<Unit>
 
-    @POST("servers/{identifier}/power")
-    fun clientSendPowerSignalToServer(
+    @POST("servers/{serverId}/power")
+    fun sendPowerSignalToServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: SendPowerSignalToServerBody
     ): Response<Unit>
 
-    @GET("servers/{identifier}/databases")
+    @GET("servers/{serverId}/databases")
     fun listServerDatabases(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
+        @Query("include") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
     ): Response<ListServerDatabasesResponse>
 
-    @POST("servers/{identifier}/databases")
+    @POST("servers/{serverId}/databases")
     fun createServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: CreateServerDatabaseBody
     ): Response<ServerDatabase>
 
-    @POST("server/{serverIdentifier}/databases/{databaseIdentifier)/rotate-password")
+    @POST("server/{serverId}/databases/{databaseId)/rotate-password")
     fun rotateServerDatabasePassword(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("databaseIdentifier") databaseId: String,
+        @Path("serverId") serverId: String,
+        @Path("databaseId") databaseId: String,
     ): Response<ServerDatabase>
 
-    @DELETE("server/{serverIdentifier}/databases/{databaseIdentifier}")
+    @DELETE("server/{serverId}/databases/{databaseId}")
     fun deleteServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("databaseIdentifier") databaseId: String,
+        @Path("serverId") serverId: String,
+        @Path("databaseId") databaseId: String,
     ): Response<Unit>
 
-    @GET("servers/{identifier}/files/list")
+    @GET("servers/{serverId}/files/list")
     fun listServerFiles(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Query("directory") directory: String? = null,
     ): Response<ListServerFilesResponse>
 
-    @GET("servers/{identifier}/files/contents")
+    @GET("servers/{serverId}/files/contents")
     fun getServerFileContents(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Query("file") file: String, // for "/home/container/file.txt" it'd be "/file.txt"
     ): Response<String>
 
-    @GET("servers/{identifier}/files/download")
+    @GET("servers/{serverId}/files/download")
     fun getDownloadServerFileUrl(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Query("file") file: String
     ): Response<SignedUrl>
 
@@ -326,76 +328,76 @@ interface PterodactylClientApiService {
         @Url fileUrl: String, // the url returned by getDownloadServerFileUrl's response
     ): Response<ResponseBody>
 
-    @POST("servers/{identifier}/files/write")
+    @POST("servers/{serverId}/files/write")
     fun writeServerFile(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Query("file") file: String,
         @Body fileContents: String,
     ): Response<Unit>
 
-    @POST("servers/{identifier}/files/create-folder")
+    @POST("servers/{serverId}/files/create-folder")
     fun createServerFolder(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: CreateServerFolderBody
     ): Response<Unit>
 
-    @POST("servers/{identifier}/files/copy")
+    @POST("servers/{serverId}/files/copy")
     fun copyServerFile(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: CopyServerFileBody
     ): Response<Unit>
 
-    @PUT("servers/{identifier}/files/rename")
+    @PUT("servers/{serverId}/files/rename")
     fun renameServerFiles(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: RenameServerFilesBody
     ): Response<Unit>
 
-    @POST("servers/{identifier}/files/compress")
+    @POST("servers/{serverId}/files/compress")
     fun compressServerFiles(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: CompressServerFilesBody
     ): Response<ServerFile>
 
-    @POST("servers/{identifier}/files/decompress")
+    @POST("servers/{serverId}/files/decompress")
     fun decompressServerFile(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: DecompressServerFileBody
     ): Response<Unit>
 
-    @POST("servers/{identifier}/files/delete")
+    @POST("servers/{serverId}/files/delete")
     fun deleteServerFiles(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: DeleteServerFilesBody
     ): Response<Unit>
 
-    @GET("servers/{identifier}/files/upload")
+    @GET("servers/{serverId}/files/upload")
     fun geUploadServerFileUrl(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Query("directory") directory: String? = null, // not sure if that actually works
     ): Response<SignedUrl>
 
@@ -408,205 +410,206 @@ interface PterodactylClientApiService {
         @Part("directory") directory: String, // idk if that'll work either
     )
 
-    @POST("servers/{identifier}/files/chmod")
-    fun updateServerFilePermissions(
+    @POST("servers/{serverId}/files/chmod")
+    fun updateServerFilesPermissions(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
-        @Body data: UpdateServerFilePermissionsBody
+        @Path("serverId") serverId: String,
+        @Body data: UpdateServerFilesPermissionsBody
     ): Response<Unit>
 
-    @GET("servers/{identifier}/schedules")
-    fun getServerSchedules(
+    @GET("servers/{serverId}/schedules")
+    fun listServerSchedules(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
-    ): Response<GetServerSchedulesResponse>
+        @Path("serverId") serverId: String,
+    ): Response<ListServerSchedulesResponse>
 
-    @GET("servers/{serverIdentifier}/schedules/{scheduleIdentifier}")
+    @GET("servers/{serverId}/schedules/{scheduleId}")
     fun getServerSchedule(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("scheduleIdentifier") scheduleId: String,
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: String,
     ): Response<ServerSchedule>
 
-    @POST("servers/{identifier}/schedules")
+    @POST("servers/{serverId}/schedules")
     fun createServerSchedule(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: CreateServerScheduleBody
     ): Response<ServerSchedule>
 
-    @POST("servers/{serverIdentifier}/schedules/{scheduleIdentifier}")
+    @POST("servers/{serverId}/schedules/{scheduleId}")
     fun updateServerSchedule(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("scheduleIdentifier") scheduleId: String,
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: String,
         @Body data: UpdateServerScheduleBody
     ): Response<ServerSchedule>
 
-    @DELETE("servers/{serverIdentifier}/schedules/{scheduleIdentifier}")
+    @DELETE("servers/{serverId}/schedules/{scheduleId}")
     fun deleteServerSchedule(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("scheduleIdentifier") scheduleId: String,
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: String,
     ): Response<Unit>
 
-    @POST("servers/{serverIdentifier}/schedules/{scheduleIdentifier}/tasks")
+    @POST("servers/{serverId}/schedules/{scheduleId}/tasks")
     fun createServerScheduleTask(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("scheduleIdentifier") scheduleId: String,
-    ): Response<CreateServerScheduleTaskBody>
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: String,
+        @Body data: CreateServerScheduleTaskBody
+    ): Response<ServerScheduleTask>
 
-    @POST("servers/{serverIdentifier}/schedules/{scheduleIdentifier}/tasks/{taskIdentifier}")
+    @POST("servers/{serverId}/schedules/{scheduleId}/tasks/{taskId}")
     fun updateServerScheduleTask(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("scheduleIdentifier") scheduleId: String,
-        @Path("taskIdentifier") taskId: String,
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: String,
+        @Path("taskId") taskId: String,
         @Body data: UpdateServerScheduleTaskBody
     ): Response<ServerScheduleTask>
 
-    @DELETE("servers/{serverIdentifier}/schedules/{scheduleIdentifier}/tasks/{taskIdentifier}")
+    @DELETE("servers/{serverId}/schedules/{scheduleId}/tasks/{taskId}")
     fun deleteServerScheduleTask(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("scheduleIdentifier") scheduleId: String,
-        @Path("taskIdentifier") taskId: String,
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: String,
+        @Path("taskId") taskId: String,
     ): Response<Unit>
 
-    @GET("servers/{identifier}/network/allocations")
+    @GET("servers/{serverId}/network/allocations")
     fun listServerAllocations(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
     ): Response<ListServerAllocationsResponse>
 
-    @POST("servers/{identifier}/network/allocations")
+    @POST("servers/{serverId}/network/allocations")
     fun assignAutomaticAllocationToServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
     ): Response<ServerAllocation>
 
-    @POST("servers/{serverIdentifier}/network/allocations/{allocationIdentifier}/primary")
+    @POST("servers/{serverId}/network/allocations/{allocationId}/primary")
     fun setServerPrimaryAllocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("allocationIdentifier") allocationId: String,
+        @Path("serverId") serverId: String,
+        @Path("allocationId") allocationId: String,
     ): Response<ServerAllocation>
 
-    @POST("servers/{serverIdentifier}/network/allocations/{allocationIdentifier}")
+    @POST("servers/{serverId}/network/allocations/{allocationId}")
     fun updateServerAllocationNotes(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("allocationIdentifier") allocationId: String,
+        @Path("serverId") serverId: String,
+        @Path("allocationId") allocationId: String,
         @Body data: UpdateServerAllocationNotesBody
     ): Response<ServerAllocation>
 
-    @DELETE("servers/{serverIdentifier}/network/allocations/{allocationIdentifier}")
+    @DELETE("servers/{serverId}/network/allocations/{allocationId}")
     fun deleteServerAllocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("allocationIdentifier") allocationId: String,
+        @Path("serverId") serverId: String,
+        @Path("allocationId") allocationId: String,
     ): Response<Unit>
 
-    @GET("servers/{identifier}/users")
-    fun listServerUsers(
+    @GET("servers/{serverId}/users")
+    fun listServerSubusers(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
-    ): Response<ListServerUsersResponse>
+        @Path("serverId") serverId: String,
+    ): Response<ListServerSubusersResponse>
 
-    @GET("servers/{serverIdentifier}/users/{userIdentifier}")
-    fun getServerUser(
+    @GET("servers/{serverId}/users/{userUuid}")
+    fun getServerSubuser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("userIdentifier") userUuid: String,
+        @Path("serverId") serverId: String,
+        @Path("userUuid") userUuid: String,
     ): Response<ServerSubuser>
 
-    @POST("servers/{identifier}/users")
-    fun createServerUser(
+    @POST("servers/{serverId}/users")
+    fun createServerSubuser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
-        @Body data: CreateServerUserBody
+        @Path("serverId") serverId: String,
+        @Body data: CreateServerSubuserBody
     ): Response<ServerSubuser>
 
-    @POST("servers/{serverIdentifier}/users/{userIdentifier}")
-    fun updateServerUser(
+    @POST("servers/{serverId}/users/{userUuid}")
+    fun updateServerSubuser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("userIdentifier") userUuid: String,
+        @Path("serverId") serverId: String,
+        @Path("userUuid") userUuid: String,
         @Body data: UpdateServerUserBody
     ): Response<ServerSubuser>
 
-    @DELETE("servers/{serverIdentifier}/users/{userIdentifier}")
-    fun deleteServerUser(
+    @DELETE("servers/{serverId}/users/{userUuid}")
+    fun deleteServerSubuser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("userIdentifier") userUuid: String,
+        @Path("serverId") serverId: String,
+        @Path("userUuid") userUuid: String,
     ): Response<Unit>
 
-    @GET("servers/{identifier}/backups")
-    fun getServerBackups(
+    @GET("servers/{serverId}/backups")
+    fun listServerBackups(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Query("per_page") perPage: Int? = null,
         @Query("page") page: Int? = null,
-    ): Response<GetServerBackupsResponse>
+    ): Response<ListServerBackupsResponse>
 
-    @GET("servers/{serverIdentifier}/backups/{backupIdentifier}")
+    @GET("servers/{serverId}/backups/{backupId}")
     fun getServerBackup(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("backupIdentifier") backupId: String,
+        @Path("serverId") serverId: String,
+        @Path("backupId") backupId: String,
     ): Response<ServerBackup>
 
-    @GET("servers/{serverIdentifier}/backups/{backupIdentifier}/download")
+    @GET("servers/{serverId}/backups/{backupId}/download")
     fun getServerBackupDownloadUrl(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("backupIdentifier") backupId: String,
+        @Path("serverId") serverId: String,
+        @Path("backupId") backupId: String,
     ): Response<SignedUrl>
 
     @Streaming
@@ -616,83 +619,83 @@ interface PterodactylClientApiService {
         @Url fileUrl: String, // the url returned by getServerBackupDownloadUrl's response
     ): Response<ResponseBody>
 
-    @POST("servers/{identifier}/backups")
+    @POST("servers/{serverId}/backups")
     fun createServerBackup(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: CreateServerBackupBody
     ): Response<ServerBackup>
 
-    @POST("servers/{serverIdentifier}/backups/{backupIdentifier}/restore")
+    @POST("servers/{serverId}/backups/{backupId}/restore")
     fun restoreServerBackup(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("backupIdentifier") backupId: String,
+        @Path("serverId") serverId: String,
+        @Path("backupId") backupId: String,
         @Body data: RestoreServerBackupBody
     ): Response<Unit>
 
-    @POST("servers/{serverIdentifier}/backups/{backupIdentifier}/lock")
+    @POST("servers/{serverId}/backups/{backupId}/lock")
     fun toggleServerBackupLock(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("backupIdentifier") backupId: String,
+        @Path("serverId") serverId: String,
+        @Path("backupId") backupId: String,
     ): Response<ServerBackup>
 
-    @GET("servers/{serverIdentifier}/backups/{backupIdentifier}")
+    @GET("servers/{serverId}/backups/{backupId}")
     fun deleteServerBackup(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("serverIdentifier") serverId: String,
-        @Path("backupIdentifier") backupId: String,
+        @Path("serverId") serverId: String,
+        @Path("backupId") backupId: String,
     ): Response<Unit>
 
-    @GET("servers/{identifier}/startup")
+    @GET("servers/{serverId}/startup")
     fun getServerStartupVariables(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
     ): Response<GetServerStartupVariablesResponse>
 
-    @PUT("servers/{identifier}/startup/variable")
+    @PUT("servers/{serverId}/startup/variable")
     fun updateServerStartupVariable(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: UpdateServerStartupVariableBody
     ): Response<ServerEggVariable>
 
-    @POST("servers/{identifier}/settings/rename")
+    @POST("servers/{serverId}/settings/rename")
     fun renameServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: RenameServerBody
     ): Response<Unit>
 
-    @POST("servers/{identifier}/settings/reinstall")
+    @POST("servers/{serverId}/settings/reinstall")
     fun reinstallServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
     ): Response<Unit>
 
-    @PUT("servers/{identifier}/settings/docker-image")
+    @PUT("servers/{serverId}/settings/docker-image")
     fun updateServerDockerImage(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Path("identifier") serverId: String,
+        @Path("serverId") serverId: String,
         @Body data: UpdateServerDockerImageBody
     ): Response<Unit>
 }

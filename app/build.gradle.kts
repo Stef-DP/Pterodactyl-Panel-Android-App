@@ -8,9 +8,7 @@ plugins {
 android {
     namespace = "com.stefdp.pterodactylpanel"
     compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
+        version = release(37)
     }
 
     val baseAppName = "Pterodactyl Panel"
@@ -18,7 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.stefdp.pterodactylpanel"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
         ndkVersion = "29.0.14206865"

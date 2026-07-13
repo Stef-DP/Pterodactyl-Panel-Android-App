@@ -1,6 +1,6 @@
 package com.stefdp.pterodactylpanel.network.client.models.requests
 
-data class CreateServerUserBody(
+data class CreateServerSubuserBody(
     val email: String,
     val permissions: List<String>
 )

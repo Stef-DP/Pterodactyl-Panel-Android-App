@@ -1,6 +1,6 @@
 package com.stefdp.pterodactylpanel.network.client.models.requests
 
-data class UpdateServerFilePermissionsBody(
+data class UpdateServerFilesPermissionsBody(
     val files: List<UpdateServerFilePermissionsFile>,
     val root: String? = null
 )

@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.client.models.responses
 import com.google.gson.annotations.SerializedName
 import com.stefdp.pterodactylpanel.network.client.models.Server
 
-data class GetServersResponse(
+data class ListServersResponse(
     val `object`: String = "list",
     val data: List<Server>,
     val meta: GetServersMeta
