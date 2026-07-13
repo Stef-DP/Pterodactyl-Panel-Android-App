@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
-import com.stefdp.pterodactylpanel.network.application.models.responses.ListNestsResponse
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationNest
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import com.stefdp.zipline.Logger
 
@@ -14,7 +14,7 @@ suspend fun getNest(
     context: Context,
     nestId: Long,
     include: String? = null,
-): Result<ListNestsResponse> {
+): Result<ApplicationNest> {
     try {
         val secureStore = SecureStorage.getInstance(context)
 
@@ -78,7 +78,7 @@ suspend fun getNest(
             )
         }
 
-        if (body is ListNestsResponse) {
+        if (body is ApplicationNest) {
             return Result.success(body)
         }
 

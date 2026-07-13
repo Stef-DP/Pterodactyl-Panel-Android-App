@@ -4,8 +4,6 @@ import android.content.Context
 import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
-import com.stefdp.pterodactylpanel.network.application.models.ApplicationLocation
-import com.stefdp.pterodactylpanel.network.application.models.requests.CreateLocationBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import com.stefdp.zipline.Logger
 
@@ -37,8 +35,6 @@ suspend fun deleteLocation(
             authorization = "Bearer $token",
             locationId = locationId,
         )
-
-        val body = response.body()
 
         if (!response.isSuccessful) {
             val statusCode = response.code()
@@ -77,13 +73,7 @@ suspend fun deleteLocation(
             )
         }
 
-        if (body is ApplicationLocation) {
-            return Result.success(body)
-        }
-
-        return Result.failure(
-            Exception("Something went wrong...")
-        )
+        return Result.success(Unit)
     } catch(e: Exception) {
         Logger.error(TAG, "Exception occurred: ${e.message}", e)
 
