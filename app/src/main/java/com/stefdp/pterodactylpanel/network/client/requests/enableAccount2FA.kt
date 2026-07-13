@@ -7,7 +7,7 @@ import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.client.models.RecoveryCodes
 import com.stefdp.pterodactylpanel.network.client.models.requests.EnableAccount2FABody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ClientApi[enableAccount2FA]"
 

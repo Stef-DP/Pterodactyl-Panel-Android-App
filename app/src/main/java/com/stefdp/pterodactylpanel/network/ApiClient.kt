@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network
 import com.google.gson.GsonBuilder
 import com.stefdp.pterodactylpanel.network.application.PterodactylApplicationApiService
 import com.stefdp.pterodactylpanel.network.client.PterodactylClientApiService
-import com.stefdp.zipline.DEBUG_NETWORK
+import com.stefdp.pterodactylpanel.DEBUG_NETWORK
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit

@@ -88,6 +88,15 @@ fun Header(
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
 //                val isInSettings = currentDestination?.route?.startsWith(SettingsScreen::class.qualifiedName ?: "") == true
+
+                UserAvatar(
+//                    enabled = !isInSettings,
+                    onClick = {
+//                        navController.navigate(SettingsScreen(
+//                            update = isUpdateAvailable
+//                        ))
+                    },
+                )
             }
         }
     }

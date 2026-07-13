@@ -8,7 +8,7 @@ import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateServerBuildBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateServerBuildBodyFeatureLimits
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[updateServerBuild]"
 

@@ -8,7 +8,7 @@ import com.stefdp.pterodactylpanel.network.client.models.ServerScheduleAction
 import com.stefdp.pterodactylpanel.network.client.models.ServerScheduleTask
 import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerScheduleTaskBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ClientApi[createServerScheduleTask]"
 

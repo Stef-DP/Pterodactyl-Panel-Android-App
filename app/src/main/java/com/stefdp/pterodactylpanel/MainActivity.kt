@@ -29,24 +29,35 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.stefdp.pterodactylpanel.components.Header
+import com.stefdp.pterodactylpanel.components.Sidebar
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.screens.HomeScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.utils.NetworkMonitor
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
+
+const val BASE_CORNER_RADIUS = 10
 
 val LocalLoggedUser = compositionLocalOf<User?> { null }
 val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Result<User>> {
@@ -58,10 +69,23 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
 }
 
 class MainActivity : FragmentActivity() {
+    private var isAppReady by mutableStateOf(false)
+
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+
         super.onCreate(savedInstanceState)
+
+        splashScreen.setKeepOnScreenCondition {
+            !isAppReady
+        }
+
+        lifecycleScope.launch {
+            delay(100L.milliseconds)
+            isAppReady = true
+        }
 
         val context = applicationContext
 
@@ -77,7 +101,7 @@ class MainActivity : FragmentActivity() {
 
                 val isConnected by networkMonitor.isConnected.collectAsState(initial = true)
 
-//                val coroutineScope = rememberCoroutineScope()
+                val coroutineScope = rememberCoroutineScope()
 
                 LaunchedEffect(isConnected) {
                     if (isConnected) {
@@ -93,10 +117,30 @@ class MainActivity : FragmentActivity() {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
 
+                    val invalidRoutes = listOf(
+                        LoginScreen::class.qualifiedName,
+                        LoadingScreen::class.qualifiedName,
+                    )
+
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         topBar = {
-                            // TODO: Header
+                            val isInvalid = invalidRoutes.any { routeName ->
+                                currentDestination?.route?.startsWith(routeName ?: "") == true
+                            }
+
+                            if (!isInvalid) {
+                                Header(
+                                    activity = activity,
+                                    context = context,
+                                    navController = navController,
+                                    onMenuClick = {
+                                        coroutineScope.launch {
+                                            if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                                        }
+                                    }
+                                )
+                            }
                         }
                     ) { innerPadding ->
                         Surface(
@@ -106,9 +150,18 @@ class MainActivity : FragmentActivity() {
                                 modifier = Modifier.padding(innerPadding),
                                 drawerState = drawerState,
                                 drawerContent = {
-                                    // TODO: Sidebar
+                                    Sidebar(
+                                        onItemClick = { screen ->
+                                            coroutineScope.launch { drawerState.close() }
+                                            navController.navigate(screen)
+                                        },
+                                        navController = navController,
+                                        closeSidebar = {
+                                            coroutineScope.launch { drawerState.close() }
+                                        }
+                                    )
                                 },
-                                gesturesEnabled = true // TODO: later disable in login screen
+//                                gesturesEnabled = currentDestination?.route !in invalidRoutes
                             ) {
                                 AppNavigation(
                                     navController = navController,

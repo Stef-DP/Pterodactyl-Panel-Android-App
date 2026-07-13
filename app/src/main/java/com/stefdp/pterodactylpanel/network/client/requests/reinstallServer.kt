@@ -5,7 +5,7 @@ import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ClientApi[reinstallServer]"
 

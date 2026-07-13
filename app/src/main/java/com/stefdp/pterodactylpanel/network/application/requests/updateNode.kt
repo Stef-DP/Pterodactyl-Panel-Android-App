@@ -6,10 +6,9 @@ import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNodeScheme
-import com.stefdp.pterodactylpanel.network.application.models.requests.CreateNodeBody
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateNodeBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[updateNode]"
 

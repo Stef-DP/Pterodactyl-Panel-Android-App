@@ -11,7 +11,7 @@ import com.stefdp.pterodactylpanel.network.application.models.requests.CreateSer
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBodyFeatureLimits
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBodyLimits
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[createServer]"
 

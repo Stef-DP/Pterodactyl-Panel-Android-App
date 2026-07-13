@@ -7,7 +7,7 @@ import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListLocationsQuerySort
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListLocationsResponse
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[listLocations]"
 

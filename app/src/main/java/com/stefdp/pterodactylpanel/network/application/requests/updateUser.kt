@@ -7,7 +7,7 @@ import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationUser
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateUserBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[updateUser]"
 

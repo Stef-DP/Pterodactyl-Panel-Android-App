@@ -1,4 +1,4 @@
-package com.stefdp.zipline
+package com.stefdp.pterodactylpanel
 
 import android.util.Log
 import androidx.compose.runtime.Composable

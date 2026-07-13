@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.websocket.models.WSEvents
 import com.stefdp.pterodactylpanel.network.websocket.models.WSMessage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

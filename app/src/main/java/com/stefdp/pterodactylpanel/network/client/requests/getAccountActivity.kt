@@ -7,7 +7,7 @@ import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetAccountActivityQuerySort
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountActivityResponse
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.zipline.Logger
+import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ClientApi[getAccountActivity]"
 
