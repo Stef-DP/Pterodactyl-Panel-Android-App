@@ -24,10 +24,11 @@ data class ServerAttributes(
     @SerializedName("docker_image") val dockerImage: String,
     @SerializedName("egg_features") val eggFeatures: List<String>,
     @SerializedName("feature_limits") val featureLimits: ServerFeatureLimits,
+    val status: ServerStatus? = null,
     @SerializedName("is_suspended") val isSuspended: Boolean,
     @SerializedName("is_installing") val isInstalling: Boolean,
     @SerializedName("is_transferring") val isTransferring: Boolean,
-    val relationships: ServerRelationships? = null,
+    val relationships: ServerRelationships,
 )
 
 data class ServerSftpDetails(
@@ -36,11 +37,11 @@ data class ServerSftpDetails(
 )
 
 data class ServerLimits(
-    val memory: Int,
-    val swap: Int,
-    val disk: Int,
-    val io: Int,
-    val cpu: Int,
+    val memory: Long,
+    val swap: Long,
+    val disk: Long,
+    val io: Long,
+    val cpu: Long,
     val threads: String? = null,
     @SerializedName("oom_disabled") val oomDisabled: Boolean,
 )
