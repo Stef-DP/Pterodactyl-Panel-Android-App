@@ -41,7 +41,7 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.User
-import com.stefdp.pterodactylpanel.screens.HomeScreen
+import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 
 @Composable
@@ -57,7 +57,7 @@ fun LoginScreen(
     val localLoggedUser = LocalLoggedUser.current
 
     if (localLoggedUser is User && currentDestination?.route == LoginScreen::class.qualifiedName) {
-        navController.navigate(HomeScreen) {
+        navController.navigate(ClientServersScreen) {
             popUpTo(navController.graph.id) { inclusive = true }
         }
     }
@@ -168,10 +168,17 @@ fun LoginScreen(
                     onClick = {
                         viewModel.onLogin(
                             context = context,
-                            onSuccess = {
+                            onSuccess = { hasClientApiKey, hasApplicationApiKey ->
                                 if (currentDestination?.route?.startsWith(LoginScreen::class.qualifiedName ?: "") == true) {
-                                    navController.navigate(HomeScreen) {
-                                        popUpTo(navController.graph.id) { inclusive = true }
+                                    if (hasClientApiKey) {
+                                        navController.navigate(ClientServersScreen) {
+                                            popUpTo(navController.graph.id) { inclusive = true }
+                                        }
+                                    } else {
+                                        // TODO: navigate to home for application API key
+//                                        navController.navigate(HomeScreen) {
+//                                            popUpTo(navController.graph.id) { inclusive = true }
+//                                        }
                                     }
                                 }
                             },

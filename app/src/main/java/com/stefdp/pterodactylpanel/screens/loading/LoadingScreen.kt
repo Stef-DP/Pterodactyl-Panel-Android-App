@@ -22,8 +22,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.LocalUpdateLoggedUser
 import com.stefdp.pterodactylpanel.components.Notification
-import com.stefdp.pterodactylpanel.screens.HomeScreen
+import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.ui.theme.Yellow
 
 @Composable
 fun LoadingScreen(
@@ -57,8 +58,20 @@ fun LoadingScreen(
                     popUpTo(navController.graph.id) { inclusive = true }
                 }
             },
-            onSuccess = {
-                navController.navigate(HomeScreen) {
+            onSuccess = { switchToBiometric, notificationContent ->
+                if (notificationContent != null) {
+                    Notification.show(
+                        activity = activity,
+                        duration = 3000L
+                    ) {
+                        Text(
+                            text = notificationContent,
+                            color = Yellow
+                        )
+                    }
+                }
+
+                navController.navigate(ClientServersScreen) {
                     popUpTo(navController.graph.id) { inclusive = true }
                 }
             },

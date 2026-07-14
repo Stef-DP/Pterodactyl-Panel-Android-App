@@ -5,6 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.network.application.requests.listUsers
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.utils.DomainRegex
 import com.stefdp.pterodactylpanel.utils.IPRegex
@@ -60,7 +61,10 @@ class LoginViewModel : ViewModel() {
 
     fun onLogin(
         context: Context,
-        onSuccess: () -> Unit,
+        onSuccess: (
+            hasClientApiKey: Boolean,
+            hasApplicationApiKey: Boolean,
+        ) -> Unit,
         onError: (String) -> Unit,
         updateLoggedUser: suspend (context: Context) -> Result<User>
     ) {
@@ -79,22 +83,6 @@ class LoginViewModel : ViewModel() {
                 return@launch
             }
 
-            val clientApiKey = _state.value.clientApiKey.text
-
-            if (clientApiKey.isNotBlank() && !clientApiKey.startsWith("ptlc_")) {
-                onError("Invalid Client API key")
-
-                return@launch
-            }
-
-            val applicationApiKey = _state.value.applicationApiKey.text
-
-            if (applicationApiKey.isNotBlank() && !applicationApiKey.startsWith("ptla_")) {
-                onError("Invalid Application API key")
-
-                return@launch
-            }
-
             _state.update {
                 it.copy(isLoading = true)
             }
@@ -106,31 +94,89 @@ class LoginViewModel : ViewModel() {
                 if (serverUrl.endsWith("/")) serverUrl.lowercase().dropLast(1) else serverUrl.lowercase()
             )
 
+            val clientApiKey = _state.value.clientApiKey.text
+            var isClientApiKeyValid = false
+
             if (clientApiKey.isNotBlank()) {
+                if (!clientApiKey.startsWith("ptlc_")) {
+                    onError("Invalid Client API key")
+
+                    secureStore.del(SecureStorage.STORAGE_SERVER_URL_KEY)
+
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
+
+                    return@launch
+                }
+
                 secureStore.set(SecureStorage.STORAGE_CLIENT_TOKEN_KEY, clientApiKey)
+
+                val userStatsRes = updateLoggedUser(context)
+
+                if (userStatsRes.isFailure) {
+                    onError("Invalid Client API key")
+
+                    secureStore.del(SecureStorage.STORAGE_SERVER_URL_KEY)
+                    secureStore.del(SecureStorage.STORAGE_CLIENT_TOKEN_KEY)
+
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
+
+                    return@launch
+                }
+
+                isClientApiKeyValid = true
             }
+
+            val applicationApiKey = _state.value.applicationApiKey.text
+            var isApplicationApiKeyValid = false
 
             if (applicationApiKey.isNotBlank()) {
+                if (!applicationApiKey.startsWith("ptla_")) {
+                    onError("Invalid Application API key")
+
+                    secureStore.del(SecureStorage.STORAGE_SERVER_URL_KEY)
+
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
+
+                    return@launch
+                }
+
                 secureStore.set(SecureStorage.STORAGE_APPLICATION_TOKEN_KEY, applicationApiKey)
+
+                val listUsersRes = listUsers(
+                    context = context,
+                    perPage = 1
+                )
+
+                if (listUsersRes.isFailure) {
+                    onError("Invalid Application API key")
+
+                    secureStore.del(SecureStorage.STORAGE_SERVER_URL_KEY)
+                    secureStore.del(SecureStorage.STORAGE_APPLICATION_TOKEN_KEY)
+
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
+
+                    return@launch
+                }
+
+                isApplicationApiKeyValid = true
             }
 
-            val userStatsRes = updateLoggedUser(context)
+            onSuccess(
+                isClientApiKeyValid,
+                isApplicationApiKeyValid
+            )
 
-            userStatsRes
-                .onSuccess {
-                    onSuccess()
-
-                    _state.update {
-                        it.copy(isLoading = false)
-                    }
-                }
-                .onFailure { error ->
-                    onError("Failed to fetch user (${error.message})")
-
-                    _state.update {
-                        it.copy(isLoading = false)
-                    }
-                }
+            _state.update {
+                it.copy(isLoading = false)
+            }
         }
     }
 }

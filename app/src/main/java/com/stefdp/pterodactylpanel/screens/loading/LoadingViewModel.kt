@@ -3,6 +3,7 @@ package com.stefdp.pterodactylpanel.screens.loading
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.stefdp.pterodactylpanel.network.application.requests.listUsers
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +23,10 @@ class LoadingViewModel : ViewModel() {
     fun startLoading(
         context: Context,
         onError: (String?) -> Unit,
-        onSuccess: (Boolean) -> Unit,
+        onSuccess: (
+            switchToBiometric: Boolean,
+            notificationContent: String?
+        ) -> Unit,
         updateLoggedUser: suspend (context: Context) -> Result<User>
     ) {
         viewModelScope.launch {
@@ -46,25 +50,91 @@ class LoadingViewModel : ViewModel() {
                 return@launch
             }
 
-            val newLoggedUser = updateLoggedUser(context)
+            val hasClientApiKey = clientToken != null
+            var isClientTokenValid = false
 
-            newLoggedUser
-                .onFailure { error ->
-                    onError(error.message)
+            if (clientToken != null) {
+                val newLoggedUser = updateLoggedUser(context)
 
-                    _state.update {
-                        it.copy(isLogging = false)
-                    }
-
-                    return@launch
+                if (newLoggedUser.isSuccess) {
+                    isClientTokenValid = true
+                } else {
+                    secureStore.del(SecureStorage.STORAGE_CLIENT_TOKEN_KEY)
                 }
-                .onSuccess {
-                    onSuccess(false)
 
-                    _state.update {
-                        it.copy(isLogging = false)
-                    }
+//                newLoggedUser
+//                    .onFailure { error ->
+//                        onError(error.message)
+//
+//                        _state.update {
+//                            it.copy(isLogging = false)
+//                        }
+//
+//                        return@launch
+//                    }
+//                    .onSuccess {
+//                        onSuccess(false)
+//
+//                        _state.update {
+//                            it.copy(isLogging = false)
+//                        }
+//                    }
+            }
+
+            val hasApplicationApiKey = applicationToken != null
+            var isApplicationTokenValid = false
+
+            if (applicationToken != null) {
+                val listUsersRes = listUsers(
+                    context = context,
+                    perPage = 1
+                )
+
+                if (listUsersRes.isSuccess) {
+                    isApplicationTokenValid = true
+                } else {
+                    secureStore.del(SecureStorage.STORAGE_APPLICATION_TOKEN_KEY)
                 }
+            }
+
+            if (
+                (hasClientApiKey && !isClientTokenValid) &&
+                (hasApplicationApiKey && !isApplicationTokenValid)
+            ) {
+                onError("Invalid Client & Application API keys")
+
+                _state.update {
+                    it.copy(isLogging = false)
+                }
+
+                return@launch
+            }
+
+            if (
+                (hasClientApiKey && isClientTokenValid) &&
+                (hasApplicationApiKey && !isApplicationTokenValid)
+            ) {
+                onSuccess(
+                    false,
+                    "Invalid Application API key"
+                )
+            }
+
+            if (
+                (hasClientApiKey && !isClientTokenValid) &&
+                hasApplicationApiKey
+//                (hasApplicationApiKey && isApplicationTokenValid)
+            ) {
+                onSuccess(
+                    false,
+                    "Invalid Client API key"
+                )
+            }
+
+            onSuccess(
+                false,
+                 null
+            )
         }
     }
 }
