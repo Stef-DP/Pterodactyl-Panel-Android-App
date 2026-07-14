@@ -88,7 +88,7 @@ I legit don't know which one to follow now 😭
 */
 
 interface PterodactylClientApiService {
-    @GET("")
+    @GET(".")
     suspend fun listServers(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
@@ -393,22 +393,19 @@ interface PterodactylClientApiService {
     ): Response<Unit>
 
     @GET("servers/{serverId}/files/upload")
-    suspend fun geUploadServerFileUrl(
+    suspend fun getUploadServerFileUrl(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Query("directory") directory: String? = null, // not sure if that actually works
     ): Response<SignedUrl>
 
-    // TODO: if i can't get this to work, i'll just use use writeServerFile instead
     @POST
     suspend fun uploadServerFile(
-//        @Header("Authorization") authorization: String, // not sure if this requires auth or not
         @Url uploadUrl: String,
-        @Part files: List<MultipartBody.Part>, // haven't tested that, idk if it actually works
-        @Part("directory") directory: String, // idk if that'll work either
-    )
+        @Part file: MultipartBody.Part,
+        @Query("directory") directory: String? = null,
+    ): Response<Unit>
 
     @POST("servers/{serverId}/files/chmod")
     suspend fun updateServerFilesPermissions(
