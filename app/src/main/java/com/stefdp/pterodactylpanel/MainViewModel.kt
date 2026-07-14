@@ -2,15 +2,18 @@ package com.stefdp.pterodactylpanel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.stefdp.pterodactylpanel.network.application.requests.listUsers
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.network.client.requests.getAccount
+import com.stefdp.pterodactylpanel.utils.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class MainUiState(
-    val loggedUser: User? = null
+    val loggedUser: User? = null,
+    val applicationApiKeyValidity: ApplicationApiKeyValidity = ApplicationApiKeyValidity.UNCHECKED
 )
 
 class MainViewModel : ViewModel() {
@@ -50,5 +53,54 @@ class MainViewModel : ViewModel() {
         return Result.failure(
             Exception("Something went wrong...")
         )
+    }
+
+    suspend fun updateApplicationApiKeyValidity(context: Context): ApplicationApiKeyValidity {
+        val tag = "MainActivity[updateApplicationApiKeyValidity]"
+
+        val secureStore = SecureStorage.getInstance(context)
+
+        val applicationApiKey = secureStore.get(SecureStorage.STORAGE_APPLICATION_TOKEN_KEY)
+
+        if (applicationApiKey.isNullOrBlank()) {
+            Logger.debug(tag, "No application API key found, skipping update")
+
+            _state.update {
+                it.copy(applicationApiKeyValidity = ApplicationApiKeyValidity.MISSING)
+            }
+
+            return ApplicationApiKeyValidity.MISSING
+        }
+
+        Logger.debug(tag, "Checking if the user application API key is valid...")
+
+        // this is only used to check if the application API key is valid as ptero doesn't seem to have an endpoint to test it
+        val listUsersRes = listUsers(
+            context = context,
+            perPage = 1
+        )
+
+        listUsersRes
+            .onSuccess {
+                Logger.debug(tag, "Application API key is valid")
+
+                _state.update {
+                    it.copy(applicationApiKeyValidity = ApplicationApiKeyValidity.VALID)
+                }
+
+                return@updateApplicationApiKeyValidity ApplicationApiKeyValidity.VALID
+            }
+            .onFailure { error ->
+                Logger.debug(tag, "User is not logged in")
+                Logger.error(tag, "Failed to fetch user data: ${error.message}", error)
+
+                _state.update {
+                    it.copy(applicationApiKeyValidity = ApplicationApiKeyValidity.INVALID)
+                }
+
+                return@updateApplicationApiKeyValidity ApplicationApiKeyValidity.INVALID
+            }
+
+        return ApplicationApiKeyValidity.INVALID
     }
 }

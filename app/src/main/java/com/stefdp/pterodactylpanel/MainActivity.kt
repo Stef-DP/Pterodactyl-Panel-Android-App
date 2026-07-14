@@ -45,19 +45,34 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.stefdp.pterodactylpanel.components.Header
 import com.stefdp.pterodactylpanel.components.Sidebar
 import com.stefdp.pterodactylpanel.network.client.models.User
-import com.stefdp.pterodactylpanel.screens.HomeScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationLocationScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationLocationsScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNestEggScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNestScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNestsScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNodesScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
+import com.stefdp.pterodactylpanel.screens.ClientAccountSettingsScreen
+import com.stefdp.pterodactylpanel.screens.ClientServerScreen
+import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
+import com.stefdp.pterodactylpanel.screens.loading.LoadingScreen
+import com.stefdp.pterodactylpanel.screens.login.LoginScreen
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.utils.NetworkMonitor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
-import com.stefdp.pterodactylpanel.screens.loading.LoadingScreen
-import com.stefdp.pterodactylpanel.screens.login.LoginScreen
 
 const val BASE_CORNER_RADIUS = 10
 
@@ -67,6 +82,14 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
         Result.failure(
             Exception("Placeholder")
         )
+    }
+}
+
+val LocalApplicationApiKeyValidity = compositionLocalOf { ApplicationApiKeyValidity.UNCHECKED }
+
+val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: Context) -> ApplicationApiKeyValidity> {
+    {
+        ApplicationApiKeyValidity.UNCHECKED
     }
 }
 
@@ -117,7 +140,9 @@ class MainActivity : FragmentActivity() {
 
                 CompositionLocalProvider(
                     LocalLoggedUser provides state.loggedUser,
-                    LocalUpdateLoggedUser provides viewModel::updateLoggedUser
+                    LocalUpdateLoggedUser provides viewModel::updateLoggedUser,
+                    LocalApplicationApiKeyValidity provides state.applicationApiKeyValidity,
+                    LocalUpdateApplicationApiKeyValidity provides viewModel::updateApplicationApiKeyValidity
                 ) {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
@@ -254,10 +279,100 @@ fun AppNavigation(
             )
         }
 
-        composable<HomeScreen> {
-            // TODO: add home screen
+        composable<ClientServersScreen> {
+            ClientServersScreen(
+                navController = navController,
+                activity = activity,
+                context = context
+            )
         }
 
-        // TODO: add all other screens
+        composable<ClientAccountSettingsScreen> {
+            // TODO: add client account settings screen
+        }
+
+        composable<ClientServerScreen> { backStackEntry ->
+            val clientServerScreen = backStackEntry.toRoute<ClientServerScreen>()
+
+//            clientServerScreen.serverId
+
+            // TODO: add client server screen
+        }
+
+        composable<ApplicationLocationsScreen> {
+            // TODO: add application locations screen
+        }
+
+        composable<ApplicationLocationScreen> { backStackEntry ->
+            val applicationLocationScreen = backStackEntry.toRoute<ApplicationLocationScreen>()
+
+//            applicationLocationScreen.locationId
+
+            // TODO: add application location screen
+        }
+
+        composable<ApplicationNodesScreen> {
+            // TODO: add application nodes screen
+        }
+
+        composable<ApplicationNodeScreen> { backStackEntry ->
+            val applicationNodeScreen = backStackEntry.toRoute<ApplicationNodeScreen>()
+
+//            applicationNodeScreen.nodeId
+
+            // TODO: add application node screen
+        }
+
+        composable<ApplicationServersScreen> {
+            // TODO: add application servers screen
+        }
+
+        composable<ApplicationServerScreen> { backStackEntry ->
+            val applicationServerScreen = backStackEntry.toRoute<ApplicationServerScreen>()
+
+//            applicationServerScreen.serverId
+
+            // TODO: add application server screen
+        }
+
+        composable<ApplicationUsersScreen> {
+            // TODO: add application users screen
+        }
+
+        composable<ApplicationUserScreen> { backStackEntry ->
+            val applicationUserScreen = backStackEntry.toRoute<ApplicationUserScreen>()
+
+//            applicationUserScreen.userId
+
+            // TODO: add application user screen
+        }
+
+        composable<ApplicationNestsScreen> {
+            // TODO: add application nests screen
+        }
+
+        composable<ApplicationNestScreen> { backStackEntry ->
+            val applicationNestScreen = backStackEntry.toRoute<ApplicationNestScreen>()
+
+//            applicationNestScreen.nestId
+
+            // TODO: add application nest screen
+        }
+
+        composable<ApplicationNestEggScreen> { backStackEntry ->
+            val applicationNestEggScreen = backStackEntry.toRoute<ApplicationNestEggScreen>()
+
+//            applicationNestEggScreen.nestId
+//            applicationNestEggScreen.eggId
+
+            // TODO: add application nest egg screen
+        }
     }
+}
+
+enum class ApplicationApiKeyValidity {
+    VALID,
+    INVALID,
+    UNCHECKED,
+    MISSING
 }
