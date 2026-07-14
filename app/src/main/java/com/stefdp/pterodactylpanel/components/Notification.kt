@@ -104,7 +104,9 @@ object Notification {
         PterodactylPanelTheme {
             Surface(
                 shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp),
-                color = MaterialTheme.colorScheme.surfaceVariant,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(
+                    alpha = 0.5f
+                ),
                 tonalElevation = 4.dp,
                 shadowElevation = 6.dp
             ) {
