@@ -43,8 +43,8 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PterodactylApplicationApiService {
-    @GET("application/users")
-    fun listUsers(
+    @GET("users")
+    suspend fun listUsers(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -58,8 +58,8 @@ interface PterodactylApplicationApiService {
         @Query("sort") sort: GetUsersQuerySort? = null,
     ): Response<ListUsersResponse>
 
-    @GET("application/users/{userId}")
-    fun getUser(
+    @GET("users/{userId}")
+    suspend fun getUser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -67,8 +67,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListUsersQueryInclude separated by ","
     ): Response<ApplicationUser>
 
-    @GET("application/users/external/{externalId}")
-    fun getUserByExternalId(
+    @GET("users/external/{externalId}")
+    suspend fun getUserByExternalId(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -76,16 +76,16 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListUsersQueryInclude separated by ","
     ): Response<ApplicationUser>
 
-    @POST("application/users")
-    fun createUser(
+    @POST("users")
+    suspend fun createUser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: CreateUserBody
     ): Response<ApplicationUser>
 
-    @PATCH("application/users/{userId}")
-    fun updateUser(
+    @PATCH("users/{userId}")
+    suspend fun updateUser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -93,16 +93,16 @@ interface PterodactylApplicationApiService {
         @Body data: UpdateUserBody
     ): Response<ApplicationUser>
 
-    @DELETE("application/users/{userId}")
-    fun deleteUser(
+    @DELETE("users/{userId}")
+    suspend fun deleteUser(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("userId") userId: Long
     ): Response<Unit>
 
-    @GET("application/nodes")
-    fun listNodes(
+    @GET("nodes")
+    suspend fun listNodes(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -116,8 +116,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null // list of ListNodesQueryInclude separated by ","
     ): Response<ListNodesResponse>
 
-    @GET("application/nodes/{nodeId}")
-    fun getNode(
+    @GET("nodes/{nodeId}")
+    suspend fun getNode(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -125,16 +125,16 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null // list of ListNodesQueryInclude separated by ","
     ): Response<ApplicationNode>
 
-    @GET("application/nodes/{nodeId}/configuration")
-    fun getNodeConfiguration(
+    @GET("nodes/{nodeId}/configuration")
+    suspend fun getNodeConfiguration(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("nodeId") nodeId: Long
     ): Response<GetNodeConfigurationResponse>
 
-    @GET("application/nodes/deployable")
-    fun getDeployableNodes(
+    @GET("nodes/deployable")
+    suspend fun getDeployableNodes(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -145,16 +145,16 @@ interface PterodactylApplicationApiService {
         @Query("per_page") perPage: Int? = null,
     ): Response<GetDeployableNodesResponse>
 
-    @POST("application/nodes")
-    fun createNode(
+    @POST("nodes")
+    suspend fun createNode(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: CreateNodeBody
     ): Response<ApplicationNode>
 
-    @PATCH("application/nodes/{nodeId}")
-    fun updateNode(
+    @PATCH("nodes/{nodeId}")
+    suspend fun updateNode(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -162,16 +162,16 @@ interface PterodactylApplicationApiService {
         @Body data: UpdateNodeBody
     ): Response<ApplicationNode>
 
-    @DELETE("application/nodes/{nodeId}")
-    fun deleteNode(
+    @DELETE("nodes/{nodeId}")
+    suspend fun deleteNode(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("nodeId") nodeId: Long
     ): Response<Unit>
 
-    @GET("application/nodes/{nodeId}/allocations")
-    fun listNodeAllocations(
+    @GET("nodes/{nodeId}/allocations")
+    suspend fun listNodeAllocations(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -185,8 +185,8 @@ interface PterodactylApplicationApiService {
         @Query("per_page") perPage: Int? = null,
     ): Response<ListNodeAllocationsResponse>
 
-    @POST("application/nodes/{nodeId}/allocations")
-    fun createNodeAllocation(
+    @POST("nodes/{nodeId}/allocations")
+    suspend fun createNodeAllocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -194,8 +194,8 @@ interface PterodactylApplicationApiService {
         @Body data: CreateNodeAllocationBody
     ): Response<Unit>
 
-    @DELETE("application/nodes/{nodeId}/allocations/{allocationId}")
-    fun deleteNodeAllocation(
+    @DELETE("nodes/{nodeId}/allocations/{allocationId}")
+    suspend fun deleteNodeAllocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -203,8 +203,8 @@ interface PterodactylApplicationApiService {
         @Path("allocationId") allocationId: Long
     ): Response<Unit>
 
-    @GET("application/locations")
-    fun listLocations(
+    @GET("locations")
+    suspend fun listLocations(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -216,8 +216,8 @@ interface PterodactylApplicationApiService {
         @Query("per_page") perPage: Int? = null
     ): Response<ListLocationsResponse>
 
-    @GET("application/locations/{locationId}")
-    fun getLocation(
+    @GET("locations/{locationId}")
+    suspend fun getLocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -225,16 +225,16 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListLocationsQueryInclude separated by ","
     ): Response<ApplicationLocation>
 
-    @POST("application/locations")
-    fun createLocation(
+    @POST("locations")
+    suspend fun createLocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: CreateLocationBody
     ): Response<ApplicationLocation>
 
-    @PATCH("application/locations/{locationId}")
-    fun updateLocation(
+    @PATCH("locations/{locationId}")
+    suspend fun updateLocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -242,16 +242,16 @@ interface PterodactylApplicationApiService {
         @Body data: CreateLocationBody
     ): Response<ApplicationLocation>
 
-    @DELETE("application/locations/{locationId}")
-    fun deleteLocation(
+    @DELETE("locations/{locationId}")
+    suspend fun deleteLocation(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("locationId") locationId: Long
     ): Response<Unit>
 
-    @GET("application/servers")
-    fun listServers(
+    @GET("servers")
+    suspend fun listServers(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -267,8 +267,8 @@ interface PterodactylApplicationApiService {
         @Query("per_page") perPage: Int? = null
     ): Response<ListServersResponse>
 
-    @GET("application/servers/{serverId}")
-    fun getServer(
+    @GET("servers/{serverId}")
+    suspend fun getServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -276,8 +276,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListServersQueryInclude separated by ","
     ): Response<ApplicationServer>
 
-    @GET("application/servers/external/{serverId}")
-    fun getServerByExternalId(
+    @GET("servers/external/{serverId}")
+    suspend fun getServerByExternalId(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -285,16 +285,16 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListServersQueryInclude separated by ","
     ): Response<ApplicationServer>
 
-    @POST("application/servers")
-    fun createServer(
+    @POST("servers")
+    suspend fun createServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Body data: CreateServerBody
     ): Response<ApplicationServer>
 
-    @PATCH("application/servers/{serverId}/details")
-    fun updateServerDetails(
+    @PATCH("servers/{serverId}/details")
+    suspend fun updateServerDetails(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -302,8 +302,8 @@ interface PterodactylApplicationApiService {
         @Body data: UpdateServerDetailsBody
     ): Response<ApplicationServer>
 
-    @PATCH("application/servers/{serverId}/build")
-    fun updateServerBuild(
+    @PATCH("servers/{serverId}/build")
+    suspend fun updateServerBuild(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -311,8 +311,8 @@ interface PterodactylApplicationApiService {
         @Body data: UpdateServerBuildBody
     ): Response<ApplicationServer>
 
-    @PATCH("application/servers/{serverId}/startup")
-    fun updateServerStartup(
+    @PATCH("servers/{serverId}/startup")
+    suspend fun updateServerStartup(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -320,48 +320,48 @@ interface PterodactylApplicationApiService {
         @Body data: UpdateServerStartupBody
     ): Response<ApplicationServer>
 
-    @POST("application/servers/{serverId}/suspend")
-    fun suspendServer(
+    @POST("servers/{serverId}/suspend")
+    suspend fun suspendServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
     ): Response<Unit>
 
-    @POST("application/servers/{serverId}/unsuspend")
-    fun unsuspendServer(
+    @POST("servers/{serverId}/unsuspend")
+    suspend fun unsuspendServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
     ): Response<Unit>
 
-    @POST("application/servers/{serverId}/reinstall")
-    fun reinstallServer(
+    @POST("servers/{serverId}/reinstall")
+    suspend fun reinstallServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
     ): Response<Unit>
 
-    @DELETE("application/servers/{serverId}")
-    fun deleteServer(
+    @DELETE("servers/{serverId}")
+    suspend fun deleteServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
     ): Response<Unit>
 
-    @DELETE("application/servers/{serverId}/force")
-    fun forceDeleteServer(
+    @DELETE("servers/{serverId}/force")
+    suspend fun forceDeleteServer(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: Long,
     ): Response<Unit>
 
-    @GET("application/servers/{serverId}/databases")
-    fun listServerDatabases(
+    @GET("servers/{serverId}/databases")
+    suspend fun listServerDatabases(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -369,8 +369,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
     ): Response<ListServerDatabasesResponse>
 
-    @GET("application/servers/{serverId}/databases/{databaseId}")
-    fun getServerDatabase(
+    @GET("servers/{serverId}/databases/{databaseId}")
+    suspend fun getServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -379,8 +379,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListServerDatabasesQueryInclude separated by ","
     ): Response<ApplicationServerDatabase>
 
-    @POST("application/servers/{serverId}/databases")
-    fun createServerDatabase(
+    @POST("servers/{serverId}/databases")
+    suspend fun createServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -388,8 +388,8 @@ interface PterodactylApplicationApiService {
         @Body data: CreateServerDatabaseBody
     ): Response<ApplicationServerDatabase>
 
-    @POST("application/servers/{serverId}/databases/{databaseId}/reset-password")
-    fun resetServerDatabasePassword(
+    @POST("servers/{serverId}/databases/{databaseId}/reset-password")
+    suspend fun resetServerDatabasePassword(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -397,8 +397,8 @@ interface PterodactylApplicationApiService {
         @Path("databaseId") databaseId: Long,
     ): Response<Unit>
 
-    @DELETE("application/servers/{serverId}/databases/{databaseId}")
-    fun deleteServerDatabase(
+    @DELETE("servers/{serverId}/databases/{databaseId}")
+    suspend fun deleteServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -406,8 +406,8 @@ interface PterodactylApplicationApiService {
         @Path("databaseId") databaseId: Long,
     ): Response<Unit>
 
-    @GET("application/nests")
-    fun listNests(
+    @GET("nests")
+    suspend fun listNests(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -416,8 +416,8 @@ interface PterodactylApplicationApiService {
         @Query("per_page") perPage: Int? = null
     ): Response<ListNestsResponse>
 
-    @GET("application/nests/{nestId}")
-    fun getNest(
+    @GET("nests/{nestId}")
+    suspend fun getNest(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -425,8 +425,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListNestsQueryInclude separated by ","
     ): Response<ApplicationNest>
 
-    @GET("application/nests/{nestId}/eggs")
-    fun listNestEggs(
+    @GET("nests/{nestId}/eggs")
+    suspend fun listNestEggs(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
@@ -434,8 +434,8 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null, // list of ListNestEggsQueryInclude separated by ","
     ): Response<ListNestEggsResponse>
 
-    @GET("application/nests/{nestId}/eggs/{eggId}")
-    fun getNestEgg(
+    @GET("nests/{nestId}/eggs/{eggId}")
+    suspend fun getNestEgg(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
