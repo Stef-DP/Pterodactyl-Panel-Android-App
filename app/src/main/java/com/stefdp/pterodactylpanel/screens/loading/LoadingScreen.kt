@@ -58,9 +58,9 @@ fun LoadingScreen(
                 }
             },
             onSuccess = {
-//                navController.navigate(HomeScreen) {
-//                    popUpTo(navController.graph.id) { inclusive = true }
-//                }
+                navController.navigate(HomeScreen) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                }
             },
             updateLoggedUser = updateLoggedUser
         )
