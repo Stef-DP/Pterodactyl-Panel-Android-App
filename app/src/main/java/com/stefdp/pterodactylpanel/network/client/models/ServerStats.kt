@@ -8,7 +8,7 @@ data class ServerStats(
 )
 
 data class ServerStatsAttributes(
-    @SerializedName("current_state") val currentState: String,
+    @SerializedName("current_state") val currentState: ServerState,
     @SerializedName("is_suspended") val isSuspended: Boolean,
     val resources: ServerStatsResources,
 )
