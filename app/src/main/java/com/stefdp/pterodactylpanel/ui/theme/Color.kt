@@ -33,3 +33,8 @@ val ErrorContainerLight = Color(0xFF991B1B)
 val ErrorLight = Color(0xFFD44246) //
 val OnErrorLight = Color(0xFFFAF8FB) //
 val LinkLight = Color(0xFF2B88F8) //
+
+
+val Yellow = Color(0xFFC38622)
+val Red = ErrorDark
+val Green = Color(0xFF219C7B)
