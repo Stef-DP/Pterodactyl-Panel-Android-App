@@ -56,6 +56,8 @@ import com.stefdp.pterodactylpanel.utils.NetworkMonitor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import com.stefdp.pterodactylpanel.screens.loading.LoadingScreen
+import com.stefdp.pterodactylpanel.screens.login.LoginScreen
 
 const val BASE_CORNER_RADIUS = 10
 
@@ -97,6 +99,8 @@ class MainActivity : FragmentActivity() {
 
                 val navController = rememberNavController()
 
+                val state by viewModel.state.collectAsState()
+
                 val networkMonitor = NetworkMonitor(context)
 
                 val isConnected by networkMonitor.isConnected.collectAsState(initial = true)
@@ -105,14 +109,15 @@ class MainActivity : FragmentActivity() {
 
                 LaunchedEffect(isConnected) {
                     if (isConnected) {
-                        // TODO: login
+                        viewModel.updateLoggedUser(context)
                     }
                 }
 
                 val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
                 CompositionLocalProvider(
-                    // TODO: for later, for global data
+                    LocalLoggedUser provides state.loggedUser,
+                    LocalUpdateLoggedUser provides viewModel::updateLoggedUser
                 ) {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
@@ -234,11 +239,19 @@ fun AppNavigation(
         }
     ) {
         composable<LoadingScreen> {
-            // TODO: add loading screen
+            LoadingScreen(
+                navController = navController,
+                activity = activity,
+                context = context
+            )
         }
 
         composable<LoginScreen> {
-            // TODO: add login screen
+            LoginScreen(
+                navController = navController,
+                activity = activity,
+                context = context
+            )
         }
 
         composable<HomeScreen> {
