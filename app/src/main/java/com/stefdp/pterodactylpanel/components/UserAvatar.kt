@@ -19,7 +19,7 @@ import com.stefdp.pterodactylpanel.ui.theme.getButtonColors
 @Composable
 fun UserAvatar(
     enabled: Boolean = true,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     val user = LocalLoggedUser.current
 
@@ -33,11 +33,6 @@ fun UserAvatar(
         ),
         enabled = enabled
     ) {
-//        Avatar(
-//            avatar = avatar,
-//            enabled = enabled,
-//            isAdmin = user != null && user.role.level <= UserRole.ADMIN.level,
-//        )
         Image(
             painter = painterResource(R.drawable.avatar),
             contentDescription = "User Avatar",
