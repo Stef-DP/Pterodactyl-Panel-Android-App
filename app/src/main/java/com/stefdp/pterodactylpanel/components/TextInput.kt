@@ -3,6 +3,7 @@ package com.stefdp.pterodactylpanel.components
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
@@ -69,6 +71,7 @@ fun TextInput(
     colors: TextFieldColors = getOutlinedTextFieldColors(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     readOnly: Boolean = false,
+    required: Boolean = false,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -103,15 +106,29 @@ fun TextInput(
             singleLine = singleLine,
             label = if (label != null) {
                 {
-                    Text(
-                        text = label.toAnnotatedString(),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1,
-                        color = if (enabled)
-                            MaterialTheme.colorScheme.onBackground
-                        else
-                            MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                    )
+                    Row {
+                        Text(
+                            text = label.toAnnotatedString(),
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            color = if (enabled)
+                                MaterialTheme.colorScheme.onBackground
+                            else
+                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                        )
+
+                        if (required) {
+                            Text(
+                                text = "*",
+                                color = if (enabled)
+                                    MaterialTheme.colorScheme.error
+                                else
+                                    MaterialTheme.colorScheme.error.copy(alpha = 0.5f),
+                                fontWeight = FontWeight.Bold
+//                            modifier = Modifier.padding(start = 2.dp)
+                            )
+                        }
+                    }
                 }
             } else null,
             placeholder = if (placeholder != null) {
