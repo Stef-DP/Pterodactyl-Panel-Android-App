@@ -31,8 +31,15 @@ class WebSocketManager(
 
     var onTokenRequired: (() -> Unit)? = null
 
-    fun connect(wsUrl:String, initialToken: String) {
-        val request = Request.Builder().url(wsUrl).build()
+    fun connect(
+        wsUrl:String,
+        initialToken: String,
+        origin: String // origin must be the panel url
+    ) {
+        val request = Request.Builder()
+            .url(wsUrl)
+            .addHeader("Origin", origin)
+            .build()
 
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
