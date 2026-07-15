@@ -13,7 +13,7 @@ private const val TAG = "ApplicationApi[listNodes]"
 
 suspend fun listNodes(
     context: Context,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null,
     filterUuid: String? = null,
     filterName: String? = null,

@@ -18,7 +18,7 @@ suspend fun listNodeAllocations(
     filterPort: Int? = null,
     filterIpAlias: String? = null,
     filterServerId: Long? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null,
 ): Result<ListNodeAllocationsResponse> {
     try {

@@ -16,7 +16,7 @@ suspend fun getAccountActivity(
     filterEvent: String? = null,
     sort: GetAccountActivityQuerySort? = null,
     include: String? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null
 ): Result<GetAccountActivityResponse> {
     try {

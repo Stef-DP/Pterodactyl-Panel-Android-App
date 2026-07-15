@@ -14,7 +14,7 @@ private const val TAG = "ApplicationApi[listUsers]"
 suspend fun listUsers(
     context: Context,
     include: String? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null,
     filterEmail: String? = null,
     filterUuid: String? = null,

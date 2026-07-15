@@ -13,7 +13,7 @@ private const val TAG = "ClientApi[listServerBackups]"
 suspend fun listServerBackups(
     context: Context,
     serverId: String,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null
 ): Result<ListServerBackupsResponse> {
     try {

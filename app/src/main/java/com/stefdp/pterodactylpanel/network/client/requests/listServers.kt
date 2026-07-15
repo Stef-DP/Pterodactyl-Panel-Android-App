@@ -20,7 +20,7 @@ suspend fun listServers(
     filterAny: String? = null,
     type: GetServersQueryType? = null,
     include: String? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null
 ): Result<ListServersResponse> {
     try {

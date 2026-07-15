@@ -21,7 +21,7 @@ suspend fun listServers(
     filterImage: String? = null,
     filterExternalId: String? = null,
     sort: ListServersQuerySort? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null
 ): Result<ListServersResponse> {
     try {

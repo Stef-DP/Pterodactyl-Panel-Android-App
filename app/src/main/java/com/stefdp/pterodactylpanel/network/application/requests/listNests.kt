@@ -13,7 +13,7 @@ private const val TAG = "ApplicationApi[listNests]"
 suspend fun listNests(
     context: Context,
     include: String? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null,
 ): Result<ListNestsResponse> {
     try {

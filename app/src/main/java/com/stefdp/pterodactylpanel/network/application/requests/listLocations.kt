@@ -17,7 +17,7 @@ suspend fun listLocations(
     filterShort: String? = null,
     filterLong: String? = null,
     sort: ListLocationsQuerySort? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null,
 ): Result<ListLocationsResponse> {
     try {

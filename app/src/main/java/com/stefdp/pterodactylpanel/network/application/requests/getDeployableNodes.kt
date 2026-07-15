@@ -15,7 +15,7 @@ suspend fun getDeployableNodes(
     memory: Long,
     disk: Long,
     locationIds: List<Long>? = null,
-    page: Int? = null,
+    page: Long? = null,
     perPage: Int? = null,
 ): Result<GetDeployableNodesResponse> {
     try {
