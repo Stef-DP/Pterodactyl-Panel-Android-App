@@ -2,8 +2,12 @@ package com.stefdp.pterodactylpanel.screens.client.servers
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,10 +25,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.LocalLoggedUser
+import com.stefdp.pterodactylpanel.components.Pager
 import com.stefdp.pterodactylpanel.network.client.models.ServerStats
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.components.ServerDisplay
+import com.stefdp.pterodactylpanel.utils.shimmerable
 
 @Composable
 fun ClientServersScreen(
@@ -50,6 +56,7 @@ fun ClientServersScreen(
         filterDescription: String? = null,
         filterAny: String? = null,
         type: GetServersQueryType = GetServersQueryType.OWNER,
+        page: Long? = null,
     ) {
         viewModel.updateData(
             context = context,
@@ -59,11 +66,12 @@ fun ClientServersScreen(
             filterDescription = filterDescription,
             filterAny = filterAny,
             type = type,
+            page = page
         )
     }
 
-    LaunchedEffect(Unit) {
-        updateData()
+    LaunchedEffect(state.page) {
+        updateData(page = state.page)
     }
 
     val scrollState = rememberScrollState()
@@ -76,13 +84,25 @@ fun ClientServersScreen(
                 end = 12.dp,
                 top = 12.dp
             )
-
     ) {
         Column(
-            modifier = Modifier.verticalScroll(scrollState),
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            if (state.servers.isNullOrEmpty()) {
+            if (state.servers == null) {
+                (1..10).forEach { _ ->
+                    Box(
+                       modifier = Modifier
+                           .fillMaxWidth()
+                           .shimmerable(
+                               enabled = true,
+                               height = 160.dp,
+                           )
+                    ) {}
+                }
+            } else if (state.servers.isNullOrEmpty()) {
                 Text(
                     text = "There are no servers to display"
                 )
@@ -118,5 +138,30 @@ fun ClientServersScreen(
                 }
             }
         }
+
+        Spacer(
+            modifier = Modifier.height(8.dp)
+        )
+
+        Pager(
+            currentPage = state.page,
+            totalPages = state.pagination?.total ?: 1,
+            enabled = state.servers != null && !state.servers.isNullOrEmpty(),
+            onFirstPageClick = {
+                viewModel.setPage(1)
+            },
+            onPreviousPageClick = {
+                viewModel.setPage(state.page - 1)
+            },
+            onCustomPageInput = { page ->
+                viewModel.setPage(page)
+            },
+            onNextPageClick = {
+                viewModel.setPage(state.page + 1)
+            },
+            onLastPageClick = {
+                viewModel.setPage(state.pagination?.total ?: 1)
+            }
+        )
     }
 }
