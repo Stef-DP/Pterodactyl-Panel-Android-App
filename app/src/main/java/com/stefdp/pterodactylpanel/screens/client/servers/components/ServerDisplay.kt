@@ -67,7 +67,12 @@ fun ServerDisplay(
             ) {
                 Text(
                     text = server.attributes.name,
-                    modifier = Modifier.weight(0.9f)
+                    modifier = Modifier.weight(0.9f),
+                    color = if (server.attributes.isSuspended) {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    }
                 )
 
                 Row(
