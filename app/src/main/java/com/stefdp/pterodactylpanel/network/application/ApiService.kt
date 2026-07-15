@@ -49,7 +49,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Query("include") include: String? = null, // list of ListUsersQueryInclude separated by ","
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null,
         @Query("filter[email]") filterEmail: String? = null,
         @Query("filter[uuid]") filterUuid: String? = null,
@@ -106,7 +106,7 @@ interface PterodactylApplicationApiService {
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null,
         @Query("filter[uuid]") filterUuid: String? = null,
         @Query("filter[name]") filterName: String? = null,
@@ -141,7 +141,7 @@ interface PterodactylApplicationApiService {
         @Query("memory") memory: Long,
         @Query("disk") disk: Long,
         @Query("location_ids[]") locationIds: List<Long>? = null,
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null,
     ): Response<GetDeployableNodesResponse>
 
@@ -181,7 +181,7 @@ interface PterodactylApplicationApiService {
         @Query("filter[port]") filterPort: Int? = null,
         @Query("filter[ip_alias") filterIpAlias: String? = null,
         @Query("filter[server_id]") filterServerId: Long? = null,
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null,
     ): Response<ListNodeAllocationsResponse>
 
@@ -212,7 +212,7 @@ interface PterodactylApplicationApiService {
         @Query("filter[long]") filterLong: String? = null,
         @Query("sort") sort: ListLocationsQuerySort? = null,
         @Query("include") include: String? = null, // list of ListLocationsQueryInclude separated by ","
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null
     ): Response<ListLocationsResponse>
 
@@ -263,7 +263,7 @@ interface PterodactylApplicationApiService {
         @Query("filter[image]") filterImage: String? = null,
         @Query("filter[external_id]") filterExternalId: String? = null,
         @Query("sort") sort: ListServersQuerySort? = null,
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null
     ): Response<ListServersResponse>
 
@@ -412,7 +412,7 @@ interface PterodactylApplicationApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Query("include") include: String? = null, // list of ListNestsQueryInclude separated by ","
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("per_page") perPage: Int? = null
     ): Response<ListNestsResponse>
 

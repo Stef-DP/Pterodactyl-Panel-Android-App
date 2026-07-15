@@ -94,7 +94,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Query("per_page") perPage: Int? = null,
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
         @Query("filter[name]") filterName: String? = null,
         @Query("filter[uuid]") filterUuid: String? = null,
         @Query("filter[external_id]") filterExternalId: String? = null,
@@ -189,7 +189,7 @@ interface PterodactylClientApiService {
         @Query("sort") sort: GetAccountActivityQuerySort? = null,
         @Query("include") include: String? = null, // list of GetAccountActivityQueryInclude separated by ","
         @Query("per_page") perPage: Int? = null,
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
     ): Response<GetAccountActivityResponse>
     
     @GET("account/ssh-keys")
@@ -224,7 +224,7 @@ interface PterodactylClientApiService {
         @Query("include") include: String? = null, // list of ListServersQueryInclude separated by ","
     ): Response<GetServerResponse>
 
-    @GET("servers/{serverId}/websocker")
+    @GET("servers/{serverId}/websocket")
     suspend fun getServerWebsocket(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
@@ -588,7 +588,7 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
         @Query("per_page") perPage: Int? = null,
-        @Query("page") page: Int? = null,
+        @Query("page") page: Long? = null,
     ): Response<ListServerBackupsResponse>
 
     @GET("servers/{serverId}/backups/{backupId}")
