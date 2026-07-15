@@ -9,15 +9,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,9 +28,11 @@ import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.components.Pager
 import com.stefdp.pterodactylpanel.network.client.models.ServerStats
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
+import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.components.ServerDisplay
 import com.stefdp.pterodactylpanel.utils.shimmerable
+import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
 @Composable
 fun ClientServersScreen(
@@ -70,71 +72,84 @@ fun ClientServersScreen(
         )
     }
 
+    val lazyColumnListState = rememberLazyListState()
+
     LaunchedEffect(state.page) {
         updateData(page = state.page)
+        lazyColumnListState.animateScrollToItem(0)
     }
 
-    val scrollState = rememberScrollState()
-
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                start = 12.dp,
-                end = 12.dp,
-                top = 12.dp
-            )
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
+        LazyColumn(
+            state = lazyColumnListState,
             modifier = Modifier
-                .verticalScroll(scrollState)
-                .weight(1f),
+                .verticalLazyScrollbar(
+                    listState = lazyColumnListState,
+                )
+                .weight(1f)
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    top = 12.dp
+                ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             if (state.servers == null) {
-                (1..10).forEach { _ ->
+                items(10) {
                     Box(
-                       modifier = Modifier
-                           .fillMaxWidth()
-                           .shimmerable(
-                               enabled = true,
-                               height = 160.dp,
-                           )
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shimmerable(
+                                enabled = true,
+                                height = 160.dp,
+                            )
                     ) {}
                 }
-            } else if (state.servers.isNullOrEmpty()) {
-                Text(
-                    text = "There are no servers to display"
-                )
             } else {
-                state.servers?.forEach { server ->
-                    var serverStats by remember {
-                        mutableStateOf<ServerStats?>(null)
-                    }
-
-                    var serverStatsLoading by remember {
-                        mutableStateOf(true)
-                    }
-
-                    LaunchedEffect(Unit) {
-                        val serverStatsRes = viewModel.getServerStats(
-                            context = context,
-                            serverId = server.attributes.identifier
-                        )
-
-                        serverStats = serverStatsRes
-                        serverStatsLoading = false
-                    }
-
-                    ServerDisplay(
-                        context = context,
-                        server = server,
-                        serverStats = serverStats,
-                        statsLoading = serverStatsLoading,
-                        onOpen = {
-
+                state.servers?.let { servers ->
+                    if (servers.isEmpty()) {
+                        item {
+                            Text(
+                                text = "There are no servers to display"
+                            )
                         }
-                    )
+                    } else {
+                        items(servers.size) { index ->
+                            val server = servers[index]
+
+                            var serverStats by rememberSaveable {
+                                mutableStateOf<ServerStats?>(null)
+                            }
+
+                            var serverStatsLoading by rememberSaveable {
+                                mutableStateOf(true)
+                            }
+
+                            LaunchedEffect(Unit) {
+                                val serverStatsRes = viewModel.getServerStats(
+                                    context = context,
+                                    serverId = server.attributes.identifier
+                                )
+
+                                serverStats = serverStatsRes
+                                serverStatsLoading = false
+                            }
+
+                            ServerDisplay(
+                                context = context,
+                                server = server,
+                                serverStats = serverStats,
+                                statsLoading = serverStatsLoading,
+                                onOpen = {
+                                    navController.navigate(
+                                        ClientServerScreen(serverId = server.attributes.identifier)
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }

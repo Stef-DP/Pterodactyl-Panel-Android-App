@@ -79,6 +79,8 @@ class ClientServersViewModel : ViewModel() {
     }
 
     fun setPage(page: Long) {
+        if (page == _state.value.page) return
+
         _state.update {
             it.copy(
                 servers = null,
