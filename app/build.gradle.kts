@@ -106,4 +106,8 @@ dependencies {
 
     // SemVer
     implementation(libs.semver)
+
+    // Ansi Parser
+    implementation(libs.android.ansi)
+    implementation(libs.android.ansi.ktx)
 }

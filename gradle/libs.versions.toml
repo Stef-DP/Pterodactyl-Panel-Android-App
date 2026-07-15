@@ -31,6 +31,9 @@ human-readbale = "1.13.0"
 # SemVer
 semver = "3.1.0"
 
+# Ansi Parser
+android-ansi = "1.2.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -68,6 +71,10 @@ human-readable = { group = "nl.jacobras", name = "Human-Readable", version.ref =
 
 # SemVer
 semver = { group = "io.github.z4kn4fein", name = "semver", version.ref = "semver" }
+
+# Ansi Parser
+android-ansi = { group = "com.github.Fox2Code.AndroidANSI", name = "library", version.ref = "android-ansi" }
+android-ansi-ktx = { group = "com.github.Fox2Code.AndroidANSI", name = "library-ktx", version.ref = "android-ansi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
