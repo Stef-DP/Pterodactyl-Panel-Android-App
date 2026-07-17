@@ -73,6 +73,7 @@ import com.stefdp.pterodactylpanel.utils.NetworkMonitor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 
 const val BASE_CORNER_RADIUS = 10
 
@@ -294,9 +295,12 @@ fun AppNavigation(
         composable<ClientServerScreen> { backStackEntry ->
             val clientServerScreen = backStackEntry.toRoute<ClientServerScreen>()
 
-//            clientServerScreen.serverId
-
-            // TODO: add client server screen
+            ClientServerScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                serverId = clientServerScreen.serverId
+            )
         }
 
         composable<ApplicationLocationsScreen> {
