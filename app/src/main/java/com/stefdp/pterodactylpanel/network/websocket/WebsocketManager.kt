@@ -112,7 +112,7 @@ class WebSocketManager(
         )
     }
 
-    fun setPowerState(state: ServerPowerSignal) {
+    fun sendPowerSignal(state: ServerPowerSignal) {
         sendEvent(
             WSEvents.SET_STATE,
             listOf(JsonPrimitive(state.value))
