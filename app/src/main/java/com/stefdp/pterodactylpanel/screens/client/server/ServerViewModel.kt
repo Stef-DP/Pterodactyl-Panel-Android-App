@@ -2,6 +2,8 @@ package com.stefdp.pterodactylpanel.screens.client.server
 
 import android.content.Context
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
@@ -15,6 +17,7 @@ import com.stefdp.pterodactylpanel.network.websocket.models.WSEvents
 import com.stefdp.pterodactylpanel.network.websocket.models.responses.WebSocketStats
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import com.stefdp.pterodactylpanel.utils.formatMs
+import ir.ehsannarmani.compose_charts.models.Line
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +28,6 @@ import java.util.Locale
 
 data class ClientServerUiState(
     val isLoading: Boolean = true,
-    val serverId: String? = null,
     val connectionState: WebSocketConnectionStatus = WebSocketConnectionStatus.DISCONNECTED,
     val logs: List<String> = emptyList(),
     val status: ServerState = ServerState.OFFLINE,
@@ -36,10 +38,42 @@ data class ClientServerUiState(
     val outgoingNetwork: String = "0 Bytes",
     val address: String = "Unknown",
     val uptime: String = "Offline",
+    val name: String = "Unknown",
     val commandToSend: TextFieldState = TextFieldState(""),
     val cpuLimit: String = "Unlimited",
     val memoryLimit: String = "Unlimited",
-    val diskLimit: String = "Unlimited"
+    val diskLimit: String = "Unlimited",
+    val currentTab: ServerTab = ServerTab.CONSOLE,
+    val cpuLoadLineChartLines: List<Line> = listOf(
+        Line(
+            values = emptyList(),
+            color = SolidColor(Color.Transparent),
+            firstGradientFillColor = Color.Transparent,
+            secondGradientFillColor = Color.Transparent,
+        )
+    ),
+    val memoryLineChartLines: List<Line> = listOf(
+        Line(
+            values = emptyList(),
+            color = SolidColor(Color.Transparent),
+            firstGradientFillColor = Color.Transparent,
+            secondGradientFillColor = Color.Transparent,
+        )
+    ),
+    val networkLineChartLines: List<Line> = listOf(
+        Line(
+            values = emptyList(),
+            color = SolidColor(Color.Transparent),
+            firstGradientFillColor = Color.Transparent,
+            secondGradientFillColor = Color.Transparent,
+        ),
+        Line(
+            values = emptyList(),
+            color = SolidColor(Color.Transparent),
+            firstGradientFillColor = Color.Transparent,
+            secondGradientFillColor = Color.Transparent,
+        )
+    ),
 )
 
 private const val MAX_LOGS = 250
@@ -50,15 +84,24 @@ class ClientServerViewModel(
     private val _state: MutableStateFlow<ClientServerUiState> = MutableStateFlow(ClientServerUiState())
     val state: StateFlow<ClientServerUiState> = _state.asStateFlow()
 
+    private var serverId: String? = null
+
+    private var cpuLoadLineData: List<Double> = (1..20).map { 0.0 }
+    private var memoryLineData: List<Double> = (1..20).map { 0.0 }
+    private var networkInboundLineData: List<Double> = (1..20).map { 0.0 }
+    private var networkOutboundLineData: List<Double> = (1..20).map { 0.0 }
+
+    private var lastRxBytes: Long? = null
+    private var lastTxBytes: Long? = null
+    private var lastStatsTimestamp: Long = 0L
+
     fun init(
         context: Context,
         serverId: String,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
-            _state.update {
-                it.copy(serverId = serverId)
-            }
+            this@ClientServerViewModel.serverId = serverId
 
             val serverRes = getServer(
                 context = context,
@@ -78,6 +121,7 @@ class ClientServerViewModel(
                     _state.update {
                         it.copy(
                             address = address,
+                            name = server.attributes.name,
                             cpuLimit = if (server.attributes.limits.cpu == 0L) "∞" else "${server.attributes.limits.cpu}%",
                             memoryLimit = if (server.attributes.limits.memory == 0L) "∞" else {
                                 HumanReadable.fileSize(
@@ -108,6 +152,12 @@ class ClientServerViewModel(
         }
     }
 
+    fun setCurrentTab(tab: ServerTab) {
+        _state.update {
+            it.copy(currentTab = tab)
+        }
+    }
+
     fun sendCommand() {
         val command = _state.value.commandToSend.text.trim()
 
@@ -120,12 +170,45 @@ class ClientServerViewModel(
         }
     }
 
+    fun updateCharts(
+        primaryColor: Color,
+        secondaryColor: Color
+    ) {
+        _state.update { current ->
+            current.copy(
+                cpuLoadLineChartLines = current.cpuLoadLineChartLines.map { line ->
+                    line.copy(
+                        color = SolidColor(primaryColor),
+                        firstGradientFillColor = primaryColor.copy(alpha = 0.5f),
+                        secondGradientFillColor = primaryColor.copy(alpha = 0.1f)
+                    )
+                },
+                memoryLineChartLines = current.memoryLineChartLines.map { line ->
+                    line.copy(
+                        color = SolidColor(primaryColor),
+                        firstGradientFillColor = primaryColor.copy(alpha = 0.5f),
+                        secondGradientFillColor = primaryColor.copy(alpha = 0.1f)
+                    )
+                },
+                networkLineChartLines = current.networkLineChartLines.mapIndexed { index, line ->
+                    val color = if (index == 0) primaryColor else secondaryColor
+
+                    line.copy(
+                        color = SolidColor(color),
+                        firstGradientFillColor = color.copy(alpha = 0.5f),
+                        secondGradientFillColor = color.copy(alpha = 0.1f)
+                    )
+                }
+            )
+        }
+    }
+
     fun connectToWebSocket(
         context: Context,
         locale: Locale,
         onError: (String) -> Unit
     ) {
-        if (_state.value.serverId == null) {
+        if (serverId == null) {
             onError("Missing server ID")
 
             return
@@ -153,7 +236,7 @@ class ClientServerViewModel(
 
                 val serverSocketRes = getServerWebsocket(
                     context = context,
-                    serverId = _state.value.serverId!!
+                    serverId = serverId!!
                 )
 
                 serverSocketRes
@@ -203,6 +286,10 @@ class ClientServerViewModel(
 
                 when (message.event) {
                     WSEvents.AUTH_SUCCESS -> {
+                        lastRxBytes = null
+                        lastTxBytes = null
+                        lastStatsTimestamp = System.currentTimeMillis()
+
                         wsManager.requestLogs()
                         wsManager.requestStats()
                     }
@@ -255,6 +342,41 @@ class ClientServerViewModel(
 
                         val serverStatus = _state.value.status
 
+                        val currentTime = System.currentTimeMillis()
+                        val timeDeltaSeconds = (
+                            (currentTime - lastStatsTimestamp) / 1000.0
+                        ).coerceAtLeast(0.1)
+
+                        lastStatsTimestamp = currentTime
+
+                        val currentInboundSpeed = if (lastRxBytes != null && stats.network.rxBytes >= lastRxBytes!!) {
+                            (
+                                (stats.network.rxBytes - lastRxBytes!!) / timeDeltaSeconds
+                            ).coerceAtLeast(0.0)
+                        } else {
+                            0.0
+                        }
+                        lastRxBytes = stats.network.rxBytes
+
+                        val currentOutboundSpeed = if (lastTxBytes != null && stats.network.txBytes >= lastTxBytes!!) {
+                            (
+                                (stats.network.txBytes - lastTxBytes!!) / timeDeltaSeconds
+                            ).coerceAtLeast(0.0)
+                        } else {
+                            0.0
+                        }
+                        lastTxBytes = stats.network.txBytes
+
+                        val newCpuLoadLineData = (cpuLoadLineData + stats.cpuAbsolute).takeLast(20)
+                        val newMemoryLineData = (memoryLineData + stats.memoryBytes).takeLast(20).map { it.toDouble() }
+                        val newNetworkInboundLineData = (networkInboundLineData + currentInboundSpeed).takeLast(20).map { it.toDouble() }
+                        val newNetworkOutboundLineData = (networkOutboundLineData + currentOutboundSpeed).takeLast(20).map { it.toDouble() }
+
+                        cpuLoadLineData = newCpuLoadLineData
+                        memoryLineData = newMemoryLineData
+                        networkInboundLineData = newNetworkInboundLineData
+                        networkOutboundLineData = newNetworkOutboundLineData
+
                         _state.update {
                             it.copy(
                                 cpuUsage = String.format(
@@ -287,6 +409,27 @@ class ClientServerViewModel(
                                         abbreviated = true,
                                         limit = 3
                                     )
+                                },
+                                cpuLoadLineChartLines = it.cpuLoadLineChartLines.map { line ->
+                                    line.copy(
+                                        values = newCpuLoadLineData
+                                    )
+                                },
+                                memoryLineChartLines = it.memoryLineChartLines.map { line ->
+                                    line.copy(
+                                        values = newMemoryLineData
+                                    )
+                                },
+                                networkLineChartLines = it.networkLineChartLines.mapIndexed { index, line ->
+                                    when (index) {
+                                        0 -> line.copy(
+                                            values = newNetworkOutboundLineData
+                                        )
+                                        1 -> line.copy(
+                                            values = newNetworkInboundLineData
+                                        )
+                                        else -> line
+                                    }
                                 }
                             )
                         }
@@ -306,7 +449,7 @@ class ClientServerViewModel(
             try {
                 val serverSocketRes = getServerWebsocket(
                     context = context,
-                    serverId = _state.value.serverId!!
+                    serverId = serverId!!
                 )
 
                 serverSocketRes
@@ -344,10 +487,6 @@ class ClientServerViewModel(
 
     fun sendPowerSignal(action: ServerPowerSignal) {
         wsManager.sendPowerSignal(action)
-    }
-
-    fun appendStatusLog(log: String) {
-
     }
 
     override fun onCleared() {
