@@ -59,6 +59,7 @@ import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
@@ -84,6 +85,25 @@ fun ConsoleTab(
     viewModel: ClientServerViewModel,
     state: ClientServerUiState
 ) {
+    val locale = LocalLocale.current.platformLocale
+
+    LaunchedEffect(Unit) {
+        viewModel.connectToWebSocket(
+            context = context,
+            locale = locale,
+            onError = { error ->
+                Notification.show(
+                    activity = activity
+                ) {
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        )
+    }
+
     Text(
         text = state.name,
         style = MaterialTheme.typography.headlineMedium,
@@ -370,7 +390,6 @@ fun ConsoleTab(
     )
 
     val chartSize = 250.dp
-    val locale = LocalLocale.current.platformLocale
 
     val chartPrimaryColor = MaterialTheme.colorScheme.primary
     val chartSecondaryColor = Yellow
