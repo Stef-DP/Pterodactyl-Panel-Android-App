@@ -26,7 +26,6 @@ import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.ui.theme.getButtonColors
 
-
 @Composable
 fun Button(
     onClick: () -> Unit,
