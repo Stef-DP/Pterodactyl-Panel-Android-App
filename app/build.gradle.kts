@@ -110,4 +110,7 @@ dependencies {
     // Ansi Parser
     implementation(libs.android.ansi)
     implementation(libs.android.ansi.ktx)
+
+    // Charts
+    implementation(libs.compose.charts)
 }

@@ -34,6 +34,10 @@ semver = "3.1.0"
 # Ansi Parser
 android-ansi = "1.2.0"
 
+# Charts
+#vico = "3.0.3"
+compose-charts = "0.2.5"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -75,6 +79,11 @@ semver = { group = "io.github.z4kn4fein", name = "semver", version.ref = "semver
 # Ansi Parser
 android-ansi = { group = "com.github.Fox2Code.AndroidANSI", name = "library", version.ref = "android-ansi" }
 android-ansi-ktx = { group = "com.github.Fox2Code.AndroidANSI", name = "library-ktx", version.ref = "android-ansi" }
+
+# Charts
+#vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+#vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+compose-charts = { group = "io.github.ehsannarmani", name = "compose-charts", version.ref = "compose-charts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
