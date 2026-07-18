@@ -22,6 +22,7 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.ConsoleTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.FilesTab
 import com.stefdp.pterodactylpanel.utils.scrollbar
 
 @Composable
@@ -30,6 +31,7 @@ fun ClientServerScreen(
     context: Context,
     activity: FragmentActivity,
     serverId: String,
+    directory: String? = null,
     viewModel: ClientServerViewModel = viewModel()
 ) {
     // TODO: uncomment this, it's just for debug
@@ -43,12 +45,11 @@ fun ClientServerScreen(
 
     val state by viewModel.state.collectAsState()
 
-    val locale = LocalLocale.current.platformLocale
-
     LaunchedEffect(serverId) {
         viewModel.init(
             context = context,
             serverId = serverId,
+            directory = directory,
             onError = { error ->
                 Notification.show(
                     activity = activity,
@@ -61,32 +62,25 @@ fun ClientServerScreen(
                 }
             }
         )
-
-        viewModel.connectToWebSocket(
-            context = context,
-            locale = locale,
-            onError = { error ->
-                Notification.show(
-                    activity = activity
-                ) {
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
-        )
     }
 
     val scrollState = rememberScrollState()
 
+    val disabledScrollScreen = listOf(
+        ServerTab.FILES
+    )
+
     Column(
-        modifier = Modifier
-            .verticalScroll(scrollState)
-            .scrollbar(
-                scrollState = scrollState,
-                direction = Orientation.Vertical
-            )
+        modifier = if (state.currentTab !in disabledScrollScreen) {
+            Modifier
+                .verticalScroll(scrollState)
+                .scrollbar(
+                    scrollState = scrollState,
+                    direction = Orientation.Vertical
+                )
+            } else {
+                Modifier
+        }
     ) {
         val tabs = ServerTab.entries.map { serverTab ->
             Tab(
@@ -106,6 +100,16 @@ fun ClientServerScreen(
         when (state.currentTab) {
             ServerTab.CONSOLE -> {
                 ConsoleTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    viewModel = viewModel,
+                    state = state
+                )
+            }
+
+            ServerTab.FILES -> {
+                FilesTab(
                     navController = navController,
                     context = context,
                     activity = activity,

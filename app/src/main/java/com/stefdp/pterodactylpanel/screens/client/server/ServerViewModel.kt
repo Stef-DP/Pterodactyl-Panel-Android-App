@@ -7,10 +7,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.network.client.models.ServerFile
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
 import com.stefdp.pterodactylpanel.network.client.requests.getServerWebsocket
+import com.stefdp.pterodactylpanel.network.client.requests.listServerFiles
 import com.stefdp.pterodactylpanel.network.websocket.WebSocket
 import com.stefdp.pterodactylpanel.network.websocket.WebSocketManager
 import com.stefdp.pterodactylpanel.network.websocket.models.WSEvents
@@ -43,7 +45,7 @@ data class ClientServerUiState(
     val cpuLimit: String = "Unlimited",
     val memoryLimit: String = "Unlimited",
     val diskLimit: String = "Unlimited",
-    val currentTab: ServerTab = ServerTab.CONSOLE,
+    val currentTab: ServerTab = ServerTab.FILES, // TODO: set this back to CONSOLE
     val cpuLoadLineChartLines: List<Line> = listOf(
         Line(
             values = emptyList(),
@@ -74,6 +76,12 @@ data class ClientServerUiState(
             secondGradientFillColor = Color.Transparent,
         )
     ),
+    val files: List<ServerFile> = emptyList(),
+    val selectedFiles: List<String> = emptyList(),
+    val filesPath: List<String> = listOf(
+        "home",
+        "container",
+    ),
 )
 
 private const val MAX_LOGS = 250
@@ -98,10 +106,23 @@ class ClientServerViewModel(
     fun init(
         context: Context,
         serverId: String,
+        directory: String?,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
             this@ClientServerViewModel.serverId = serverId
+
+            if (directory != null) {
+                _state.update {
+                    it.copy(
+                        currentTab = ServerTab.FILES,
+                        filesPath = listOf(
+                            "home",
+                            "container",
+                        ) + directory.split("/").filter { it.isNotBlank() }
+                    )
+                }
+            }
 
             val serverRes = getServer(
                 context = context,
@@ -153,6 +174,23 @@ class ClientServerViewModel(
     }
 
     fun setCurrentTab(tab: ServerTab) {
+        if (tab != ServerTab.CONSOLE && _state.value.connectionState == WebSocketConnectionStatus.CONNECTED) {
+            disconnectFromWebSocket()
+        }
+
+        if (tab != ServerTab.FILES) {
+            _state.update {
+                it.copy(
+                    selectedFiles = emptyList(),
+                    filesPath = listOf(
+                        "home",
+                        "container",
+                    ),
+                    files = emptyList()
+                )
+            }
+        }
+
         _state.update {
             it.copy(currentTab = tab)
         }
@@ -199,6 +237,102 @@ class ClientServerViewModel(
                         secondGradientFillColor = color.copy(alpha = 0.1f)
                     )
                 }
+            )
+        }
+    }
+
+    fun updateFiles(
+        context: Context,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            var path = (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            if (path.isBlank()) {
+                path = "/"
+            }
+
+            val serverFilesRes = listServerFiles(
+                context = context,
+                serverId = serverId!!,
+                directory = path
+            )
+
+            serverFilesRes
+                .onSuccess { files ->
+                    _state.update {
+                        it.copy(
+                            files = files.data,
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to fetch server files: ${error.message}")
+
+                    onError("Failed to fetch server files")
+                }
+
+
+            _state.update {
+                it.copy(
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    fun selectAllFiles() {
+        _state.update {
+            it.copy(
+                selectedFiles = it.files.map { file -> file.attributes.name }
+            )
+        }
+    }
+
+    fun deselectAllFiles() {
+        _state.update {
+            it.copy(
+                selectedFiles = emptyList()
+            )
+        }
+    }
+
+    fun toggleFileSelection(fileName: String) {
+        _state.update {
+            it.copy(
+                selectedFiles = if (fileName in it.selectedFiles) {
+                    it.selectedFiles - fileName
+                } else {
+                    it.selectedFiles + fileName
+                }
+            )
+        }
+    }
+
+    fun navigateToDirectory(index: Int) {
+        _state.update {
+            it.copy(
+                filesPath = it.filesPath.take(index + 1),
+                selectedFiles = emptyList()
+            )
+        }
+    }
+
+    fun addDirectoryToPath(directory: String) {
+        _state.update {
+            it.copy(
+                filesPath = it.filesPath + directory,
+                selectedFiles = emptyList()
             )
         }
     }
@@ -265,7 +399,7 @@ class ClientServerViewModel(
                             it.copy(connectionState = WebSocketConnectionStatus.DISCONNECTED)
                         }
 
-                        onError("Failed to connect to console: ${error.message}")
+                        onError("Failed to connect to console")
                     }
             } catch (e: Exception) {
                 _state.update {
@@ -369,8 +503,8 @@ class ClientServerViewModel(
 
                         val newCpuLoadLineData = (cpuLoadLineData + stats.cpuAbsolute).takeLast(20)
                         val newMemoryLineData = (memoryLineData + stats.memoryBytes).takeLast(20).map { it.toDouble() }
-                        val newNetworkInboundLineData = (networkInboundLineData + currentInboundSpeed).takeLast(20).map { it.toDouble() }
-                        val newNetworkOutboundLineData = (networkOutboundLineData + currentOutboundSpeed).takeLast(20).map { it.toDouble() }
+                        val newNetworkInboundLineData = (networkInboundLineData + currentInboundSpeed).takeLast(20)
+                        val newNetworkOutboundLineData = (networkOutboundLineData + currentOutboundSpeed).takeLast(20)
 
                         cpuLoadLineData = newCpuLoadLineData
                         memoryLineData = newMemoryLineData
@@ -457,7 +591,7 @@ class ClientServerViewModel(
                         wsManager.authenticate(res.data.token)
                     }
                     .onFailure { error ->
-                        onError("Failed to refresh console token: ${error.message}")
+                        onError("Failed to refresh console token")
 
                         disconnectFromWebSocket()
                     }

@@ -301,7 +301,8 @@ fun AppNavigation(
                 navController = navController,
                 activity = activity,
                 context = context,
-                serverId = clientServerScreen.serverId
+                serverId = clientServerScreen.serverId,
+                directory = clientServerScreen.directory
             )
         }
 

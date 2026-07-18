@@ -18,7 +18,10 @@ object ClientServersScreen : AppScreen
 object ClientAccountSettingsScreen : AppScreen
 
 @Serializable
-data class ClientServerScreen(val serverId: String) : AppScreen
+data class ClientServerScreen(
+    val serverId: String,
+    val directory: String? = null,
+) : AppScreen
 
 @Serializable
 object ApplicationLocationsScreen : AppScreen
