@@ -60,7 +60,7 @@ import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerFil
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerSchedulesResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServerSubusersResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.ListServersResponse
-import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -69,7 +69,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.PUT
-import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Streaming
@@ -401,9 +400,9 @@ interface PterodactylClientApiService {
     ): Response<SignedUrl>
 
     @POST
-    suspend fun uploadServerFile(
+    suspend fun uploadServerFiles(
         @Url uploadUrl: String,
-        @Part file: MultipartBody.Part,
+        @Body body: RequestBody,
         @Query("directory") directory: String? = null,
     ): Response<Unit>
 
