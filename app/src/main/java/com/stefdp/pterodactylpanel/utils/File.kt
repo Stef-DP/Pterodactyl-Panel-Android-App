@@ -2,25 +2,49 @@ package com.stefdp.pterodactylpanel.utils
 
 import android.content.Context
 import android.net.Uri
+import android.provider.DocumentsContract
 import android.provider.OpenableColumns
 import nl.jacobras.humanreadable.HumanReadable
 import java.io.File
 import java.lang.Math.pow
 import kotlin.math.pow
 
-fun formatSpeed(bytesPerSecond: Double): String {
-    val bps = HumanReadable.fileSize(bytesPerSecond.toLong(), decimals = 2)
-    return "$bps/s"
+fun getDisplayPath(uri: Uri): String {
+    val docId = DocumentsContract.getTreeDocumentId(uri)
 
-//    return when {
-//        bytesPerSecond >= 1_000_000 -> String.format(Locale.US, "%.1f MB/s", bytesPerSecond / 1_000_000)
-//        bytesPerSecond >= 1_000 -> String.format(Locale.US, "%.1f KB/s", bytesPerSecond / 1_000)
-//        else -> String.format(Locale.US, "%.0f B/s", bytesPerSecond)
-//    }
+    return docId.replace("primary:", "Internal Storage/")
+        .replace("home:", "Documents/")
+        .ifBlank { uri.path ?: "Unknown Folder" }
+}
+
+fun formatSpeed(bytesPerSecond: Double): String {
+    val speed = HumanReadable.fileSize(bytesPerSecond.toLong(), decimals = 2)
+    return "$speed/s"
 }
 
 fun formatBytes(bytes: Long, decimals: Int = 2): String {
     return HumanReadable.fileSize(bytes, decimals)
+}
+
+fun linuxPermissionToInt(permissions: String): String {
+    var cleanString = permissions.takeLast(9)
+
+    if (cleanString.length != 9) {
+        cleanString = cleanString.padStart(9, '-')
+    }
+
+    var octalResult = 0
+
+    cleanString.chunked(3).forEach { group ->
+        var groupValue = 0
+        if (group[0] == 'r') groupValue += 4
+        if (group[1] == 'w') groupValue += 2
+        if (group[2] == 'x') groupValue += 1
+
+        octalResult = (octalResult * 8) + groupValue
+    }
+
+    return octalResult.toString(8)
 }
 
 fun parseBytes(
