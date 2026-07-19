@@ -1,30 +1,54 @@
 package com.stefdp.pterodactylpanel.screens.client.server
 
 import android.content.Context
+import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerFile
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
+import com.stefdp.pterodactylpanel.network.client.models.requests.RenameServerFile
+import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilePermissionsFile
+import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
+import com.stefdp.pterodactylpanel.network.client.requests.compressServerFiles
+import com.stefdp.pterodactylpanel.network.client.requests.copyServerFile
+import com.stefdp.pterodactylpanel.network.client.requests.createServerFolder
+import com.stefdp.pterodactylpanel.network.client.requests.decompressServerFile
+import com.stefdp.pterodactylpanel.network.client.requests.deleteServerFiles
+import com.stefdp.pterodactylpanel.network.client.requests.downloadServerFile
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
 import com.stefdp.pterodactylpanel.network.client.requests.getServerWebsocket
 import com.stefdp.pterodactylpanel.network.client.requests.listServerFiles
+import com.stefdp.pterodactylpanel.network.client.requests.renameServerFiles
+import com.stefdp.pterodactylpanel.network.client.requests.updateServerFilesPermissions
+import com.stefdp.pterodactylpanel.network.client.requests.uploadServerFiles
 import com.stefdp.pterodactylpanel.network.websocket.WebSocket
 import com.stefdp.pterodactylpanel.network.websocket.WebSocketManager
 import com.stefdp.pterodactylpanel.network.websocket.models.WSEvents
 import com.stefdp.pterodactylpanel.network.websocket.models.responses.WebSocketStats
 import com.stefdp.pterodactylpanel.utils.SecureStorage
+import com.stefdp.pterodactylpanel.utils.StorageUtil
+import com.stefdp.pterodactylpanel.utils.copyUriToTempFile
 import com.stefdp.pterodactylpanel.utils.formatMs
+import com.stefdp.pterodactylpanel.utils.getDisplayPath
 import ir.ehsannarmani.compose_charts.models.Line
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import nl.jacobras.humanreadable.HumanReadable
 import java.util.Locale
 
@@ -82,6 +106,16 @@ data class ClientServerUiState(
         "home",
         "container",
     ),
+    val showNewDirectoryPopup: Boolean = false,
+    val newDirectoryName: TextFieldValue = TextFieldValue(""),
+    val showMoveFilesPopup: Boolean = false,
+    val isRename: Boolean = false,
+    val showDeleteFilesPopup: Boolean = false,
+    val showUpdatePermissionsPopup: Boolean = false,
+    val newPermissions: TextFieldValue = TextFieldValue(""),
+    val selectedUri: Uri? = null,
+    val isUploading: Boolean = false,
+    val uploadPercent: Float = 0f
 )
 
 private const val MAX_LOGS = 250
@@ -103,6 +137,8 @@ class ClientServerViewModel(
     private var lastTxBytes: Long? = null
     private var lastStatsTimestamp: Long = 0L
 
+    private var selectedPath: String? = null
+
     fun init(
         context: Context,
         serverId: String,
@@ -111,6 +147,20 @@ class ClientServerViewModel(
     ) {
         viewModelScope.launch {
             this@ClientServerViewModel.serverId = serverId
+
+            val secureStore = SecureStorage.getInstance(context)
+
+            val fileDownloadFolder = secureStore.get(SecureStorage.STORAGE_FILE_DOWNLOAD_FOLDER_KEY)
+
+            val fileDownloadFolderUri = fileDownloadFolder?.toUri()
+
+            _state.update {
+                it.copy(
+                    selectedUri = fileDownloadFolderUri
+                )
+            }
+
+            selectedPath = fileDownloadFolderUri?.let { uri -> getDisplayPath(uri) }
 
             if (directory != null) {
                 _state.update {
@@ -243,7 +293,8 @@ class ClientServerViewModel(
 
     fun updateFiles(
         context: Context,
-        onError: (String) -> Unit
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit = { }
     ) {
         viewModelScope.launch {
             if (serverId == null) {
@@ -273,21 +324,23 @@ class ClientServerViewModel(
                     _state.update {
                         it.copy(
                             files = files.data,
+                            isLoading = false
                         )
                     }
+
+                    onSuccess()
                 }
                 .onFailure { error ->
                     Logger.error("ClientServerViewModel", "Failed to fetch server files: ${error.message}")
 
                     onError("Failed to fetch server files")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
                 }
-
-
-            _state.update {
-                it.copy(
-                    isLoading = false
-                )
-            }
         }
     }
 
@@ -334,6 +387,774 @@ class ClientServerViewModel(
                 filesPath = it.filesPath + directory,
                 selectedFiles = emptyList()
             )
+        }
+    }
+
+    fun showCreateNewDirectoryPopup() {
+        _state.update {
+            it.copy(
+                showNewDirectoryPopup = true
+            )
+        }
+    }
+
+    fun hideCreateNewDirectoryPopup(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showNewDirectoryPopup = false,
+                newDirectoryName = TextFieldValue("")
+            )
+        }
+    }
+
+    fun setNewDirectoryName(name: TextFieldValue) {
+        _state.update {
+            it.copy(
+                newDirectoryName = name
+            )
+        }
+    }
+
+    fun createNewDirectory(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val newFolderRes = createServerFolder(
+                context = context,
+                serverId = serverId!!,
+                name = _state.value.newDirectoryName.text.trim(),
+                directory = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+            )
+
+            newFolderRes
+                .onSuccess {
+                    hideCreateNewDirectoryPopup(true)
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to create new directory: ${error.message}")
+
+                    onError("Failed to create new directory")
+
+                    hideCreateNewDirectoryPopup(true)
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun showMoveFilesPopup(
+        isRename: Boolean = false
+    ) {
+        _state.update {
+            it.copy(
+                showMoveFilesPopup = true,
+                isRename = isRename
+            )
+        }
+    }
+
+    fun hideMoveFilesPopup(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showMoveFilesPopup = false,
+                newDirectoryName = TextFieldValue("")
+            )
+        }
+    }
+
+    fun moveFiles(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            val selectedFiles = _state.value.selectedFiles
+
+            val renameFiles = if (selectedFiles.size == 1) {
+                listOf(
+                    RenameServerFile(
+                        from = selectedFiles.first(),
+                        to = _state.value.newDirectoryName.text
+                    )
+                )
+            } else {
+                selectedFiles.map { fileName ->
+                    RenameServerFile(
+                        from = fileName,
+                        to = "${_state.value.newDirectoryName.text}/$fileName"
+                    )
+                }
+            }
+
+            val moveFilesRes = renameServerFiles(
+                context = context,
+                serverId = serverId!!,
+                directory = root,
+                files = renameFiles
+            )
+
+            moveFilesRes
+                .onSuccess {
+                    hideMoveFilesPopup(true)
+
+                    _state.update {
+                        it.copy(
+                            selectedFiles = emptyList()
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to move files: ${error.message}")
+
+                    onError("Failed to move files")
+
+                    hideMoveFilesPopup(true)
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun showDeleteFilesPopup() {
+        _state.update {
+            it.copy(
+                showDeleteFilesPopup = true
+            )
+        }
+    }
+
+    fun hideDeleteFilesPopup(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showDeleteFilesPopup = false
+            )
+        }
+    }
+
+    fun deleteFiles(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            val selectedFiles = _state.value.selectedFiles
+
+            val deleteFilesRes = deleteServerFiles(
+                context = context,
+                serverId = serverId!!,
+                directory = root,
+                files = selectedFiles
+            )
+
+            deleteFilesRes
+                .onSuccess {
+                    hideDeleteFilesPopup(true)
+
+                    _state.update {
+                        it.copy(
+                            selectedFiles = emptyList()
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to delete files: ${error.message}")
+
+                    onError("Failed to delete files")
+
+                    hideDeleteFilesPopup(true)
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun archiveFiles(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            val archiveFilesRes = compressServerFiles(
+                context = context,
+                serverId = serverId!!,
+                directory = root,
+                files = _state.value.selectedFiles
+            )
+
+            archiveFilesRes
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            selectedFiles = emptyList()
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to archive files: ${error.message}")
+
+                    onError("Failed to archive files")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun unarchiveFile(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            val unarchiveFilesRes = decompressServerFile(
+                context = context,
+                serverId = serverId!!,
+                directory = root,
+                file = _state.value.selectedFiles.first()
+            )
+
+            unarchiveFilesRes
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            selectedFiles = emptyList()
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to unarchive file: ${error.message}")
+
+                    onError("Failed to unarchive file")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun copyFile(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/") + "/"
+
+            val copyFilesRes = copyServerFile(
+                context = context,
+                serverId = serverId!!,
+                file = root + _state.value.selectedFiles.first()
+            )
+
+            copyFilesRes
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            selectedFiles = emptyList()
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to copy file: ${error.message}")
+
+                    onError("Failed to copy file")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    fun showUpdatePermissionsPopup() {
+        _state.update {
+            it.copy(
+                showUpdatePermissionsPopup = true
+            )
+        }
+    }
+
+    fun hideUpdatePermissionsPopup(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showUpdatePermissionsPopup = false,
+                newPermissions = TextFieldValue("")
+            )
+        }
+    }
+
+    fun setNewPermissions(permissions: TextFieldValue) {
+        _state.update {
+            it.copy(
+                newPermissions = permissions
+            )
+        }
+    }
+
+    fun updateFilePermissions(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            val updatePermissionsRes = updateServerFilesPermissions(
+                context = context,
+                serverId = serverId!!,
+                directory = root,
+                files = listOf(
+                    UpdateServerFilePermissionsFile(
+                        file = _state.value.selectedFiles.first(),
+                        mode = _state.value.newPermissions.text
+                    )
+                )
+            )
+
+            updatePermissionsRes
+                .onSuccess {
+                    hideUpdatePermissionsPopup(true)
+
+                    _state.update {
+                        it.copy(
+                            selectedFiles = emptyList()
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to copy file: ${error.message}")
+
+                    onError("Failed to copy file")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    hideUpdatePermissionsPopup(true)
+                }
+        }
+    }
+
+    fun setSelectedUri(
+        context: Context,
+        uri: Uri
+    ) {
+        viewModelScope.launch {
+            val secureStore = SecureStorage.getInstance(context)
+
+            secureStore.set(SecureStorage.STORAGE_FILE_DOWNLOAD_FOLDER_KEY, uri.toString())
+
+            _state.update {
+                it.copy(
+                    selectedUri = uri
+                )
+            }
+
+            selectedPath = getDisplayPath(uri)
+        }
+    }
+
+    fun performDownload(
+        context: Context,
+        file: ServerFile,
+        uri: Uri,
+        sendNotification: (content: @Composable () -> Unit) -> Unit,
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                sendNotification {
+                    Text(
+                        text = "Missing server ID",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                return@launch
+            }
+
+            val fileFits = withContext(Dispatchers.IO) {
+                StorageUtil.canFitFile(
+                    context = context,
+                    uri = uri,
+                    fileSize = file.attributes.size
+                )
+            }
+
+            if (!fileFits) {
+                sendNotification {
+                    Text(
+                        text = "Not enough space in the selected directory to download the file",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                return@launch
+            }
+
+            val fileFitsCache = withContext(Dispatchers.IO) {
+                StorageUtil.canFitInternalCache(
+                    context = context,
+                    fileSize = file.attributes.size
+                )
+            }
+
+            if (!fileFitsCache) {
+                sendNotification {
+                    Text(
+                        text = "Not enough space in the internal cache to download the file",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                return@launch
+            }
+
+            sendNotification {
+                Text(
+                    text = "Starting download...",
+                )
+            }
+
+            val fileName = file.attributes.name
+
+            val tempFile = java.io.File(context.cacheDir, fileName)
+            val tempDestinationPath = tempFile.absolutePath
+
+            if (tempFile.exists()) {
+                withContext(Dispatchers.IO) {
+                    tempFile.delete()
+                }
+            }
+
+            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/") + "/"
+
+            withContext(Dispatchers.IO) {
+                val downloadRes = downloadServerFile(
+                    context = context,
+                    serverId = serverId!!,
+                    file = root + file.attributes.name,
+                    destinationPath = tempDestinationPath,
+                    notificationTitle = "Downloading file",
+                    notificationContent = "Downloading ${file.attributes.name}",
+                )
+
+                downloadRes
+                    .onSuccess {
+                        try {
+                            val docUri =
+                                DocumentsContract.buildDocumentUriUsingTree(
+                                    uri,
+                                    DocumentsContract.getTreeDocumentId(
+                                        uri
+                                    )
+                                )
+
+                            val fileUri = DocumentsContract.createDocument(
+                                context.contentResolver,
+                                docUri,
+                                file.attributes.mimetype,
+                                fileName
+                            )
+
+                            if (fileUri != null) {
+                                context.contentResolver.openOutputStream(fileUri)
+                                    ?.use { out ->
+                                        tempFile.inputStream().use { inp ->
+                                            inp.copyTo(out)
+                                        }
+                                    }
+
+                                sendNotification {
+                                    Text(
+                                        text = "File downloaded to ${selectedPath}/$fileName",
+                                    )
+                                }
+                            } else {
+                                sendNotification {
+                                    Text(
+                                        text = "Failed to create file in selected directory",
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        } catch (e: Exception) {
+                            Logger.error(
+                                "ClientServerViewModel",
+                                "Failed to copy file to selected directory",
+                                e
+                            )
+
+                            sendNotification {
+                                Text(
+                                    text = "Failed to copy file to selected directory: ${e.message}",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        } finally {
+                            tempFile.delete()
+                        }
+                    }
+                    .onFailure {
+                        Logger.error("ClientServerViewModel", "Failed to download file", it)
+
+                        sendNotification {
+                            Text(
+                                text = "Failed to download file: ${it.message}",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+            }
+        }
+    }
+
+    fun uploadFiles(
+        context: Context,
+        files: List<UploadFile>,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(isUploading = true)
+            }
+
+            val newFiles = files.mapNotNull { selectedFile ->
+                val tempFile = withContext(Dispatchers.IO) {
+                    copyUriToTempFile(
+                        context = context,
+                        uri = selectedFile.uri,
+                        displayName = selectedFile.name
+                    )
+                }
+
+                if (tempFile == null) {
+                    return@mapNotNull null
+                }
+
+                return@mapNotNull selectedFile
+            }
+
+            val uploadRes = uploadServerFiles(
+                context = context,
+                serverId = serverId!!,
+                directory = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/"),
+                files = newFiles,
+                notificationTitle = "Uploading files",
+                notificationContent = "Uploading ${newFiles.size} files",
+                onProgress = { total, transferred, speed ->
+                    val totalFloat = total.toFloat()
+                    val transferredFloat = transferred.toFloat()
+
+                    val percent = if (totalFloat > 0f) ((transferredFloat * 100f) / total) else 0f
+
+                    _state.update {
+                        it.copy(
+                            uploadPercent = percent
+                        )
+                    }
+                },
+            )
+
+            uploadRes
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isUploading = false,
+                            uploadPercent = 0f
+                        )
+                    }
+
+                    updateFiles(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to upload files: ${error.message}")
+
+                    onError("Failed to upload files")
+
+                    _state.update {
+                        it.copy(
+                            isUploading = false,
+                            uploadPercent = 0f
+                        )
+                    }
+                }
         }
     }
 
