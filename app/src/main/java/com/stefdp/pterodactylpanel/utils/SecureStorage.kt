@@ -16,6 +16,7 @@ class SecureStorage private constructor(context: Context) {
         const val STORAGE_SERVER_URL_KEY = "serverUrl"
         const val STORAGE_APPLICATION_TOKEN_KEY = "applicationToken"
         const val STORAGE_CLIENT_TOKEN_KEY = "clientToken"
+        const val STORAGE_FILE_DOWNLOAD_FOLDER_KEY = "fileDownloadFolder"
 
         @Volatile
         private var INSTANCE: SecureStorage? = null
