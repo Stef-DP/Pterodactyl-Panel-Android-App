@@ -27,6 +27,7 @@ import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Checkbox
 import com.stefdp.pterodactylpanel.components.MoreActionsButton
+import com.stefdp.pterodactylpanel.components.MoreActionsMenuItem
 import com.stefdp.pterodactylpanel.network.client.models.ServerFile
 import com.stefdp.pterodactylpanel.network.client.models.ServerFileAttributes
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
@@ -48,7 +49,15 @@ fun File(
     file: ServerFile,
     isSelected: Boolean,
     onSelectionToggle: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onRename: () -> Unit,
+    onMove: () -> Unit,
+    onChangePermissions: () -> Unit,
+    onCopy: () -> Unit,
+    onArchive: () -> Unit,
+    onUnarchive: () -> Unit,
+    onDownload: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -109,7 +118,65 @@ fun File(
             }
 
             MoreActionsButton(
-                items = emptyList()
+                items = listOf(
+                    MoreActionsMenuItem(
+                        label = "Rename",
+                        icon = painterResource(R.drawable.edit),
+                        iconDescription = "Rename",
+                        onClick = onRename
+                    ),
+                    MoreActionsMenuItem(
+                        label = "Move",
+                        icon = painterResource(R.drawable.arrow_top_left),
+                        iconDescription = "Move",
+                        onClick = onMove
+                    ),
+                    MoreActionsMenuItem(
+                        label = "Permissions",
+                        icon = painterResource(R.drawable.key),
+                        iconDescription = "Change Permissions",
+                        onClick = onChangePermissions
+                    ),
+                    if (file.attributes.isFile) {
+                        MoreActionsMenuItem(
+                            label = "Copy",
+                            icon = painterResource(R.drawable.content_copy),
+                            iconDescription = "Copy",
+                            onClick = onCopy
+                        )
+                    } else null,
+                    if (file.attributes.isFile && file.attributes.mimetype in zipMimetypes) {
+                        MoreActionsMenuItem(
+                            label = "Unarchive",
+                            icon = painterResource(R.drawable.unarchive),
+                            iconDescription = "Unarchive",
+                            onClick = onUnarchive
+                        )
+                    } else {
+                        MoreActionsMenuItem(
+                            label = "Archive",
+                            icon = painterResource(R.drawable.folder_zip_fill),
+                            iconDescription = "Archive",
+                            onClick = onArchive
+                        )
+                    },
+                    if (file.attributes.isFile) {
+                        MoreActionsMenuItem(
+                            label = "Download",
+                            icon = painterResource(R.drawable.download),
+                            iconDescription = "Download",
+                            onClick = onDownload
+                        )
+                    } else null,
+                    MoreActionsMenuItem(
+                        label = "Delete",
+                        icon = painterResource(R.drawable.delete),
+                        iconDescription = "Delete",
+                        onClick = onDelete,
+                        labelColor = MaterialTheme.colorScheme.error,
+                        iconColor = MaterialTheme.colorScheme.error
+                    )
+                ).filterNotNull()
             )
         }
     }
@@ -134,35 +201,75 @@ fun FilePreview() {
                         file = testFile,
                         isSelected = true,
                         onSelectionToggle = {},
-                        onClick = {}
+                        onClick = {},
+                        onRename = {},
+                        onMove = {},
+                        onChangePermissions = {},
+                        onCopy = {},
+                        onArchive = {},
+                        onUnarchive = {},
+                        onDownload = {},
+                        onDelete = {}
                     )
 
                     File(
                         file = testFile,
                         isSelected = false,
                         onSelectionToggle = {},
-                        onClick = {}
+                        onClick = {},
+                        onRename = {},
+                        onMove = {},
+                        onChangePermissions = {},
+                        onCopy = {},
+                        onArchive = {},
+                        onUnarchive = {},
+                        onDownload = {},
+                        onDelete = {}
                     )
 
                     File(
                         file = testFolder,
                         isSelected = true,
                         onSelectionToggle = {},
-                        onClick = {}
+                        onClick = {},
+                        onRename = {},
+                        onMove = {},
+                        onChangePermissions = {},
+                        onCopy = {},
+                        onArchive = {},
+                        onUnarchive = {},
+                        onDownload = {},
+                        onDelete = {}
                     )
 
                     File(
                         file = testZipFile,
                         isSelected = false,
                         onSelectionToggle = {},
-                        onClick = {}
+                        onClick = {},
+                        onRename = {},
+                        onMove = {},
+                        onChangePermissions = {},
+                        onCopy = {},
+                        onArchive = {},
+                        onUnarchive = {},
+                        onDownload = {},
+                        onDelete = {}
                     )
 
                     File(
                         file = testFile,
                         isSelected = false,
                         onSelectionToggle = {},
-                        onClick = {}
+                        onClick = {},
+                        onRename = {},
+                        onMove = {},
+                        onChangePermissions = {},
+                        onCopy = {},
+                        onArchive = {},
+                        onUnarchive = {},
+                        onDownload = {},
+                        onDelete = {}
                     )
                 }
             }
