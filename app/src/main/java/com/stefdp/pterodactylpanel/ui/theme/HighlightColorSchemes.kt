@@ -4,44 +4,190 @@ import com.neoutils.highlight.core.scheme.TextColorScheme
 import com.neoutils.highlight.core.util.Matcher
 import com.neoutils.highlight.core.util.UiColor
 
-enum class HighlightLanguage {
-    C,
-    CPP,
-    CSHARP,
-    CSS,
-    SASS,
-    SCSS,
-    HTML,
-    JAVASCRIPT,
-    TYPESCRIPT,
-    VUE,
-    PUG,
-    SQL,
-    MYSQL,
-    MARIADB,
-    POSTGRESQL,
-    SQLITE,
-    MS_SQL,
-    CQL,
-    DOCKERFILE,
-    NGINX,
-    HTTP,
-    GOLANG,
-    LUA,
-    PYTHON,
-    RUBY,
-    RUST,
-    PHP,
-    SHELL,
-    JSON,
-    XML,
-    YAML,
-    TOML,
-    PROPERTIES,
-    DIFF,
-    MARKDOWN,
-    GIT_MARKDOWN,
-    PLAIN_TEXT
+enum class HighlightLanguage(
+    val mimeTypes: List<String>,
+    val extensions: List<String>
+) {
+    C(
+        mimeTypes = listOf("text/x-csrc", "text/x-chdr"),
+        extensions = listOf("c", "h")
+    ),
+    CPP(
+        mimeTypes = listOf("text/x-c++src", "text/x-c++hdr"),
+        extensions = listOf("cpp", "hpp", "cc", "hh", "cxx", "hxx")
+    ),
+    CSHARP(
+        mimeTypes = listOf("text/x-csharp"),
+        extensions = listOf("cs", "csx")
+    ),
+    CSS(
+        mimeTypes = listOf("text/css"),
+        extensions = listOf("css")
+    ),
+    SASS(
+        mimeTypes = listOf("text/x-sass"),
+        extensions = listOf("sass")
+    ),
+    SCSS(
+        mimeTypes = listOf("text/x-scss"),
+        extensions = listOf("scss")
+    ),
+    HTML(
+        mimeTypes = listOf("text/html"),
+        extensions = listOf("html", "htm")
+    ),
+    JAVASCRIPT(
+        mimeTypes = listOf("application/javascript", "text/javascript", "application/ecmascript"),
+        extensions = listOf("js", "mjs", "cjs")
+    ),
+    TYPESCRIPT(
+        mimeTypes = listOf("application/typescript", "text/typescript"),
+        extensions = listOf("ts", "mts", "cts")
+    ),
+    VUE(
+        mimeTypes = listOf("text/x-vue", "application/x-vue"),
+        extensions = listOf("vue")
+    ),
+    PUG(
+        mimeTypes = listOf("text/x-pug", "text/x-jade"),
+        extensions = listOf("pug", "jade")
+    ),
+    SQL(
+        mimeTypes = listOf("application/sql", "text/x-sql"),
+        extensions = listOf("sql")
+    ),
+    MYSQL(
+        mimeTypes = listOf("text/x-mysql"),
+        extensions = listOf("mysql")
+    ),
+    MARIADB(
+        mimeTypes = listOf("text/x-mariadb"),
+        extensions = listOf("mariadb")
+    ),
+    POSTGRESQL(
+        mimeTypes = listOf("text/x-pgsql", "text/x-postgres"),
+        extensions = listOf("pgsql", "postgres")
+    ),
+    SQLITE(
+        mimeTypes = listOf("application/x-sqlite3", "application/sqlite3"),
+        extensions = listOf("sqlite", "sqlite3", "db")
+    ),
+    MS_SQL(
+        mimeTypes = listOf("text/x-mssql"),
+        extensions = listOf("mssql", "tsql")
+    ),
+    CQL(
+        mimeTypes = listOf("text/x-cql", "application/cql"),
+        extensions = listOf("cql")
+    ),
+    DOCKERFILE(
+        mimeTypes = listOf("text/x-dockerfile"),
+        extensions = listOf("dockerfile", "Dockerfile")
+    ),
+    NGINX(
+        mimeTypes = listOf("text/x-nginx-conf"),
+        extensions = listOf("conf", "nginx")
+    ),
+    HTTP(
+        mimeTypes = listOf("message/http", "application/x-httpd-php"),
+        extensions = listOf("http", "rest")
+    ),
+    GOLANG(
+        mimeTypes = listOf("text/x-go", "application/x-go"),
+        extensions = listOf("go")
+    ),
+    LUA(
+        mimeTypes = listOf("text/x-lua", "application/x-lua"),
+        extensions = listOf("lua")
+    ),
+    PYTHON(
+        mimeTypes = listOf("text/x-python", "application/x-python"),
+        extensions = listOf("py", "pyw", "pyi")
+    ),
+    RUBY(
+        mimeTypes = listOf("text/x-ruby", "application/x-ruby"),
+        extensions = listOf("rb", "rbw")
+    ),
+    RUST(
+        mimeTypes = listOf("text/x-rustsrc", "application/rust"),
+        extensions = listOf("rs")
+    ),
+    PHP(
+        mimeTypes = listOf("application/x-httpd-php", "text/x-php"),
+        extensions = listOf("php", "phtml")
+    ),
+    SHELL(
+        mimeTypes = listOf("text/x-sh", "application/x-sh", "text/x-shellscript"),
+        extensions = listOf("sh", "bash", "zsh")
+    ),
+    JSON(
+        mimeTypes = listOf("application/json", "text/x-json"),
+        extensions = listOf("json")
+    ),
+    XML(
+        mimeTypes = listOf("application/xml", "text/xml"),
+        extensions = listOf("xml", "xsd", "xsl")
+    ),
+    YAML(
+        mimeTypes = listOf("application/x-yaml", "text/yaml", "text/x-yaml"),
+        extensions = listOf("yaml", "yml")
+    ),
+    TOML(
+        mimeTypes = listOf("application/toml", "text/x-toml"),
+        extensions = listOf("toml")
+    ),
+    PROPERTIES(
+        mimeTypes = listOf("text/x-java-properties"),
+        extensions = listOf("properties")
+    ),
+    DIFF(
+        mimeTypes = listOf("text/x-diff", "text/x-patch"),
+        extensions = listOf("diff", "patch")
+    ),
+    MARKDOWN(
+        mimeTypes = listOf("text/markdown", "text/x-markdown"),
+        extensions = listOf("md", "markdown")
+    ),
+    GIT_MARKDOWN(
+        mimeTypes = listOf("text/x-git-markdown"),
+        extensions = listOf("gitmd")
+    ),
+    ENV(
+        mimeTypes = listOf("text/x-env"),
+        extensions = listOf("env")
+    ),
+    PLAIN_TEXT(
+        mimeTypes = listOf("text/plain"),
+        extensions = listOf("txt")
+    );
+
+    companion object {
+        private val mimeTypeMap: Map<String, HighlightLanguage> by lazy {
+            entries.flatMap { language ->
+                language.mimeTypes.map { mime -> mime.lowercase() to language }
+            }.toMap()
+        }
+
+        private val extensionMap: Map<String, HighlightLanguage> by lazy {
+            entries.flatMap { language ->
+                language.extensions.map { ext -> ext.lowercase() to language }
+            }.toMap()
+        }
+
+        fun fromMimeType(mimeType: String?): HighlightLanguage? {
+            if (mimeType.isNullOrBlank()) return null
+
+            return mimeTypeMap[mimeType.trim().lowercase()] ?: PLAIN_TEXT
+        }
+
+        fun fromExtension(extension: String?): HighlightLanguage? {
+            if (extension.isNullOrBlank()) return null
+
+            val cleanExt = extension.substringAfterLast('.').trim().lowercase()
+
+            return extensionMap[cleanExt] ?: PLAIN_TEXT
+        }
+    }
 }
 
 val supportedLanguages = listOf(
@@ -81,6 +227,7 @@ val supportedLanguages = listOf(
     Pair(HighlightLanguage.DIFF, "Diff"),
     Pair(HighlightLanguage.MARKDOWN, "Markdown"),
     Pair(HighlightLanguage.GIT_MARKDOWN, "Git Markdown"),
+    Pair(HighlightLanguage.ENV, "Environment"),
     Pair(HighlightLanguage.PLAIN_TEXT, "Plain Text")
 )
 
@@ -393,7 +540,7 @@ val sqlHighlightColors = listOf(
     TextColorScheme(
         regex = "(?i)\\b(true|false)\\b".toRegex(),
         matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ), // Case-insensitive Booleans
+    ),
     TextColorScheme(
         regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
         matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
@@ -870,6 +1017,25 @@ val markdownHighlightColors = listOf(
     ),
 )
 
+val envHighlightColors = listOf(
+    TextColorScheme(
+        regex = "(?m)#.*".toRegex(),
+        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+    ),
+    TextColorScheme(
+        regex = "(?m)^\\s*([A-Za-z0-9_]+)(?=\\s*=)".toRegex(),
+        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+    ),
+    TextColorScheme(
+        regex = "=".toRegex(),
+        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+    ),
+    TextColorScheme(
+        regex = "=\\s*(.*)".toRegex(),
+        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+    ),
+)
+
 val gitMarkdownHighlightColors = markdownHighlightColors + listOf(
     TextColorScheme(
         regex = "\\b#[0-9]+\\b|@[a-zA-Z0-9_-]+\\b".toRegex(),
@@ -882,6 +1048,7 @@ val languageToHighlightColors = mapOf(
     HighlightLanguage.CPP to cppHighlightColors,
     HighlightLanguage.CSHARP to csharpHighlightColors,
     HighlightLanguage.CSS to cssHighlightColors,
+    HighlightLanguage.ENV to envHighlightColors,
     HighlightLanguage.SASS to sassHighlightColors,
     HighlightLanguage.SCSS to scssHighlightColors,
     HighlightLanguage.HTML to htmlHighlightColors,
