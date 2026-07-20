@@ -12,16 +12,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
-import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.ConsoleTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.FileEditTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.FilesTab
 import com.stefdp.pterodactylpanel.utils.scrollbar
 
@@ -109,13 +107,23 @@ fun ClientServerScreen(
             }
 
             ServerTab.FILES -> {
-                FilesTab(
-                    navController = navController,
-                    context = context,
-                    activity = activity,
-                    viewModel = viewModel,
-                    state = state
-                )
+                if (state.fileToEdit != null || state.createNewFile) {
+                    FileEditTab(
+                        navController = navController,
+                        context = context,
+                        activity = activity,
+                        viewModel = viewModel,
+                        state = state
+                    )
+                } else {
+                    FilesTab(
+                        navController = navController,
+                        context = context,
+                        activity = activity,
+                        viewModel = viewModel,
+                        state = state
+                    )
+                }
             }
 
              else -> {

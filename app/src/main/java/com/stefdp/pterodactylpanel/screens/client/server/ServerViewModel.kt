@@ -36,6 +36,7 @@ import com.stefdp.pterodactylpanel.network.websocket.WebSocket
 import com.stefdp.pterodactylpanel.network.websocket.WebSocketManager
 import com.stefdp.pterodactylpanel.network.websocket.models.WSEvents
 import com.stefdp.pterodactylpanel.network.websocket.models.responses.WebSocketStats
+import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import com.stefdp.pterodactylpanel.utils.StorageUtil
 import com.stefdp.pterodactylpanel.utils.copyUriToTempFile
@@ -115,7 +116,14 @@ data class ClientServerUiState(
     val newPermissions: TextFieldValue = TextFieldValue(""),
     val selectedUri: Uri? = null,
     val isUploading: Boolean = false,
-    val uploadPercent: Float = 0f
+    val uploadPercent: Float = 0f,
+    val fileToEdit: String? = null,
+    val fileContent: TextFieldValue = TextFieldValue(""),
+    val originalFileContent: String = "",
+    val selectedLanguage: HighlightLanguage = HighlightLanguage.PLAIN_TEXT,
+    val createNewFile: Boolean = true, // TODO: set to false
+    val newFileName: TextFieldValue = TextFieldValue(""),
+    val showUnsavedFileWarningPopup: Boolean = false
 )
 
 private const val MAX_LOGS = 250
@@ -1155,6 +1163,54 @@ class ClientServerViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    fun setFileContent(context: TextFieldValue) {
+        _state.update {
+            it.copy(
+                fileContent = context
+            )
+        }
+    }
+
+    fun setSelectedLanguage(language: HighlightLanguage) {
+        _state.update {
+            it.copy(
+                selectedLanguage = language
+            )
+        }
+    }
+
+    fun showUnsavedFileWarningPopup() {
+        _state.update {
+            it.copy(
+                showUnsavedFileWarningPopup = true
+            )
+        }
+    }
+
+    fun hideUnsavedFileWarningPopup() {
+        _state.update {
+            it.copy(
+                showUnsavedFileWarningPopup = false
+            )
+        }
+    }
+
+    fun setCreateNewFile(createNewFile: Boolean) {
+        _state.update {
+            it.copy(
+                createNewFile = createNewFile
+            )
+        }
+    }
+
+    fun setFileToEdit(file: String?) {
+        _state.update {
+            it.copy(
+                fileToEdit = file
+            )
         }
     }
 
