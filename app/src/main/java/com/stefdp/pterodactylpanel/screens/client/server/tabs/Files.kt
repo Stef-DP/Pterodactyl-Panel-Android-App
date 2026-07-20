@@ -56,6 +56,7 @@ import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
 import com.stefdp.pterodactylpanel.screens.client.server.components.File
+import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.utils.PermissionModeRegex
 import com.stefdp.pterodactylpanel.utils.getFileInfo
 import com.stefdp.pterodactylpanel.utils.linuxPermissionToInt
@@ -575,6 +576,7 @@ fun FilesTab(
             Button(
                 onClick = {
                     viewModel.setCreateNewFile(true)
+                    viewModel.setSelectedLanguage(HighlightLanguage.PLAIN_TEXT)
                 },
                 enabled = !state.isLoading,
                 buttonType = ButtonType.PRIMARY,
