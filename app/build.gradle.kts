@@ -113,4 +113,8 @@ dependencies {
 
     // Charts
     implementation(libs.compose.charts)
+
+    // Code Highlighting
+    implementation(libs.highlight.view)
+    implementation(libs.highlight.compose)
 }

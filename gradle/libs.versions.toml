@@ -38,6 +38,9 @@ android-ansi = "1.2.0"
 #vico = "3.0.3"
 compose-charts = "0.2.5"
 
+# Code Highlighting
+highlight = "2.3.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -84,6 +87,10 @@ android-ansi-ktx = { group = "com.github.Fox2Code.AndroidANSI", name = "library-
 #vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
 #vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 compose-charts = { group = "io.github.ehsannarmani", name = "compose-charts", version.ref = "compose-charts" }
+
+# Code Highlighting
+highlight-view = { group = "com.neoutils.highlight", name = "highlight-view", version.ref = "highlight" }
+highlight-compose = { group = "com.neoutils.highlight", name = "highlight-compose", version.ref = "highlight" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
