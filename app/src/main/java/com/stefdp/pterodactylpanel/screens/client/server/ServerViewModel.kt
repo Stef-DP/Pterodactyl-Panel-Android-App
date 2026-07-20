@@ -1390,7 +1390,8 @@ class ClientServerViewModel(
                     _state.update {
                         it.copy(
                             isFileSaving = false,
-                            originalFileContent = _state.value.fileContent.text.trim()
+                            originalFileContent = _state.value.fileContent.text.trim(),
+                            fileContent = TextFieldValue(_state.value.fileContent.text.trim())
                         )
                     }
 
