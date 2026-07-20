@@ -159,7 +159,9 @@ fun LoginScreen(
                     isPassword = true,
                     placeholder = "ptla_xxxx",
                     label = "Application API Key",
-                    enabled = !state.isLoading
+                    description = "Currently unavailable - WIP",
+                    enabled = false // TODO: enable when admin side is done
+//                    enabled = !state.isLoading
                 )
 
                 val updateLoggedUser = LocalUpdateLoggedUser.current
