@@ -2,28 +2,44 @@ package com.stefdp.pterodactylpanel.screens.client.server.tabs
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import com.neoutils.highlight.compose.remember.rememberTextFieldValue
 import com.neoutils.highlight.core.Highlight
+import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.Select
 import com.stefdp.pterodactylpanel.components.SelectOption
@@ -33,6 +49,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.ui.theme.languageToHighlightColors
 import com.stefdp.pterodactylpanel.ui.theme.supportedLanguages
+import java.nio.file.Paths
 
 @Composable
 fun FileEditTab(
@@ -46,9 +63,8 @@ fun FileEditTab(
         viewModel.hideUnsavedFileWarningPopup()
         viewModel.setFileContent(TextFieldValue(""))
         viewModel.setCreateNewFile(false)
-        viewModel.setFileToEdit(null)
-
-        Logger.debug("closeFileEditing", "Navigating back to FilesTab")
+        viewModel.clearFileToEdit()
+        viewModel.setOriginalFileContent("")
     }
 
     BackHandler {
@@ -103,6 +119,119 @@ fun FileEditTab(
         }
     }
 
+    Popup(
+        showPopup = state.showNewFileNamePopup,
+        onDismissRequest = {
+            viewModel.hideNewFileNamePopup()
+        },
+        scrollable = true
+    ) {
+        Text(
+            text = "Create New File",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(12.dp)
+        )
+
+        TextInput(
+            value = state.newFileName,
+            label = "Name",
+            onValueChange = { newValue ->
+                viewModel.setNewFileName(newValue)
+            },
+            placeholder = "File Name",
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+
+        FlowRow {
+            Text(
+                text = "This file will be created as"
+            )
+
+            val folderPathText = buildAnnotatedString {
+                append("/${state.filesPath.joinToString("/")}/")
+
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    val basePath = Paths.get("/")
+
+                    val absoluteNormalizedPath = basePath.resolve(state.newFileName.text).normalize()
+
+                    append(basePath.relativize(absoluteNormalizedPath).toString())
+                }
+            }
+
+            Text(
+                text = folderPathText,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(4.dp),
+                style = TextStyle(
+                    lineBreak = LineBreak.Simple,
+                    fontFamily = FontFamily.Monospace
+                )
+            )
+        }
+
+        Spacer(
+            modifier = Modifier.height(4.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = {
+                    viewModel.hideNewFileNamePopup()
+                },
+                buttonType = ButtonType.SECONDARY,
+                enabled = !state.isLoading
+            ) {
+                Text("Cancel")
+            }
+
+            Button(
+                onClick = {
+                    viewModel.saveFile(
+                        context = context,
+                        onError = { error ->
+                            Notification.show(
+                                activity = activity,
+                                duration = 3000L
+                            ) {
+                                Text(
+                                    text = error,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        },
+                        onSuccess = {
+                            Notification.show(
+                                activity = activity,
+                                duration = 3000L
+                            ) {
+                                Text(
+                                    text = "File created successfully",
+                                )
+                            }
+                        }
+                    )
+                },
+                buttonType = ButtonType.PRIMARY,
+                enabled = state.newFileName.text.isNotBlank() && !state.isLoading && !state.isFileSaving
+            ) {
+                Text("Create")
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -115,15 +244,33 @@ fun FileEditTab(
         Column(
             modifier = Modifier.fillMaxWidth().weight(1f)
         ) {
-            TextInput(
-                value = highlight.rememberTextFieldValue(state.fileContent),
-                onValueChange = {
-                    viewModel.setFileContent(it)
-                },
-                singleLine = false,
-                modifier = Modifier.fillMaxSize(),
-                fontFamily = FontFamily.Monospace
-            )
+            if (state.isFetchingFileContent) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                TextInput(
+                    value = highlight.rememberTextFieldValue(state.fileContent),
+                    onValueChange = {
+                        viewModel.setFileContent(it)
+                    },
+                    singleLine = false,
+                    modifier = Modifier.fillMaxSize(),
+                    fontFamily = FontFamily.Monospace,
+                    enabled = !state.isFileSaving
+                )
+            }
         }
 
         Row(
@@ -150,23 +297,54 @@ fun FileEditTab(
                             )
                         }
                     )
-                },
+                }.sortedBy { it.id },
                 onSelectionChange = {
                     if (it.isEmpty()) return@Select
 
                     viewModel.setSelectedLanguage(HighlightLanguage.valueOf(it.first()))
                 },
-                containerModifier = Modifier.weight(1f)
+                containerModifier = Modifier.weight(1f),
+                enabled = !state.isFetchingFileContent && !state.isFileSaving
             )
 
             Button(
-                onClick = {},
+                onClick = {
+                    if (state.createNewFile || state.fileToEdit == null) {
+                        viewModel.showNewFileNamePopup()
+                    } else {
+                        viewModel.saveFile(
+                            context = context,
+                            onError = { error ->
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = error,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            },
+                            onSuccess = {
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = "File saved successfully",
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
+                            }
+                        )
+                    }
+                },
                 buttonType = ButtonType.PRIMARY,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                enabled = !state.isFetchingFileContent && !state.isFileSaving
             ) {
                 Text(
                     text = "Save",
-                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

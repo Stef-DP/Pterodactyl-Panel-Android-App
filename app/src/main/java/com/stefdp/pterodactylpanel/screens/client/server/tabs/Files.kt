@@ -574,7 +574,7 @@ fun FilesTab(
 
             Button(
                 onClick = {
-                    // TODO
+                    viewModel.setCreateNewFile(true)
                 },
                 enabled = !state.isLoading,
                 buttonType = ButtonType.PRIMARY,
@@ -722,7 +722,21 @@ fun FilesTab(
                         },
                         onClick = {
                             if (file.attributes.isFile) {
-                                // TODO
+                                viewModel.setFileToEdit(
+                                    context = context,
+                                    file = file,
+                                    onError = {
+                                        Notification.show(
+                                            activity = activity,
+                                            duration = 3000L
+                                        ) {
+                                            Text(
+                                                text = it,
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
+                                )
                             } else {
                                 viewModel.addDirectoryToPath(file.attributes.name)
                             }
@@ -730,6 +744,7 @@ fun FilesTab(
                         onRename = {
                             viewModel.deselectAllFiles()
                             viewModel.toggleFileSelection(file.attributes.name)
+                            viewModel.setNewDirectoryName(TextFieldValue(file.attributes.name))
 
                             viewModel.showMoveFilesPopup(true)
                         },

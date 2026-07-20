@@ -27,11 +27,13 @@ import com.stefdp.pterodactylpanel.network.client.requests.decompressServerFile
 import com.stefdp.pterodactylpanel.network.client.requests.deleteServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.downloadServerFile
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
+import com.stefdp.pterodactylpanel.network.client.requests.getServerFileContents
 import com.stefdp.pterodactylpanel.network.client.requests.getServerWebsocket
 import com.stefdp.pterodactylpanel.network.client.requests.listServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.renameServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.updateServerFilesPermissions
 import com.stefdp.pterodactylpanel.network.client.requests.uploadServerFiles
+import com.stefdp.pterodactylpanel.network.client.requests.writeServerFile
 import com.stefdp.pterodactylpanel.network.websocket.WebSocket
 import com.stefdp.pterodactylpanel.network.websocket.WebSocketManager
 import com.stefdp.pterodactylpanel.network.websocket.models.WSEvents
@@ -118,12 +120,15 @@ data class ClientServerUiState(
     val isUploading: Boolean = false,
     val uploadPercent: Float = 0f,
     val fileToEdit: String? = null,
+    val isFetchingFileContent: Boolean = false,
     val fileContent: TextFieldValue = TextFieldValue(""),
     val originalFileContent: String = "",
     val selectedLanguage: HighlightLanguage = HighlightLanguage.PLAIN_TEXT,
-    val createNewFile: Boolean = true, // TODO: set to false
+    val createNewFile: Boolean = false, // TODO: set to false
     val newFileName: TextFieldValue = TextFieldValue(""),
-    val showUnsavedFileWarningPopup: Boolean = false
+    val showUnsavedFileWarningPopup: Boolean = false,
+    val isFileSaving: Boolean = false,
+    val showNewFileNamePopup: Boolean = false,
 )
 
 private const val MAX_LOGS = 250
@@ -524,14 +529,14 @@ class ClientServerViewModel(
                 listOf(
                     RenameServerFile(
                         from = selectedFiles.first(),
-                        to = _state.value.newDirectoryName.text
+                        to = _state.value.newDirectoryName.text.trim()
                     )
                 )
             } else {
                 selectedFiles.map { fileName ->
                     RenameServerFile(
                         from = fileName,
-                        to = "${_state.value.newDirectoryName.text}/$fileName"
+                        to = "${_state.value.newDirectoryName.text.trim()}/$fileName"
                     )
                 }
             }
@@ -782,7 +787,11 @@ class ClientServerViewModel(
                 )
             }
 
-            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/") + "/"
+            var root = (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            if (root.isBlank()) {
+                root = "/"
+            }
 
             val copyFilesRes = copyServerFile(
                 context = context,
@@ -872,7 +881,7 @@ class ClientServerViewModel(
                 files = listOf(
                     UpdateServerFilePermissionsFile(
                         file = _state.value.selectedFiles.first(),
-                        mode = _state.value.newPermissions.text
+                        mode = _state.value.newPermissions.text.trim()
                     )
                 )
             )
@@ -1000,7 +1009,11 @@ class ClientServerViewModel(
                 }
             }
 
-            val root = "/" + (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/") + "/"
+            var root = (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            if (root.isBlank()) {
+                root = "/"
+            }
 
             withContext(Dispatchers.IO) {
                 val downloadRes = downloadServerFile(
@@ -1122,7 +1135,7 @@ class ClientServerViewModel(
                 files = newFiles,
                 notificationTitle = "Uploading files",
                 notificationContent = "Uploading ${newFiles.size} files",
-                onProgress = { total, transferred, speed ->
+                onProgress = { total, transferred, _ ->
                     val totalFloat = total.toFloat()
                     val transferredFloat = transferred.toFloat()
 
@@ -1182,6 +1195,28 @@ class ClientServerViewModel(
         }
     }
 
+    fun parseFileLanguage(file: ServerFile) {
+        val fileName = file.attributes.name
+
+        val languageFromExtension = HighlightLanguage.fromExtension(fileName)
+
+        if (languageFromExtension is HighlightLanguage) {
+            setSelectedLanguage(languageFromExtension)
+
+            return
+        }
+
+        val languageFromMimetype = HighlightLanguage.fromMimeType(file.attributes.mimetype)
+
+        if (languageFromMimetype is HighlightLanguage) {
+            setSelectedLanguage(languageFromMimetype)
+
+            return
+        }
+
+        setSelectedLanguage(HighlightLanguage.PLAIN_TEXT)
+    }
+
     fun showUnsavedFileWarningPopup() {
         _state.update {
             it.copy(
@@ -1206,11 +1241,174 @@ class ClientServerViewModel(
         }
     }
 
-    fun setFileToEdit(file: String?) {
+    fun showNewFileNamePopup() {
         _state.update {
             it.copy(
-                fileToEdit = file
+                showNewFileNamePopup = true
             )
+        }
+    }
+
+    fun hideNewFileNamePopup(skipFileSaving: Boolean = false) {
+        if (_state.value.isFileSaving && !skipFileSaving) return
+
+        _state.update {
+            it.copy(
+                showNewFileNamePopup = false,
+                newFileName = TextFieldValue("")
+            )
+        }
+    }
+
+    fun setNewFileName(name: TextFieldValue) {
+        _state.update {
+            it.copy(
+                newFileName = name
+            )
+        }
+    }
+
+    fun setFileToEdit(
+        context: Context,
+        file: ServerFile,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            parseFileLanguage(file)
+
+            var root = (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+            if (root.isBlank()) {
+                root = "/"
+            }
+
+            val filePath = root + file.attributes.name
+
+            _state.update {
+                it.copy(
+                    isFetchingFileContent = true,
+                    fileToEdit = filePath
+                )
+            }
+
+            val fileContentRes = getServerFileContents(
+                context = context,
+                serverId = serverId!!,
+                file = filePath
+            )
+
+            fileContentRes
+                .onSuccess { content ->
+                    _state.update {
+                        it.copy(
+                            isFetchingFileContent = false,
+                            fileContent = TextFieldValue(content),
+                            originalFileContent = content
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to fetch file content: ${error.message}")
+
+                    onError("Failed to fetch file content")
+
+                    _state.update {
+                        it.copy(
+                            isFetchingFileContent = false,
+                            fileToEdit = null
+                        )
+                    }
+                }
+        }
+    }
+
+    fun clearFileToEdit() {
+        _state.update {
+            it.copy(
+                fileToEdit = null,
+            )
+        }
+    }
+
+    fun setOriginalFileContent(content: String) {
+        _state.update {
+            it.copy(
+                originalFileContent = content
+            )
+        }
+    }
+
+    fun saveFile(
+        context: Context,
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isFileSaving = true
+                )
+            }
+
+            if (_state.value.createNewFile || _state.value.fileToEdit == null) {
+                val languageByExtension = HighlightLanguage.fromExtension(_state.value.newFileName.text.trim())
+
+                setSelectedLanguage(languageByExtension ?: HighlightLanguage.PLAIN_TEXT)
+            }
+
+            val writeFileRes = writeServerFile(
+                context = context,
+                serverId = serverId!!,
+                file = if (_state.value.createNewFile || _state.value.fileToEdit == null) {
+                    var root = (_state.value.filesPath - _state.value.filesPath.take(2).toSet()).joinToString("/")
+
+                    if (root.isBlank()) {
+                        root = "/"
+                    }
+
+                    root + _state.value.newFileName.text.trim()
+                } else {
+                    _state.value.fileToEdit!!
+                },
+                content = _state.value.fileContent.text.trim()
+            )
+
+            writeFileRes
+                .onSuccess {
+                    _state.update {
+                        it.copy(
+                            isFileSaving = false,
+                            originalFileContent = _state.value.fileContent.text.trim()
+                        )
+                    }
+
+                    hideNewFileNamePopup(true)
+
+                    onSuccess()
+                }
+                .onFailure {
+                    Logger.error("ClientServerViewModel", "Failed to save file: ${it.message}")
+
+                    _state.update {
+                        it.copy(
+                            isFileSaving = false
+                        )
+                    }
+
+                    onError("Failed to save file")
+                }
         }
     }
 
