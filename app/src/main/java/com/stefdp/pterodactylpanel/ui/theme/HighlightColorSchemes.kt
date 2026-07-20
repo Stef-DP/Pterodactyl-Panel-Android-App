@@ -403,7 +403,7 @@ val htmlHighlightColors = listOf(
         matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
     ),
     TextColorScheme(
-        regex = "(<\\/?[a-zA-Z0-9:-]+)".toRegex(),
+        regex = "(<\\/?[a-zA-Z0-9:-]+>)".toRegex(),
         matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
     ),
     TextColorScheme(
