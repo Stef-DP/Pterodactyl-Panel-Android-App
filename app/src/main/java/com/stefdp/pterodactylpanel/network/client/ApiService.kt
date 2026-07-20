@@ -323,7 +323,6 @@ interface PterodactylClientApiService {
     @Streaming
     @GET
     suspend fun downloadServerFile(
-//        @Header("Authorization") authorization: String, // not sure if this requires auth or not
         @Url fileUrl: String, // the url returned by getDownloadServerFileUrl's response
     ): Response<ResponseBody>
 
@@ -331,7 +330,7 @@ interface PterodactylClientApiService {
     suspend fun writeServerFile(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
-        @Header("Content-Type") contentType: String = "application/json",
+        @Header("Content-Type") contentType: String = "text/plain",
         @Path("serverId") serverId: String,
         @Query("file") file: String,
         @Body fileContents: String,
@@ -611,7 +610,6 @@ interface PterodactylClientApiService {
     @Streaming
     @GET
     suspend fun downloadServerBackup(
-//        @Header("Authorization") authorization: String, // not sure if this requires auth or not
         @Url fileUrl: String, // the url returned by getServerBackupDownloadUrl's response
     ): Response<ResponseBody>
 
