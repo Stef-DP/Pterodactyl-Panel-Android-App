@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -72,6 +73,7 @@ fun TextInput(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     readOnly: Boolean = false,
     required: Boolean = false,
+    fontFamily: FontFamily? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -100,6 +102,7 @@ fun TextInput(
                     MaterialTheme.colorScheme.onBackground
                 else
                     MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                fontFamily = fontFamily
             ),
             modifier = modifier,
             readOnly = readOnly,
