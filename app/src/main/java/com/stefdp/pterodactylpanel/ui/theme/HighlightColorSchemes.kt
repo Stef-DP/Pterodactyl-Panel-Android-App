@@ -159,6 +159,14 @@ enum class HighlightLanguage(
     PLAIN_TEXT(
         mimeTypes = listOf("text/plain"),
         extensions = listOf("txt")
+    ),
+    CRAWSSEMBLY(
+        mimeTypes = emptyList(),
+        extensions = listOf("craw")
+    ),
+    JAVA(
+        mimeTypes = listOf("text/x-java-source", "text/x-java"),
+        extensions = listOf("java")
     );
 
     companion object {
@@ -228,818 +236,950 @@ val supportedLanguages = listOf(
     Pair(HighlightLanguage.MARKDOWN, "Markdown"),
     Pair(HighlightLanguage.GIT_MARKDOWN, "Git Markdown"),
     Pair(HighlightLanguage.ENV, "Environment"),
-    Pair(HighlightLanguage.PLAIN_TEXT, "Plain Text")
+    Pair(HighlightLanguage.PLAIN_TEXT, "Plain Text"),
+    Pair(HighlightLanguage.CRAWSSEMBLY, "Craw Assembly"),
+    Pair(HighlightLanguage.JAVA, "Java")
 )
 
 val cHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(0x[0-9a-fA-F]+|\d+(\.\d+)?)\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b[A-Z_][A-Z0-9_]*\b"""),
+        matcher = Matcher.fully(colorConstantsAndEnums)
     ),
     TextColorScheme(
-        regex = "\\b(0x[0-9a-fA-F]+|\\d+(\\.\\d+)?)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b(int|char|float|double|void|long|short|signed|unsigned|struct|union|enum|typedef|const|volatile|extern|static|register|auto)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(int|char|float|double|void|long|short|signed|unsigned|struct|union|enum|typedef|const|volatile|extern|static|register|auto)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(if|else|while|do|for|return|switch|case|default|break|continue|goto)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|while|do|for|return|switch|case|default|break|continue|goto)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(#\s*(include|define|undef|ifdef|ifndef|if|else|elif|endif|error|pragma))\b"""),
+        matcher = Matcher.fully(colorPreprocessorDirectives)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "(#\\s*(include|define|undef|ifdef|ifndef|if|else|elif|endif|error|pragma))\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF5555"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val cppHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(0x[0-9a-fA-F]+|\d+(\.\d+)?)\b"""),
+        matcher = Matcher.fully(colorPreprocessorNumbers)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b[A-Z_][A-Z0-9_]*\b"""),
+        matcher = Matcher.fully(colorConstantsAndEnums)
     ),
     TextColorScheme(
-        regex = "\\b(0x[0-9a-fA-F]+|\\d+(\\.\\d+)?)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b(int|char|float|double|void|bool|wchar_t|class|struct|union|enum|typedef|typename|template|namespace|using|public|protected|private|const|volatile|static|inline|virtual|explicit|friend|constexpr)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(int|char|float|double|void|bool|wchar_t|class|struct|union|enum|typedef|typename|template|namespace|using|public|protected|private|const|volatile|static|inline|virtual|explicit|friend|constexpr)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(if|else|while|do|for|return|switch|case|default|break|continue|goto|try|catch|throw|operator|this)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|while|do|for|return|switch|case|default|break|continue|goto|try|catch|throw|new|delete|operator|this)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\bnew\b"""),
+        matcher = Matcher.fully(colorNewOperator)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""(#\s*(include|define|undef|ifdef|ifndef|if|else|elif|endif|error|pragma))\b"""),
+        matcher = Matcher.fully(colorPreprocessorDirectives)
     ),
     TextColorScheme(
-        regex = "(#\\s*(include|define|undef|ifdef|ifndef|if|else|elif|endif|error|pragma))\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF5555"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
+    TextColorScheme(
+        regex = Regex("""<[^>\s]+>"""),
+        matcher = Matcher.fully(colorPreprocessorStrings)
+    ),
+    TextColorScheme(
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val csharpHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b[A-Z_][A-Z0-9_]*\b"""),
+        matcher = Matcher.fully(colorConstantsAndEnums)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b(class|struct|interface|enum|delegate|object|string|int|uint|long|ulong|short|ushort|byte|sbyte|float|double|decimal|bool|char|void|var|dynamic)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(class|struct|interface|enum|delegate|object|string|int|uint|long|ulong|short|ushort|byte|sbyte|float|double|decimal|bool|char|void|var|dynamic)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(if|else|while|do|for|foreach|return|switch|case|default|break|continue|goto|yield|await|async|try|catch|finally|throw|this|base|abstract|as|is|checked|unchecked|fixed|lock|nameof|out|ref|readonly|sealed|static|unsafe|virtual|volatile|using|namespace)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|while|do|for|foreach|return|switch|case|default|break|continue|goto|yield|await|async|try|catch|finally|throw|new|this|base|abstract|as|is|checked|unchecked|fixed|lock|nameof|out|ref|readonly|sealed|static|unsafe|virtual|volatile)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\bnew\b"""),
+        matcher = Matcher.fully(colorNewOperator)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\[\w+]"""),
+        matcher = Matcher.fully(colorLabels)
     ),
     TextColorScheme(
-        regex = "\\[\\w+\\]".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b(using|namespace)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF5555"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val cssHighlightColors = listOf(
     TextColorScheme(
-        regex = "/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(?:\b|\.|#)[a-zA-Z_-][a-zA-Z0-9_-]*(?=\s*[{,])"""),
+        matcher = Matcher.fully(colorCssClassesAndIDs)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b[a-zA-Z_-][a-zA-Z0-9_-]*(?=\s*\{)"""),
+        matcher = Matcher.fully(colorCssTags)
     ),
     TextColorScheme(
-        regex = "(?:\\b|\\.|\\#)[a-zA-Z_-][a-zA-Z0-9_-]*(?=\\s*[\\{,])".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b([a-zA-Z-]+)(?=\s*:)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "\\b(color|background|margin|padding|width|height|border|display|position|top|left|right|bottom|font|flex|grid|box-shadow|opacity|cursor|z-index|transform|transition)\\b(?=\\s*:)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex(""":\s*([^;}]+)"""),
+        matcher = Matcher.fully(colorCssPropertyValue)
     ),
     TextColorScheme(
-        regex = ":\\s*([^;\\}]+)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""@(media|import|keyframes|font-face|charset|supports)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "@(media|import|keyframes|font-face|charset|supports)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF5555"))
-    ),
+        regex = Regex("""/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val sassHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(\$[a-zA-Z_-][a-zA-Z0-9_-]*)\b"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "(\\$[a-zA-Z_-][a-zA-Z0-9_-]*)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b([a-zA-Z-]+)(?=\s*:)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "\\b(color|background|margin|padding|width|height|border|display|position|font|flex|opacity|cursor)\\b(?=\\s*:)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""@(mixin|include|extend|import|forward|use|function|return|if|else|for|each|while)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "@(mixin|include|extend|import|forward|use|function|return|if|else|for|each|while)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""//.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val scssHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(\$[a-zA-Z_-][a-zA-Z0-9_-]*)\b"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "(\\$[a-zA-Z_-][a-zA-Z0-9_-]*)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b([a-zA-Z-]+)(?=\s*:)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "\\b(color|background|margin|padding|width|height|border|display|position|font|flex|opacity|cursor)\\b(?=\\s*:)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""@(mixin|include|extend|import|forward|use|function|return|if|else|for|each|while)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "@(mixin|include|extend|import|forward|use|function|return|if|else|for|each|while)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val htmlHighlightColors = listOf(
     TextColorScheme(
-        regex = "<!--[\\s\\S]*?-->".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""</?|>|/>"""),
+        matcher = Matcher.fully(colorHtmlTagBrackets)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""(?<=</?)[a-zA-Z0-9:-]+"""),
+        matcher = Matcher.fully(colorTags)
     ),
     TextColorScheme(
-        regex = "(<\\/?[a-zA-Z0-9:-]+>)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b([a-zA-Z0-9:-]+)(?=\s*=)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "\\b(class|id|style|src|href|alt|type|value|name|placeholder|target|rel|onClick|disabled)\\b(?=\\s*=)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\\[nrt0"'\\]"""),
+        matcher = Matcher.fully(colorEscapeCharacters)
     ),
+    TextColorScheme(
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""<!--[\s\S]*?-->"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val javascriptHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b[a-zA-Z_$\d]+\b"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'|`[^`]*`".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b(true|false|null|undefined|NaN|Infinity)\b"""),
+        matcher = Matcher.fully(colorConstantsAndEnums)
     ),
     TextColorScheme(
-        regex = "\\b(const|let|var|function|class|extends|constructor|import|export|from|default)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b[A-Z][a-zA-Z0-9_$]*\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|while|do|for|in|of|return|switch|case|break|continue|try|catch|finally|throw|async|await|yield|new|this|typeof|instanceof|delete|void)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(const|let|var|function|class|extends|constructor|import|export|from|default)\b"""),
+        matcher = Matcher.fully(colorTags)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(if|else|while|do|for|in|of|return|switch|case|break|continue|try|catch|finally|throw|async|await|yield|new|this|typeof|instanceof|delete|void)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(true|false|null|undefined|NaN)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b[a-zA-Z_$][a-zA-Z0-9_$]*(?=\s*:)"""),
+        matcher = Matcher.fully(colorObjectKeysTSGrammar)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b[a-zA-Z_$][a-zA-Z0-9_$]*(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
+    ),
+    TextColorScheme(
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
     ),
 )
 
 val typescriptHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'|`[^`]*`".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b(true|false|null|undefined)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b(any|unknown|never|string|number|boolean|void)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferencesTSGrammar)
     ),
     TextColorScheme(
-        regex = "\\b(const|let|var|function|class|interface|type|enum|extends|implements|constructor|import|export|from|namespace|as|declare|public|private|protected|readonly|abstract|static)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b[A-Z_][A-Z0-9_]*\b"""),
+        matcher = Matcher.fully(colorConstantsAndEnums)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|while|do|for|in|of|return|switch|case|break|continue|try|catch|finally|throw|async|await|yield|new|this|typeof|instanceof|keyof|any|unknown|never|string|number|boolean|void)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b[a-zA-Z_$][a-zA-Z0-9_$]*(?=\s*:)"""),
+        matcher = Matcher.fully(colorObjectKeysTSGrammar)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(const|let|var|function|class|interface|type|enum|extends|implements|constructor|import|export|from|namespace|as|declare|public|private|protected|readonly|abstract|static|if|else|while|do|for|in|of|return|switch|case|break|continue|try|catch|finally|throw|async|await|yield|new|this|typeof|instanceof|keyof)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(true|false|null|undefined)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
+    TextColorScheme(
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val vueHighlightColors = listOf(
     TextColorScheme(
-        regex = "<!--[\\s\\S]*?-->|//.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""</?[a-zA-Z0-9:-]+>?|>"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b([a-zA-Z0-9_:-]+|:[a-zA-Z0-9_-]+|@[a-zA-Z0-9_-]+)(?=\s*=)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "(<\\/?[a-zA-Z0-9:-]+)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(return|export|default|data|methods|computed|watch|props|setup|mounted|created|const|let|var|function|if|else|for|while|import|from)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(v-[a-z:-]+|:[a-z-]+|@[a-z-]+|ref|key|slot)\\b(?=\\s*=)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b[a-zA-Z_$][a-zA-Z0-9_$]*(?=\s*:)"""),
+        matcher = Matcher.fully(colorObjectKeysTSGrammar)
     ),
     TextColorScheme(
-        regex = "\\b(export|default|data|methods|computed|watch|props|setup|mounted|created)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
+    TextColorScheme(
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""<!--[\s\S]*?-->|//.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val pugHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""^\s*[a-zA-Z0-9_-]+"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""([.#][a-zA-Z0-9_-]+)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "^\\s*[a-zA-Z0-9_-]+".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(if|else|each|while|unless|case|when|default|block|extends|include|mixin)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "([.#][a-zA-Z0-9_-]+)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|each|while|unless|case|when|default|block|extends|include|mixin)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
-    ),
+        regex = Regex("""//.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val sqlHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)--.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""(?i)\b(true|false)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|ON|GROUP\\s+BY|ORDER\\s+BY|HAVING|LIMIT|UNION|ALL|AS|VALUES|COMMIT|ROLLBACK)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(CREATE|TABLE|DATABASE|ALTER|DROP|INDEX|VIEW|PRIMARY\s+KEY|FOREIGN\s+KEY|NOT\s+NULL|UNIQUE|DEFAULT|AUTO_INCREMENT|CHECK)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(CREATE|TABLE|DATABASE|ALTER|DROP|INDEX|VIEW|PRIMARY\\s+KEY|FOREIGN\\s+KEY|NOT\\s+NULL|UNIQUE|DEFAULT|AUTO_INCREMENT|CHECK)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|JOIN|LEFT|RIGHT|INNER|OUTER|ON|GROUP\s+BY|ORDER\s+BY|HAVING|LIMIT|UNION|ALL|AS|VALUES|COMMIT|ROLLBACK|AND|OR|NOT|IN|EXISTS|BETWEEN|LIKE|IS\s+NULL|NULL)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "(?i)\\b(true|false)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
-    TextColorScheme(
-        regex = "\\b(AND|OR|NOT|IN|EXISTS|BETWEEN|LIKE|IS\\s+NULL|NULL)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""(?m)--.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val mysqlHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)(#|--).*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B")
-        ))
-) + sqlHighlightColors + listOf(
+        regex = Regex("""\b(ENGINE|CHARSET|INT|VARCHAR|TEXT|DATETIME|TIMESTAMP)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
+    )
+) + sqlHighlightColors.filterNot { it.matcher == Matcher.fully(colorComment) } + listOf(
     TextColorScheme(
-        regex = "\\b(ENGINE|CHARSET|INT|VARCHAR|TEXT|DATETIME|TIMESTAMP)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD")
-        ))
-)
-
-val mariadbHighlightColors = sqlHighlightColors + listOf(
-    TextColorScheme(
-        regex = "\\b(ENGINE|INT|VARCHAR|UUID|JSON)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""(?m)(#|--).*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
     )
 )
 
-val postgresqlHighlightColors = sqlHighlightColors + listOf(
+val mariadbHighlightColors = listOf(
     TextColorScheme(
-        regex = "\\b(SERIAL|BIGSERIAL|INT|VARCHAR|TEXT|UUID|JSONB|BOOLEAN|TIMESTAMP|WITH\\s+TIME\\s+ZONE|RETURNING)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(ENGINE|INT|VARCHAR|UUID|JSON)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     )
-)
+) + sqlHighlightColors
 
-val sqliteHighlightColors = sqlHighlightColors + listOf(
+val postgresqlHighlightColors = listOf(
     TextColorScheme(
-        regex = "\\b(INTEGER|TEXT|REAL|BLOB|NONE|AUTOINCREMENT)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(SERIAL|BIGSERIAL|INT|VARCHAR|TEXT|UUID|JSONB|BOOLEAN|TIMESTAMP|WITH\s+TIME\s+ZONE|RETURNING)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     )
-)
+) + sqlHighlightColors
 
-val msSqlHighlightColors = sqlHighlightColors + listOf(
+val sqliteHighlightColors = listOf(
     TextColorScheme(
-        regex = "@[a-zA-Z0-9_]+\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b(INTEGER|TEXT|REAL|BLOB|NONE|AUTOINCREMENT)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
+    )
+) + sqlHighlightColors
+
+val msSqlHighlightColors = listOf(
+    TextColorScheme(
+        regex = Regex("""@[a-zA-Z0-9_]+\b"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "\\b(TOP|NVARCHAR|DATETIME2|IDENTITY|DECLARE|SET|BEGIN|END|TRANSACTION)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(TOP|NVARCHAR|DATETIME2|IDENTITY|DECLARE|SET|BEGIN|END|TRANSACTION)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     )
-)
+) + sqlHighlightColors
 
 val cqlHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)--.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(CREATE|KEYSPACE|TABLE|ALTER|DROP|WITH|PRIMARY\s+KEY|CLUSTERING\s+ORDER|INT|TEXT|UUID|TIMESTAMP|MAP|LIST|SET)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|USING|AND|IN|LIMIT|ALLOW\s+FILTERING|AS)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|USING|AND|IN|LIMIT|ALLOW\\s+FILTERING|AS)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(CREATE|KEYSPACE|TABLE|ALTER|DROP|WITH|PRIMARY\\s+KEY|CLUSTERING\\s+ORDER|INT|TEXT|UUID|TIMESTAMP|MAP|LIST|SET)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""(?m)--.*"""),
+        matcher = Matcher.fully(colorComment)
     )
 )
 
 val dockerfileHighlightColors = listOf(
     TextColorScheme(
-        regex = "#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(FROM|RUN|CMD|LABEL|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL|AS)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "^\\s*(FROM|RUN|CMD|LABEL|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
-    ),
-    TextColorScheme(
-        regex = "\\b(AS)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
-    ),
+        regex = Regex("""#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val nginxHighlightColors = listOf(
     TextColorScheme(
-        regex = "#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(on|off|worker_processes|worker_connections|keepalive_timeout)\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(server|location|listen|server_name|root|index|proxy_pass|proxy_set_header|try_files|rewrite|return|access_log|error_log|ssl_certificate|ssl_certificate_key)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(server|location|listen|server_name|root|index|proxy_pass|proxy_set_header|try_files|rewrite|return|access_log|error_log|ssl_certificate|ssl_certificate_key)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(on|off|worker_processes|worker_connections|keepalive_timeout)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val httpHighlightColors = listOf(
     TextColorScheme(
-        regex = "^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|CONNECT|TRACE)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""HTTP/\d\.\d"""),
+        matcher = Matcher.fully(colorHeader)
     ),
     TextColorScheme(
-        regex = "HTTP\\/\\d\\.\\d".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""^(GET|POST|PUT|DELETE|PATCH|HEAD|OPTIONS|CONNECT|TRACE)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "^([A-Z][a-zA-Z0-9-]+)(?=:)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""^([A-Z][a-zA-Z0-9-]+)(?=:)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = ":\\s*(.*)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
-    ),
+        regex = Regex(""":\s*(.*)"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    )
 )
 
 val golangHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|`[^`]*`".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b(true|false|nil|iota)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\\b(package|import|type|struct|interface|func|var|const|chan|map)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|uintptr|float32|float64|complex64|complex128|string|bool|byte|rune|error)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|switch|case|default|for|range|return|break|continue|fallthrough|go|select|defer|goto)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b[A-Z_][A-Z0-9_]*\b"""),
+        matcher = Matcher.fully(colorConstantsAndEnums)
     ),
     TextColorScheme(
-        regex = "\\b(int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|uintptr|float32|float64|complex64|complex128|string|bool|byte|rune|error)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(package|import|type|struct|interface|func|var|const|chan|map|if|else|switch|case|default|for|range|return|break|continue|fallthrough|go|select|defer|goto)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex(""""([^"\\]|\\.)*"|`([^`\\]|\\.)*`"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(true|false|nil|iota)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""(?m)//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val luaHighlightColors = listOf(
     TextColorScheme(
-        regex = "--.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(true|false|nil)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b(local|function|end|return|if|then|elseif|else|while|do|repeat|until|for|in|break)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(local|function|end|return)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b(if|then|elseif|else|while|do|repeat|until|for|in|break)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
-    ),
-    TextColorScheme(
-        regex = "\\b(true|false|nil)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""--.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val pythonHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"\"\"[\\s\\S]*?\"\"\"|'''[\\s\\S]*?'''|\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b(True|False|and|or|not|in|is)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\\b(def|class|global|nonlocal|import|from|as|lambda|pass|del)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(int|float|complex|str|bytes|bytearray|bool|list|tuple|set|dict|None|Any|Optional|Union|List|Dict|Tuple)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(if|elif|else|while|for|break|continue|return|yield|try|except|finally|raise|assert|with|async|await)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b[a-zA-Z_]\w*(?=\s*:|\s*=\s*|\s*])"""),
+        matcher = Matcher.fully(colorPythonDictionaryKeys)
     ),
     TextColorScheme(
-        regex = "\\b(int|float|complex|str|bytes|bytearray|bool|list|tuple|set|dict|None|Any|Optional|Union|List|Dict|Tuple)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(def|class|global|nonlocal|import|from|as|lambda|pass|del|if|elif|else|while|for|break|continue|return|yield|try|except|finally|raise|assert|with|async|await)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""${"\"\"\""}[\s\S]*?${"\"\"\""}|'''[\s\S]*?'''|"([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(True|False|and|or|not|in|is)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""(?m)#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val rubyHighlightColors = listOf(
     TextColorScheme(
-        regex = "#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(true|false|nil|and|or|not|self)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""@[a-zA-Z_]\w*"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "\\b(def|class|module|end|undef|alias|defined\\?)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(:[a-zA-Z_]\w*|\battr_accessor|attr_reader|attr_writer)\b"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "\\b(if|elsif|else|unless|while|until|for|break|next|redo|retry|return|yield|begin|rescue|ensure|raise|then|case|when)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(def|class|module|end|undef|alias|defined\?|if|elsif|else|unless|while|until|for|break|next|redo|retry|return|yield|begin|rescue|ensure|raise|then|case|when|puts|print)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b(true|false|nil|and|or|not|self)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val rustHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)//.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b(true|false|Some|None|Ok|Err)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\\b(fn|struct|enum|union|trait|impl|type|mod|use|pub|const|static|let|mut|ref|as)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64|str|char|bool|String|Option|Result|Vec)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(if|else|while|loop|for|in|match|return|break|continue|async|await|unsafe|move|where)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(fn|struct|enum|union|trait|impl|type|mod|use|pub|const|static|let|mut|ref|as|if|else|while|loop|for|in|match|return|break|continue|async|await|unsafe|move|where)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(u8|u16|u32|u64|u128|usize|i8|i16|i32|i64|i128|isize|f32|f64|str|char|bool|String|Option|Result|Vec)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b\w+!(?=\s*\(|\s*\[|\s*\{)|\b\w+!\b"""),
+        matcher = Matcher.fully(colorCustomLiteral)
     ),
     TextColorScheme(
-        regex = "\\b\\w+!(?=\\s*\\(|\\s*\\[|\\s*\\{)|\\b\\w+!\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b\\d+(\\.\\d+)?\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
-    TextColorScheme(
-        regex = "\\b(true|false|Some|None|Ok|Err)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""(?m)//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val phpHighlightColors = listOf(
     TextColorScheme(
-        regex = "//.*|#.*|/\\*[\\s\\S]*?\\*/".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""<\?php|\?>"""),
+        matcher = Matcher.fully(colorPreprocessorDirectives)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "<\\?php|\\?>".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF5555"))
+        regex = Regex("""\$\w+"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "\\b(function|class|interface|trait|extends|implements|public|protected|private|static|const|namespace|use|global)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(?<=class\s)\w+|\b(string|int|float|bool|array|object|callable|iterable|void|never|mixed)\b|\b[A-Z]\w*\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\\b(if|elseif|else|while|do|for|foreach|switch|case|default|break|continue|return|try|catch|finally|throw|echo|print|die|exit|include|require)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(function|class|interface|trait|extends|implements|public|protected|private|static|const|namespace|use|global|if|elseif|else|while|do|for|foreach|switch|case|default|break|continue|return|try|catch|finally|throw|echo|print|die|exit|include|require)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\$\\w+".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\b\\w+(?=\\s*\\()".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""//.*|#.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val shellHighlightColors = listOf(
     TextColorScheme(
-        regex = "#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(true|false)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""(?<=\b)[A-Za-z_]\w*(?=\s*=)|\$\w+|\$\{\w+\}"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
     ),
     TextColorScheme(
-        regex = "\\b(if|then|elif|else|fi|case|esac|for|while|until|do|done|in|return|exit|break|continue)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""\b(if|then|elif|else|fi|case|esac|for|while|until|do|done|in|return|exit|break|continue)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "\\b(echo|alias|export|local|unset|read|cd|pwd|ls|grep|awk|sed)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(echo|alias|export|local|unset|read|cd|pwd|ls|grep|awk|sed)\b"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
     ),
     TextColorScheme(
-        regex = "\\$\\w+|\\$\\{\\w+\\}".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val jsonHighlightColors = listOf(
     TextColorScheme(
-        regex = "\"[^\"]*\"(?=\\s*:)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""\b(-?\d+(\.\d+)?|true|false|null)\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = ":\\s*(\"[^\"]*\")".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex(""""\w+"\s*(?=:)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "\\b(-?\\d+(\\.\\d+)?|true|false|null)\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex(""":\s*("([^"\\]|\\.)*")"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    )
 )
 
 val xmlHighlightColors = listOf(
     TextColorScheme(
-        regex = "<!--[\\s\\S]*?-->".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(</?[a-zA-Z0-9:-]+)"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""\b([a-zA-Z0-9:-]+)(?=\s*=)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "(<\\/?[a-zA-Z0-9:-]+)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b([a-zA-Z0-9:-]+)(?=\\s*=)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
-    ),
+        regex = Regex("""<!--[\s\S]*?-->"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val yamlHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(true|false|null|yes|no|on|off)\b|\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""(?m)^\s*([\w.-]+)(?=\s*:)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "(?m)^\\s*([\\w.-]+)(?=\\s*:)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(?<=:\s)(?!true|false|null|yes|no|on|off|\d+)[a-zA-Z0-9_.-]+"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(true|false|null|yes|no|on|off)\\b|\\b\\d+\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
+    TextColorScheme(
+        regex = Regex("""(?m)#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val tomlHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""\b(true|false)\b|\d{4}-\d{2}-\d{2}|\b\d+\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = "\"[^\"]*\"|'[^']*'".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""(?m)^\s*([\w.-]+)(?=\s*=)"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "(?m)^\\[.*\\]".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""(?m)^\[.*]"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
     ),
     TextColorScheme(
-        regex = "(?m)^\\s*([\\w.-]+)(?=\\s*=)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "\\b(true|false)\\b|\\d{4}-\\d{2}-\\d{2}|\\b\\d+\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
-    ),
+        regex = Regex("""(?m)#.*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val propertiesHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)^[#!].*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(?m)^([^#!=:\s]+)(?=\s*[=:])"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
     TextColorScheme(
-        regex = "(?m)^([^#!=:=\\s]+)(?=\\s*[=:])".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(?<=[=:]).*"""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = "[=:].*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
-    ),
+        regex = Regex("""(?m)^[#!].*"""),
+        matcher = Matcher.fully(colorComment)
+    )
 )
 
 val diffHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)^\\+.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(?m)^diff.*|^index.*"""),
+        matcher = Matcher.fully(colorDiffHeader)
     ),
     TextColorScheme(
-        regex = "(?m)^-.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF5555"))
+        regex = Regex("""(?m)^@@.*@@"""),
+        matcher = Matcher.fully(colorDiffChanged)
     ),
     TextColorScheme(
-        regex = "(?m)^@@.*@@".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""(?m)^-.*"""),
+        matcher = Matcher.fully(colorDiffDeleted)
     ),
     TextColorScheme(
-        regex = "(?m)^diff.*|^index.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
-    ),
+        regex = Regex("""(?m)^\+.*"""),
+        matcher = Matcher.fully(colorDiffInserted)
+    )
 )
 
 val markdownHighlightColors = listOf(
     TextColorScheme(
-        regex = "(?m)^#{1,6}\\s+.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(?m)^#{1,6}\s+.*"""),
+        matcher = Matcher.fully(colorMarkdownHeading)
     ),
     TextColorScheme(
-        regex = "(?m)^\\s*([*+-]|\\d+\\.)\\s".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
+        regex = Regex("""(?m)^\s*([*+-]|\d+\.)\s"""),
+        matcher = Matcher.fully(colorMarkdownListPunctuation)
     ),
     TextColorScheme(
-        regex = "(\\*\\*|__)(.*?)\\1".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
+        regex = Regex("""(?m)^\s*>.*"""),
+        matcher = Matcher.fully(colorMarkdownQuotePunctuation)
     ),
     TextColorScheme(
-        regex = "`[^`]+`".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
+        regex = Regex("""(\*\*|__)(.*?)\1"""),
+        matcher = Matcher.fully(colorMarkdownBold)
     ),
     TextColorScheme(
-        regex = "\\[([^\\]]+)\\]\\(([^\\)]+)\\)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#BD93F9"))
+        regex = Regex("""([*_])(.*?)\1"""),
+        matcher = Matcher.fully(colorMarkdownItalic)
     ),
+    TextColorScheme(
+        regex = Regex("""\[([^]]+)]\(([^)]+)\)"""),
+        matcher = Matcher.fully(colorAttributes)
+    ),
+    TextColorScheme(
+        regex = Regex("""`[^`]+`"""),
+        matcher = Matcher.fully(colorInlineCodeAndRawMarkup)
+    )
 )
 
-val envHighlightColors = listOf(
+val envHighlightColors = propertiesHighlightColors
+
+val gitMarkdownHighlightColors = markdownHighlightColors.dropLast(1) + listOf(
     TextColorScheme(
-        regex = "(?m)#.*".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""#\d+\b|@[a-zA-Z0-9_-]+\b"""),
+        matcher = Matcher.fully(colorAttributes)
     ),
-    TextColorScheme(
-        regex = "(?m)^\\s*([A-Za-z0-9_]+)(?=\\s*=)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#FF79C6"))
-    ),
-    TextColorScheme(
-        regex = "=".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#8BE9FD"))
-    ),
-    TextColorScheme(
-        regex = "=\\s*(.*)".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#F1FA8C"))
-    ),
+    markdownHighlightColors.last()
 )
 
-val gitMarkdownHighlightColors = markdownHighlightColors + listOf(
+val crawssemblyHighlightColors = listOf(
     TextColorScheme(
-        regex = "\\b#[0-9]+\\b|@[a-zA-Z0-9_-]+\\b".toRegex(),
-        matcher = Matcher.fully(UiColor.Hex("#50FA7B"))
+        regex = Regex("""(?<![\w])[-+]?0x[0-9A-Fa-f]+\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""(?<![\w])[-+]?\d+\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""\br[0-9A-Fa-f]{2}\b|\b(r00|r01|ref|rff)\b"""),
+        matcher = Matcher.fully(colorVariableAndParameterName)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(sav|cal|io|inp|nop|screen|keyboard|speaker|mem|disk|text|time)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(not|and|or|xor|shl|shr|sar|add|jmp|jmz|jmg|jml|ifz|ifg|ifl|rmv|fgo|str|run|stp)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(char|hex|newline|pixel|read|write|erase|erasecell|x|y|int|clear|unix|low|sleep|milli|dump|present|red|green|blue|poll|btn|channel|freq|volume|wave|on|off|toggle|addr|save|iso|space)\b"""),
+        matcher = Matcher.fully(colorAttributes)
+    ),
+    TextColorScheme(
+        regex = """\b(execute|executestd)\b\s+.*$""".toRegex(RegexOption.MULTILINE),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
+    ),
+    TextColorScheme(
+        regex = """;.*$""".toRegex(RegexOption.MULTILINE),
+        matcher = Matcher.fully(colorComment)
+    )
+)
+
+val javaHighlightColors = listOf(
+    TextColorScheme(
+        regex = Regex("""\b\d+(\.\d+)?\b"""),
+        matcher = Matcher.fully(colorNumberLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(true|false|null)\b"""),
+        matcher = Matcher.fully(colorConstantsAndOptions)
+    ),
+    TextColorScheme(
+        regex = Regex("""(?<=import\s|package\s)[a-zA-Z0-9_.]+(?=;)"""),
+        matcher = Matcher.fully(colorJavaImportsAndPackageIdentifier)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(class|interface|enum|record|extends|implements|void|int|long|double|float|boolean|char|byte|short)\b"""),
+        matcher = Matcher.fully(colorTypesDeclarationAndReferences)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(public|private|protected|static|final|abstract|synchronized|volatile|transient|native)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b(if|else|while|do|for|return|switch|case|default|break|continue|try|catch|finally|throw|throws|new|this|super|instanceof)\b"""),
+        matcher = Matcher.fully(colorControlFlowAndSpecialKeywords)
+    ),
+    TextColorScheme(
+        regex = Regex("""\b\w+(?=\s*\()"""),
+        matcher = Matcher.fully(colorFunctionDeclarations)
+    ),
+    TextColorScheme(
+        regex = Regex(""""([^"\\]|\\.)*"|'([^'\\]|\\.)*'"""),
+        matcher = Matcher.fully(colorStringLiteral)
+    ),
+    TextColorScheme(
+        regex = Regex("""//.*|/\*[\s\S]*?\*/"""),
+        matcher = Matcher.fully(colorComment)
     )
 )
 
@@ -1081,5 +1221,7 @@ val languageToHighlightColors = mapOf(
     HighlightLanguage.PROPERTIES to propertiesHighlightColors,
     HighlightLanguage.DIFF to diffHighlightColors,
     HighlightLanguage.MARKDOWN to markdownHighlightColors,
-    HighlightLanguage.GIT_MARKDOWN to gitMarkdownHighlightColors
+    HighlightLanguage.GIT_MARKDOWN to gitMarkdownHighlightColors,
+    HighlightLanguage.CRAWSSEMBLY to crawssemblyHighlightColors,
+    HighlightLanguage.JAVA to javaHighlightColors
 )
