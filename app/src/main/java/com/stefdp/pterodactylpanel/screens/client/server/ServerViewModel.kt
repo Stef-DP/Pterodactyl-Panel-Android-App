@@ -14,23 +14,30 @@ import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.network.client.models.ServerDatabase
 import com.stefdp.pterodactylpanel.network.client.models.ServerFile
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
+import com.stefdp.pterodactylpanel.network.client.models.requests.ListServerDatabasesQueryInclude
 import com.stefdp.pterodactylpanel.network.client.models.requests.RenameServerFile
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilePermissionsFile
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
 import com.stefdp.pterodactylpanel.network.client.requests.compressServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.copyServerFile
+import com.stefdp.pterodactylpanel.network.client.requests.createServerDatabase
 import com.stefdp.pterodactylpanel.network.client.requests.createServerFolder
 import com.stefdp.pterodactylpanel.network.client.requests.decompressServerFile
+import com.stefdp.pterodactylpanel.network.client.requests.deleteServerDatabase
 import com.stefdp.pterodactylpanel.network.client.requests.deleteServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.downloadServerFile
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
 import com.stefdp.pterodactylpanel.network.client.requests.getServerFileContents
 import com.stefdp.pterodactylpanel.network.client.requests.getServerWebsocket
+import com.stefdp.pterodactylpanel.network.client.requests.listServerDatabases
 import com.stefdp.pterodactylpanel.network.client.requests.listServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.renameServerFiles
+import com.stefdp.pterodactylpanel.network.client.requests.rotateServerDatabasePassword
 import com.stefdp.pterodactylpanel.network.client.requests.updateServerFilesPermissions
 import com.stefdp.pterodactylpanel.network.client.requests.uploadServerFiles
 import com.stefdp.pterodactylpanel.network.client.requests.writeServerFile
@@ -46,6 +53,7 @@ import com.stefdp.pterodactylpanel.utils.formatMs
 import com.stefdp.pterodactylpanel.utils.getDisplayPath
 import ir.ehsannarmani.compose_charts.models.Line
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,6 +65,7 @@ import java.util.Locale
 
 data class ClientServerUiState(
     val isLoading: Boolean = true,
+    val server: GetServerResponse? = null,
     val connectionState: WebSocketConnectionStatus = WebSocketConnectionStatus.DISCONNECTED,
     val logs: List<String> = emptyList(),
     val status: ServerState = ServerState.OFFLINE,
@@ -65,14 +74,9 @@ data class ClientServerUiState(
     val diskUsage: String = "0 Bytes",
     val incomingNetwork: String = "0 Bytes",
     val outgoingNetwork: String = "0 Bytes",
-    val address: String = "Unknown",
     val uptime: String = "Offline",
-    val name: String = "Unknown",
     val commandToSend: TextFieldState = TextFieldState(""),
-    val cpuLimit: String = "Unlimited",
-    val memoryLimit: String = "Unlimited",
-    val diskLimit: String = "Unlimited",
-    val currentTab: ServerTab = ServerTab.FILES, // TODO: set this back to CONSOLE
+    val currentTab: ServerTab = ServerTab.DATABASES, // TODO: set this back to CONSOLE
     val cpuLoadLineChartLines: List<Line> = listOf(
         Line(
             values = emptyList(),
@@ -124,11 +128,18 @@ data class ClientServerUiState(
     val fileContent: TextFieldValue = TextFieldValue(""),
     val originalFileContent: String = "",
     val selectedLanguage: HighlightLanguage = HighlightLanguage.PLAIN_TEXT,
-    val createNewFile: Boolean = false, // TODO: set to false
+    val createNewFile: Boolean = false,
     val newFileName: TextFieldValue = TextFieldValue(""),
     val showUnsavedFileWarningPopup: Boolean = false,
     val isFileSaving: Boolean = false,
     val showNewFileNamePopup: Boolean = false,
+    val databases: List<ServerDatabase> = emptyList(),
+    val databaseToDelete: String? = null,
+    val databaseToShowDetails: String? = null,
+    val confirmDatabaseNameValue: TextFieldValue = TextFieldValue(""),
+    val showCreateDatabasePopup: Boolean = false,
+    val newDatabaseName: TextFieldValue = TextFieldValue(""),
+    val newDatabaseAllowedIp: TextFieldValue = TextFieldValue(""),
 )
 
 private const val MAX_LOGS = 250
@@ -140,6 +151,8 @@ class ClientServerViewModel(
     val state: StateFlow<ClientServerUiState> = _state.asStateFlow()
 
     private var serverId: String? = null
+
+    private var webSocketObservationJob: Job? = null
 
     private var cpuLoadLineData: List<Double> = (1..20).map { 0.0 }
     private var memoryLineData: List<Double> = (1..20).map { 0.0 }
@@ -194,31 +207,9 @@ class ClientServerViewModel(
 
             serverRes
                 .onSuccess { server ->
-                    val defaultAllocation = server.attributes.relationships.allocations.data.find { it.attributes.isDefault }?.attributes
-
-                    val address = if (defaultAllocation != null) {
-                        "${defaultAllocation.ipAlias ?: defaultAllocation.ip}:${defaultAllocation.port}"
-                    } else {
-                        "Unknown"
-                    }
-
                     _state.update {
                         it.copy(
-                            address = address,
-                            name = server.attributes.name,
-                            cpuLimit = if (server.attributes.limits.cpu == 0L) "∞" else "${server.attributes.limits.cpu}%",
-                            memoryLimit = if (server.attributes.limits.memory == 0L) "∞" else {
-                                HumanReadable.fileSize(
-                                    bytes = server.attributes.limits.memory * 1024L * 1024L,
-                                    decimals = 2
-                                )
-                            },
-                            diskLimit = if (server.attributes.limits.disk == 0L) "∞" else {
-                                HumanReadable.fileSize(
-                                    bytes = server.attributes.limits.disk * 1024L * 1024L,
-                                    decimals = 2
-                                )
-                            }
+                            server = server
                         )
                     }
                 }
@@ -237,22 +228,81 @@ class ClientServerViewModel(
     }
 
     fun setCurrentTab(tab: ServerTab) {
-        if (tab != ServerTab.CONSOLE && _state.value.connectionState == WebSocketConnectionStatus.CONNECTED) {
-            disconnectFromWebSocket()
-        }
-
-        if (tab != ServerTab.FILES) {
+        if (tab != ServerTab.CONSOLE) {
             _state.update {
                 it.copy(
-                    selectedFiles = emptyList(),
-                    filesPath = listOf(
-                        "home",
-                        "container",
-                    ),
-                    files = emptyList()
+                    logs = emptyList(),
+//                    connectionState = WebSocketConnectionStatus.DISCONNECTED,
+//                    status = ServerState.OFFLINE,
+//                    cpuUsage = "0.00%",
+//                    memoryUsage = "0 Bytes",
+//                    diskUsage = "0 Bytes",
+//                    incomingNetwork = "0 Bytes",
+//                    outgoingNetwork = "0 Bytes",
+//                    uptime = "Offline",
+//                    cpuLoadLineChartLines = listOf(
+//                        Line(
+//                            values = emptyList(),
+//                            color = SolidColor(Color.Transparent),
+//                            firstGradientFillColor = Color.Transparent,
+//                            secondGradientFillColor = Color.Transparent,
+//                        )
+//                    ),
+//                    memoryLineChartLines = listOf(
+//                        Line(
+//                            values = emptyList(),
+//                            color = SolidColor(Color.Transparent),
+//                            firstGradientFillColor = Color.Transparent,
+//                            secondGradientFillColor = Color.Transparent,
+//                        )
+//                    ),
+//                    networkLineChartLines = listOf(
+//                        Line(
+//                            values = emptyList(),
+//                            color = SolidColor(Color.Transparent),
+//                            firstGradientFillColor = Color.Transparent,
+//                            secondGradientFillColor = Color.Transparent,
+//                        ),
+//                        Line(
+//                            values = emptyList(),
+//                            color = SolidColor(Color.Transparent),
+//                            firstGradientFillColor = Color.Transparent,
+//                            secondGradientFillColor = Color.Transparent,
+//                        )
+//                    ),
                 )
             }
+
+//            lastRxBytes = null
+//            lastTxBytes = null
+//            lastStatsTimestamp = 0L
         }
+
+//        if (tab != ServerTab.FILES) {
+//            _state.update {
+//                it.copy(
+//                    selectedFiles = emptyList(),
+//                    filesPath = listOf(
+//                        "home",
+//                        "container",
+//                    ),
+//                    files = emptyList(),
+//                    createNewFile = false,
+//                    fileToEdit = null,
+//                    fileContent = TextFieldValue(""),
+//                    originalFileContent = "",
+//                    selectedLanguage = HighlightLanguage.PLAIN_TEXT,
+//                )
+//            }
+//        }
+
+//        if (tab != ServerTab.DATABASES) {
+//            _state.update {
+//                it.copy(
+//                    databases = emptyList()
+//                )
+//            }
+//        }
 
         _state.update {
             it.copy(currentTab = tab)
@@ -1413,6 +1463,288 @@ class ClientServerViewModel(
         }
     }
 
+    fun updateDatabases(
+        context: Context,
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val serverDatabasesRes = listServerDatabases(
+                context = context,
+                serverId = serverId!!,
+                include = ListServerDatabasesQueryInclude.PASSWORD.toString()
+            )
+
+            serverDatabasesRes
+                .onSuccess { databases ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            databases = databases.data
+                        )
+                    }
+
+                    onSuccess()
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to fetch server databases: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to fetch server databases")
+                }
+        }
+    }
+
+    fun setDatabaseToDelete(
+        database: String?,
+        skipLoading: Boolean = false
+    ) {
+        if (database == null && _state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                databaseToDelete = database,
+                confirmDatabaseNameValue = TextFieldValue("")
+            )
+        }
+    }
+
+    fun deleteDatabase(
+        context: Context,
+        databaseId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val deleteDatabaseRes = deleteServerDatabase(
+                context = context,
+                serverId = serverId!!,
+                databaseId = databaseId
+            )
+
+            deleteDatabaseRes
+                .onSuccess {
+                    setDatabaseToDelete(null, true)
+
+                    updateDatabases(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to delete database: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to delete database")
+                }
+        }
+    }
+
+    fun setDatabaseToShowDetails(database: String?) {
+        _state.update {
+            it.copy(
+                databaseToShowDetails = database
+            )
+        }
+    }
+
+    fun rotateDatabasePassword(
+        context: Context,
+        databaseId: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val rotatePasswordRes = rotateServerDatabasePassword(
+                context = context,
+                serverId = serverId!!,
+                databaseId = databaseId
+            )
+
+            rotatePasswordRes
+                .onSuccess { database ->
+                    val databaseIndex = _state.value.databases.indexOfFirst { it.attributes.id == database.attributes.id }
+
+                    if (databaseIndex == -1) {
+                        updateDatabases(
+                            context = context,
+                            onError = onError,
+                            onSuccess = onSuccess
+                        )
+                    } else {
+                        val updatedDatabases = _state.value.databases.toMutableList()
+                        updatedDatabases[databaseIndex] = database
+
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                databases = updatedDatabases.toList()
+                            )
+                        }
+
+                        onSuccess()
+                    }
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to rotate database password: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to rotate database password")
+                }
+        }
+    }
+
+    fun setConfirmDeleteDatabaseNameValue(name: TextFieldValue) {
+        _state.update {
+            it.copy(
+                confirmDatabaseNameValue = name
+            )
+        }
+    }
+
+    fun showCreateDatabasePopup() {
+        _state.update {
+            it.copy(
+                showCreateDatabasePopup = true,
+            )
+        }
+    }
+
+    fun hideCreateDatabasePopup(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showCreateDatabasePopup = false,
+                newDatabaseName = TextFieldValue(""),
+                newDatabaseAllowedIp = TextFieldValue(""),
+            )
+        }
+    }
+
+    fun createDatabase(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val allowedIp = if (_state.value.newDatabaseAllowedIp.text.trim().isBlank()) {
+                "%"
+            } else {
+                _state.value.newDatabaseAllowedIp.text.trim()
+            }
+
+            val createDatabaseRes = createServerDatabase(
+                context = context,
+                serverId = serverId!!,
+                databaseName = _state.value.newDatabaseName.text.trim(),
+                allowedIp = allowedIp
+            )
+
+            createDatabaseRes
+                .onSuccess {
+                    hideCreateDatabasePopup(true)
+
+                    updateDatabases(
+                        context = context,
+                        onError = onError,
+                        onSuccess = onSuccess
+                    )
+                }
+                .onFailure { error ->
+                    Logger.error("ClientServerViewModel", "Failed to create database: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to create database: ${error.message}")
+                }
+        }
+    }
+
+    fun setNewDatabaseName(name: TextFieldValue) {
+        _state.update {
+            it.copy(
+                newDatabaseName = name
+            )
+        }
+    }
+
+    fun setNewDatabaseAllowedIp(ip: TextFieldValue) {
+        _state.update {
+            it.copy(
+                newDatabaseAllowedIp = ip
+            )
+        }
+    }
+
     fun connectToWebSocket(
         context: Context,
         locale: Locale,
@@ -1488,7 +1820,9 @@ class ClientServerViewModel(
     }
 
     private fun observeWebSocket(locale: Locale) {
-        viewModelScope.launch {
+        webSocketObservationJob?.cancel()
+
+        webSocketObservationJob = viewModelScope.launch {
             wsManager.events.collect { message ->
                 val firstArg = message.args?.firstOrNull()
 
@@ -1683,7 +2017,10 @@ class ClientServerViewModel(
         }
     }
 
-    private fun disconnectFromWebSocket() {
+    fun disconnectFromWebSocket() {
+        webSocketObservationJob?.cancel()
+        webSocketObservationJob = null
+
         wsManager.disconnect()
 
         _state.update {

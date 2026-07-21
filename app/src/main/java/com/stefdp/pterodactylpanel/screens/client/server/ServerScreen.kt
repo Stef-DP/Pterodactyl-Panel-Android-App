@@ -1,17 +1,14 @@
 package com.stefdp.pterodactylpanel.screens.client.server
 
 import android.content.Context
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -19,9 +16,9 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.ConsoleTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.DatabasesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.FileEditTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.FilesTab
-import com.stefdp.pterodactylpanel.utils.scrollbar
 
 @Composable
 fun ClientServerScreen(
@@ -69,16 +66,16 @@ fun ClientServerScreen(
     )
 
     Column(
-        modifier = if (state.currentTab !in disabledScrollScreen) {
-            Modifier
-                .verticalScroll(scrollState)
-                .scrollbar(
-                    scrollState = scrollState,
-                    direction = Orientation.Vertical
-                )
-            } else {
-                Modifier
-        }
+//        modifier = if (state.currentTab !in disabledScrollScreen) {
+//            Modifier
+//                .verticalScroll(scrollState)
+//                .scrollbar(
+//                    scrollState = scrollState,
+//                    direction = Orientation.Vertical
+//                )
+//            } else {
+//                Modifier
+//        }
     ) {
         val tabs = ServerTab.entries.map { serverTab ->
             Tab(
@@ -124,6 +121,16 @@ fun ClientServerScreen(
                         state = state
                     )
                 }
+            }
+
+            ServerTab.DATABASES -> {
+                DatabasesTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    viewModel = viewModel,
+                    state = state
+                )
             }
 
              else -> {
