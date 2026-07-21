@@ -275,7 +275,7 @@ interface PterodactylClientApiService {
         @Body data: CreateServerDatabaseBody
     ): Response<ServerDatabase>
 
-    @POST("server/{serverId}/databases/{databaseId)/rotate-password")
+    @POST("servers/{serverId}/databases/{databaseId}/rotate-password")
     suspend fun rotateServerDatabasePassword(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
@@ -284,7 +284,7 @@ interface PterodactylClientApiService {
         @Path("databaseId") databaseId: String,
     ): Response<ServerDatabase>
 
-    @DELETE("server/{serverId}/databases/{databaseId}")
+    @DELETE("servers/{serverId}/databases/{databaseId}")
     suspend fun deleteServerDatabase(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
