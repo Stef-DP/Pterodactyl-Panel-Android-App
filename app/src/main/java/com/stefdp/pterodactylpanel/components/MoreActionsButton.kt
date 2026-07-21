@@ -74,32 +74,13 @@ fun MoreActionsButton(
             }
         }
 
-        Box(
-            modifier = Modifier
-                .size(35.dp)
-                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                .background(
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                )
-                .clickable(
-                    enabled = enabled,
-                    onClick = { expanded = true }
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            val color = MaterialTheme.colorScheme.onSurface
-
-            Icon(
-                painter = painterResource(R.drawable.more_horiz),
-                contentDescription =  "More options",
-                tint = if (enabled)
-                    color
-                else
-                    color.copy(alpha = 0.5f),
-                modifier = Modifier.size(25.dp)
-            )
-        }
+        IconButton(
+            icon = painterResource(R.drawable.more_horiz),
+            iconContentDescription = "More options",
+            iconColor = MaterialTheme.colorScheme.onSurface,
+            onClick = { expanded = true },
+            enabled = enabled
+        )
     }
 }
 
