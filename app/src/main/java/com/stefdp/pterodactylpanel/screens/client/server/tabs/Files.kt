@@ -518,7 +518,7 @@ fun FilesTab(
             ) { uris ->
                 if (uris.isNotEmpty()) {
                     val files = uris.mapNotNull { uri ->
-                        getFileInfo(context, uri)?.let { (name, size, mimeType) ->
+                        getFileInfo(context, uri)?.let { (name, _, mimeType) ->
                             UploadFile(
                                 uri = uri,
                                 name = name,

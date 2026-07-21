@@ -36,7 +36,6 @@ import androidx.navigation.NavHostController
 import com.neoutils.highlight.compose.remember.rememberTextFieldValue
 import com.neoutils.highlight.core.Highlight
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
-import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
