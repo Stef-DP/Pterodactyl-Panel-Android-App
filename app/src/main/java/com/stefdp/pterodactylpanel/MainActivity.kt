@@ -94,7 +94,7 @@ val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: 
     }
 }
 
-// TODO: in allm.onFailure, show the "error.messagwe" in the onError() call to show the error to the user
+// TODO: in all .onFailure, show the "error.message" in the onError() call to show the error to the user
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
