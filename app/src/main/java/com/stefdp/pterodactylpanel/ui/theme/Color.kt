@@ -12,12 +12,13 @@ val SurfaceDark = Color(0xFF1F2933) //
 val OnSurfaceDark = Color(0xFFC3CAD3) //
 val SurfaceVariantDark = Color(0xFF16171D) //
 val OnSurfaceVariantDark = Color(0xFFF7F7F8) //
+val SurfaceContainerDark = Color(0xFF3F4A57) //
 val OutlineDark = Color(0xFF5F6B7B) //
 val ErrorContainerDark = Color(0xFF991B1B)
 val ErrorDark = Color(0xFFD44246) //
 val OnErrorDark = Color(0xFFFAF8FB) //
 val LinkDark = Color(0xFF2B88F8) //
-val SurfaceContainerDark = Color(0xFF3F4A57) //
+val SurfaceDimDark = Color(0xFF282E39) //
 
 
 val PrimaryLight = Color(0xFF2561E6) //
@@ -36,6 +37,7 @@ val ErrorContainerLight = Color(0xFF991B1B)
 val ErrorLight = Color(0xFFD44246) //
 val OnErrorLight = Color(0xFFFAF8FB) //
 val LinkLight = Color(0xFF2B88F8) //
+val SurfaceDimLight = Color(0xFF282E39) //
 
 
 val Yellow = Color(0xFFC38622)
