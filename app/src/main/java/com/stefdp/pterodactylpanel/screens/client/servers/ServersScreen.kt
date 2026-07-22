@@ -107,49 +107,53 @@ fun ClientServersScreen(
                             )
                     ) {}
                 }
-            } else {
-                state.servers?.let { servers ->
-                    if (servers.isEmpty()) {
-                        item {
-                            Text(
-                                text = "There are no servers to display"
-                            )
-                        }
-                    } else {
-                        items(servers.size) { index ->
-                            val server = servers[index]
 
-                            var serverStats by rememberSaveable {
-                                mutableStateOf<ServerStats?>(null)
-                            }
+                return@LazyColumn
+            }
 
-                            var serverStatsLoading by rememberSaveable {
-                                mutableStateOf(true)
-                            }
-
-                            LaunchedEffect(Unit) {
-                                val serverStatsRes = viewModel.getServerStats(
-                                    context = context,
-                                    serverId = server.attributes.identifier
-                                )
-
-                                serverStats = serverStatsRes
-                                serverStatsLoading = false
-                            }
-
-                            ServerDisplay(
-                                context = context,
-                                server = server,
-                                serverStats = serverStats,
-                                statsLoading = serverStatsLoading,
-                                onOpen = {
-                                    navController.navigate(
-                                        ClientServerScreen(serverId = server.attributes.identifier)
-                                    )
-                                }
-                            )
-                        }
+            state.servers?.let { servers ->
+                if (servers.isEmpty()) {
+                    item {
+                        Text(
+                            text = "There are no servers to display"
+                        )
                     }
+
+                    return@LazyColumn
+                }
+
+                items(servers.size) { index ->
+                    val server = servers[index]
+
+                    var serverStats by rememberSaveable {
+                        mutableStateOf<ServerStats?>(null)
+                    }
+
+                    var serverStatsLoading by rememberSaveable {
+                        mutableStateOf(true)
+                    }
+
+                    LaunchedEffect(Unit) {
+                        val serverStatsRes = viewModel.getServerStats(
+                            context = context,
+                            serverId = server.attributes.identifier
+                        )
+
+                        serverStats = serverStatsRes
+                        serverStatsLoading = false
+                    }
+
+                    ServerDisplay(
+                        context = context,
+                        server = server,
+                        serverStats = serverStats,
+                        statsLoading = serverStatsLoading,
+                        onOpen = {
+                            navController.navigate(
+                                ClientServerScreen(serverId = server.attributes.identifier)
+                            )
+                        }
+                    )
                 }
             }
         }
