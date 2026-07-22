@@ -67,14 +67,27 @@ fun ScrollableTabRow(
                         Icon(
                             painter = tab.icon,
                             contentDescription = tab.iconContentDescription,
+                            modifier = Modifier.padding(16.dp),
+                            tint = if (tab.enabled) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            }
                         )
                     }
 
                     if (tab.label != null) {
                         Text(
                             text = tab.label,
-                            modifier = Modifier
-                                .padding(16.dp)
+                            modifier = Modifier.padding(
+                                top = 16.dp,
+                                bottom = 16.dp
+                            ),
+                            color = if (tab.enabled) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            }
                         )
                     }
                 }
@@ -119,7 +132,7 @@ fun ScrollableTabRowPreview() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 Column {
-                    val tabs = (0..10).map { index ->
+                    val tabs = (0..2).map { index ->
                         Tab(
                             label = "Tab $index",
                             id = "tab_$index",
@@ -127,7 +140,13 @@ fun ScrollableTabRowPreview() {
                             enabled = true,
 //                            icon = painterResource(R.drawable.storage)
                         )
-                    }
+                    } + Tab(
+                        icon = painterResource(R.drawable.open_in_new),
+                        iconContentDescription = "Open in admin view",
+                        id = "admin",
+                        active = false,
+                    )
+
                     ScrollableTabRow(
                         tabs = tabs,
                         onTabClick = {}
