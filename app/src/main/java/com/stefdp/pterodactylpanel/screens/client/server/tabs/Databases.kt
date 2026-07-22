@@ -167,7 +167,7 @@ fun DatabasesTab(
                             }
                         )
                     },
-                    buttonType = ButtonType.ERROR,
+                    buttonType = ButtonType.PRIMARY,
                     enabled = state.newDatabaseName.text.trim().length >= 3 && !state.isLoading
                 ) {
                     Text("Create Database")
