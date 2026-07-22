@@ -94,7 +94,7 @@ val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: 
     }
 }
 
-// TODO: in all .onFailure, show the "error.message" in the onError() call to show the error to the user
+// TODO: trim() all user input fields
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
@@ -136,6 +136,7 @@ class MainActivity : FragmentActivity() {
                 LaunchedEffect(isConnected) {
                     if (isConnected) {
                         viewModel.updateLoggedUser(context)
+                        viewModel.updateApplicationApiKeyValidity(context)
                     }
                 }
 
