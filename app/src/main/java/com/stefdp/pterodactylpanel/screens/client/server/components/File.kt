@@ -5,11 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +27,6 @@ import com.stefdp.pterodactylpanel.components.Checkbox
 import com.stefdp.pterodactylpanel.components.MoreActionsButton
 import com.stefdp.pterodactylpanel.components.MoreActionsMenuItem
 import com.stefdp.pterodactylpanel.network.client.models.ServerFile
-import com.stefdp.pterodactylpanel.network.client.models.ServerFileAttributes
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import nl.jacobras.humanreadable.HumanReadable
 
@@ -278,7 +275,7 @@ fun FilePreview() {
 }
 
 val testFile = ServerFile(
-    attributes = ServerFileAttributes(
+    attributes = ServerFile.Attributes(
         name = "test-file.txt",
         mode = "rw-r--r--",
         size = 1024L,
@@ -292,7 +289,7 @@ val testFile = ServerFile(
 )
 
 val testZipFile = ServerFile(
-    attributes = ServerFileAttributes(
+    attributes = ServerFile.Attributes(
         name = "test-file.zip",
         mode = "rw-r--r--",
         size = 1024L,
@@ -306,7 +303,7 @@ val testZipFile = ServerFile(
 )
 
 val testFolder = ServerFile(
-    attributes = ServerFileAttributes(
+    attributes = ServerFile.Attributes(
         name = "test-dir",
         mode = "rw-r--r--",
         size = 0L,

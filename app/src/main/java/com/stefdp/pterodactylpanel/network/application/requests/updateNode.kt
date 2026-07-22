@@ -2,13 +2,12 @@ package com.stefdp.pterodactylpanel.network.application.requests
 
 import android.content.Context
 import com.google.gson.Gson
+import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
-import com.stefdp.pterodactylpanel.network.application.models.ApplicationNodeScheme
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateNodeBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[updateNode]"
 
@@ -24,7 +23,7 @@ suspend fun updateNode(
     memory: Long? = null,
     memoryOverallocate: Long? = null,
     name: String? = null,
-    scheme: ApplicationNodeScheme? = null,
+    scheme: ApplicationNode.Attributes.Scheme? = null,
     behindProxy: Boolean? = null,
     daemonBase: String? = null,
     description: String? = null,

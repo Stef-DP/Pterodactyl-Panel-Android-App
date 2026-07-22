@@ -2,13 +2,12 @@ package com.stefdp.pterodactylpanel.network.application.requests
 
 import android.content.Context
 import com.google.gson.Gson
+import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
-import com.stefdp.pterodactylpanel.network.application.models.ApplicationNodeScheme
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateNodeBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[createNode]"
 
@@ -23,7 +22,7 @@ suspend fun createNode(
     memory: Long,
     memoryOverallocate: Long,
     name: String,
-    scheme: ApplicationNodeScheme,
+    scheme: ApplicationNode.Attributes.Scheme,
     behindProxy: Boolean? = null,
     daemonBase: String? = null,
     description: String? = null,

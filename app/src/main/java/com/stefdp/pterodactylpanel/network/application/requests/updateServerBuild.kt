@@ -2,13 +2,12 @@ package com.stefdp.pterodactylpanel.network.application.requests
 
 import android.content.Context
 import com.google.gson.Gson
+import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateServerBuildBody
-import com.stefdp.pterodactylpanel.network.application.models.requests.UpdateServerBuildBodyFeatureLimits
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[updateServerBuild]"
 
@@ -16,7 +15,7 @@ suspend fun updateServerBuild(
     context: Context,
     serverId: Long,
     allocation: Long? = null,
-    featureLimits: UpdateServerBuildBodyFeatureLimits,
+    featureLimits: UpdateServerBuildBody.FeatureLimits,
     addAllocations: List<Long>? = null,
     removeAllocations: List<Long>? = null,
     oomDisabled: Boolean? = null,

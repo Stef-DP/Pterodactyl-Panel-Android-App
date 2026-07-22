@@ -2,19 +2,18 @@ package com.stefdp.pterodactylpanel.network.client.requests
 
 import android.content.Context
 import com.google.gson.Gson
+import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilesPermissionsBody
-import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilePermissionsFile
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ClientApi[updateServerFilesPermissions]"
 
 suspend fun updateServerFilesPermissions(
     context: Context,
     serverId: String,
-    files: List<UpdateServerFilePermissionsFile>,
+    files: List<UpdateServerFilesPermissionsBody.File>,
     directory: String? = null,
 ): Result<Unit> {
     try {

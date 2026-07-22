@@ -3,11 +3,10 @@ package com.stefdp.pterodactylpanel.screens.client.servers
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.Server
 import com.stefdp.pterodactylpanel.network.client.models.ServerStats
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetServersMetaPagination
+import com.stefdp.pterodactylpanel.network.client.models.responses.ListServersResponse
 import com.stefdp.pterodactylpanel.network.client.requests.getServerResources
 import com.stefdp.pterodactylpanel.network.client.requests.listServers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +17,7 @@ import kotlinx.coroutines.launch
 
 data class ClientServersUiState(
     val servers: List<Server>? = null,
-    val pagination: GetServersMetaPagination? = null,
+    val pagination: ListServersResponse.Meta.Pagination? = null,
     val page: Long = 1
 )
 
@@ -50,8 +49,6 @@ class ClientServersViewModel : ViewModel() {
             )
 
             val servers = serversRes.getOrNull()
-
-            Logger.debug("updateData", "Fetched ${servers?.data?.size ?: 0} servers")
 
             _state.update {
                 it.copy(

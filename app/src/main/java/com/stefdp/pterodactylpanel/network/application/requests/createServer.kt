@@ -2,16 +2,12 @@ package com.stefdp.pterodactylpanel.network.application.requests
 
 import android.content.Context
 import com.google.gson.Gson
+import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBody
-import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBodyAllocation
-import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBodyDeploy
-import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBodyFeatureLimits
-import com.stefdp.pterodactylpanel.network.application.models.requests.CreateServerBodyLimits
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ApplicationApi[createServer]"
 
@@ -20,9 +16,9 @@ suspend fun createServer(
     dockerImage: String,
     egg: Long,
     environment: Map<String, Any?>,
-    featureLimits: CreateServerBodyFeatureLimits,
-    limits: CreateServerBodyLimits,
-    allocation: CreateServerBodyAllocation,
+    featureLimits: CreateServerBody.FeatureLimits,
+    limits: CreateServerBody.Limits,
+    allocation: CreateServerBody.Allocation,
     name: String,
     startup: String,
     user: Long,
@@ -30,7 +26,7 @@ suspend fun createServer(
     description: String? = null,
     skipEggInstallScript: Boolean? = null,
     oomDisabled: Boolean? = null,
-    deploy: CreateServerBodyDeploy? = null,
+    deploy: CreateServerBody.Deploy? = null,
     startOnCompletion: Boolean? = null,
 ): Result<ApplicationServer> {
     try {

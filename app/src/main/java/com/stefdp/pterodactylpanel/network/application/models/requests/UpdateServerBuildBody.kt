@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class UpdateServerBuildBody(
     val allocation: Long? = null,
-    @SerializedName("feature_limits") val featureLimits: UpdateServerBuildBodyFeatureLimits? = null,
+    @SerializedName("feature_limits") val featureLimits: FeatureLimits? = null,
     @SerializedName("add_allocations") val addAllocations: List<Long>? = null,
 //    val limits: UpdateServerBuildBodyLimits? = null,
     @SerializedName("oom_disabled") val oomDisabled: Boolean? = null,
@@ -15,13 +15,13 @@ data class UpdateServerBuildBody(
     val memory: Long? = null,
     val swap: Long? = null,
     val threads: String? = null
-)
-
-data class UpdateServerBuildBodyFeatureLimits(
-    val allocations: Long,
-    val backups: Long,
-    val databases: Long
-)
+) {
+    data class FeatureLimits(
+        val allocations: Long,
+        val backups: Long,
+        val databases: Long
+    )
+}
 
 //data class UpdateServerBuildBodyLimits(
 //    val cpu: Long,

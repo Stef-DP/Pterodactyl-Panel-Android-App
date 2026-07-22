@@ -1,7 +1,7 @@
 package com.stefdp.pterodactylpanel.network.application.models.requests
 
 import com.google.gson.annotations.SerializedName
-import com.stefdp.pterodactylpanel.network.application.models.ApplicationNodeScheme
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 
 data class CreateNodeBody(
     @SerializedName("daemon_listen") val daemonListen: Int,
@@ -13,7 +13,7 @@ data class CreateNodeBody(
     val memory: Long,
     @SerializedName("memory_overallocate") val memoryOverallocate: Long,
     val name: String,
-    val scheme: ApplicationNodeScheme,
+    val scheme: ApplicationNode.Attributes.Scheme,
     @SerializedName("behind_proxy") val behindProxy: Boolean? = null,
     @SerializedName("daemon_base") val daemonBase: String? = null,
     val description: String? = null,
