@@ -1,4 +1,4 @@
-package com.stefdp.pterodactylpanel.screens.client.server.tabs
+package com.stefdp.pterodactylpanel.screens.client.server.tabs.databases
 
 import android.content.ClipData
 import android.content.Context
@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,6 +33,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
@@ -39,8 +42,7 @@ import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.TextInput
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.DatabaseDisplay
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
@@ -51,23 +53,12 @@ fun DatabasesTab(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
-    viewModel: ClientServerViewModel,
-    state: ClientServerUiState
+    viewModel: ClientServerDatabasesTabViewModel = viewModel(),
+    server: GetServerResponse?
 ) {
-    if (state.server?.attributes?.featureLimits?.databases == 0) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "Databases cannot be created for this server"
-            )
-        }
+    LaunchedEffect(server) {
+        viewModel.init(server)
 
-        return
-    }
-
-    LaunchedEffect(Unit) {
         viewModel.updateDatabases(
             context = context,
             onError = { error ->
@@ -83,6 +74,21 @@ fun DatabasesTab(
             },
             onSuccess = {}
         )
+    }
+
+    val state by viewModel.state.collectAsState()
+
+    if (state.server?.attributes?.featureLimits?.databases == 0) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Databases cannot be created for this server"
+            )
+        }
+
+        return
     }
 
     val clipboardManager = LocalClipboard.current
@@ -538,15 +544,22 @@ fun DatabasesTab(
                             )
                     )
                 }
-            } else {
-                items(state.databases.size) { index ->
-                    val database = state.databases[index]
 
-                    DatabaseDisplay(
-                        database = database,
-                        viewModel = viewModel,
-                    )
-                }
+                return@LazyColumn
+            }
+
+            items(state.databases.size) { index ->
+                val database = state.databases[index]
+
+                DatabaseDisplay(
+                    database = database,
+                    onShowDatabaseDetails = { databaseId ->
+                        viewModel.setDatabaseToShowDetails(databaseId)
+                    },
+                    onDeleteDatabase = { databaseId ->
+                        viewModel.setDatabaseToDelete(databaseId)
+                    }
+                )
             }
         }
     }

@@ -1,7 +1,8 @@
-package com.stefdp.pterodactylpanel.screens.client.server.tabs
+package com.stefdp.pterodactylpanel.screens.client.server.tabs.console
 
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.text.LineBreaker
 import android.os.Build
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,6 +56,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.fox2code.androidansi.AnsiParser
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
@@ -63,8 +66,7 @@ import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.WebSocketConnectionStatus
 import com.stefdp.pterodactylpanel.screens.client.server.components.ChartContainer
 import com.stefdp.pterodactylpanel.screens.client.server.components.StatsDisplay
@@ -84,12 +86,16 @@ fun ConsoleTab(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
-    viewModel: ClientServerViewModel,
-    state: ClientServerUiState
+    viewModel: ClientServerConsoleTabViewModel = viewModel(),
+    server: GetServerResponse?
 ) {
+    val state by viewModel.state.collectAsState()
+
     val locale = LocalLocale.current.platformLocale
 
-    DisposableEffect(Unit) {
+    DisposableEffect(server) {
+        viewModel.init(server)
+
         viewModel.connectToWebSocket(
             context = context,
             locale = locale,
@@ -130,7 +136,7 @@ fun ConsoleTab(
                     top = 12.dp
                 )
                 .shimmerable(
-                    enabled = state.isLoading
+                    enabled = state.server == null
                 )
         )
 
@@ -185,28 +191,30 @@ fun ConsoleTab(
                             CircularProgressIndicator()
                         }
                     }
-                } else {
-                    items(state.logs.size) { index ->
-                        val log = state.logs[index]
 
-                        AndroidView(
-                            factory = { context ->
-                                TextView(context).apply {
-                                    setTextColor(android.graphics.Color.WHITE)
-                                    setTypeface(Typeface.MONOSPACE)
+                    return@LazyColumn
+                }
 
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                        breakStrategy = LineBreaker.BREAK_STRATEGY_SIMPLE
-                                    }
+                items(state.logs.size) { index ->
+                    val log = state.logs[index]
 
-                                    hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
+                    AndroidView(
+                        factory = { context ->
+                            TextView(context).apply {
+                                setTextColor(Color.WHITE)
+                                setTypeface(Typeface.MONOSPACE)
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    breakStrategy = LineBreaker.BREAK_STRATEGY_SIMPLE
                                 }
-                            },
-                            update = { textView ->
-                                AnsiParser.setAnsiText(textView, log)
+
+                                hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
                             }
-                        )
-                    }
+                        },
+                        update = { textView ->
+                            AnsiParser.setAnsiText(textView, log)
+                        }
+                    )
                 }
             }
 
@@ -352,7 +360,7 @@ fun ConsoleTab(
         StatsDisplay(
             label = "Address",
             value = address,
-            loading = state.isLoading
+            loading = state.server == null
         )
 
         val isServerOffline by remember(state.status) {
@@ -369,7 +377,7 @@ fun ConsoleTab(
         )
 
         val cpuLimit = if (state.server != null) {
-            if (state.server.attributes.limits.cpu == 0L) "∞" else "${state.server.attributes.limits.cpu}%"
+            if (state.server?.attributes?.limits?.cpu == 0L) "∞" else "${state.server?.attributes?.limits?.cpu ?: 0}%"
         } else {
             "Unknown"
         }
@@ -385,9 +393,9 @@ fun ConsoleTab(
         )
 
         val memoryLimit = if (state.server != null) {
-            if (state.server.attributes.limits.memory == 0L) "∞" else {
+            if (state.server?.attributes?.limits?.memory == 0L) "∞" else {
                 HumanReadable.fileSize(
-                    bytes = state.server.attributes.limits.memory * 1024L * 1024L,
+                    bytes = (state.server?.attributes?.limits?.memory ?: 0L) * 1024L * 1024L,
                     decimals = 2
                 )
             }
@@ -406,9 +414,9 @@ fun ConsoleTab(
         )
 
         val diskLimit = if (state.server != null) {
-            if (state.server.attributes.limits.disk == 0L) "∞" else {
+            if (state.server?.attributes?.limits?.disk == 0L) "∞" else {
                 HumanReadable.fileSize(
-                    bytes = state.server.attributes.limits.disk * 1024L * 1024L,
+                    bytes = (state.server?.attributes?.limits?.disk ?: 0L) * 1024L * 1024L,
                     decimals = 2
                 )
             }

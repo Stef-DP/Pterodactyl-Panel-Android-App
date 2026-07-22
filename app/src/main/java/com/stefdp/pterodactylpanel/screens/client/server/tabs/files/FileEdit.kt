@@ -1,4 +1,4 @@
-package com.stefdp.pterodactylpanel.screens.client.server.tabs
+package com.stefdp.pterodactylpanel.screens.client.server.tabs.files
 
 import android.content.Context
 import androidx.activity.compose.BackHandler
@@ -55,8 +55,8 @@ fun FileEditTab(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
-    viewModel: ClientServerViewModel,
-    state: ClientServerUiState
+    viewModel: ClientServerFilesTabViewModel,
+    state: ClientServerFilesTabUiState
 ) {
     fun closeFileEditing() {
         viewModel.hideUnsavedFileWarningPopup()

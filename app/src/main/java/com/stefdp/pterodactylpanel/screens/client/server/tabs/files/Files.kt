@@ -1,4 +1,4 @@
-package com.stefdp.pterodactylpanel.screens.client.server.tabs
+package com.stefdp.pterodactylpanel.screens.client.server.tabs.files
 
 import android.content.Context
 import android.content.Intent
@@ -19,12 +19,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
@@ -52,9 +55,8 @@ import com.stefdp.pterodactylpanel.components.Checkbox
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.TextInput
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
 import com.stefdp.pterodactylpanel.screens.client.server.components.File
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.utils.PermissionModeRegex
@@ -62,6 +64,7 @@ import com.stefdp.pterodactylpanel.utils.getFileInfo
 import com.stefdp.pterodactylpanel.utils.linuxPermissionToInt
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 import java.nio.file.Paths
 
 @Composable
@@ -69,9 +72,32 @@ fun FilesTab(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
-    viewModel: ClientServerViewModel,
-    state: ClientServerUiState
+    viewModel: ClientServerFilesTabViewModel = viewModel(),
+    server: GetServerResponse?,
+    directory: String?
 ) {
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(server) {
+        viewModel.init(
+            context = context,
+            server = server,
+            directory = directory,
+        )
+    }
+
+    if (state.fileToEdit != null || state.createNewFile) {
+        FileEditTab(
+            navController = navController,
+            context = context,
+            activity = activity,
+            viewModel = viewModel,
+            state = state
+        )
+
+        return
+    }
+
     val listState = rememberLazyListState()
 
     LaunchedEffect(state.filesPath) {
@@ -329,7 +355,7 @@ fun FilesTab(
         onDismissRequest = {
             viewModel.hideDeleteFilesPopup()
         },
-        scrollable = true
+        scrollable = false
     ) {
         Text(
             text = "Delete Files",
@@ -338,17 +364,28 @@ fun FilesTab(
             modifier = Modifier.padding(12.dp)
         )
 
-        Text(
-            text = "Are you sure you want to delete ${state.selectedFiles.size} file${if (state.selectedFiles.size > 1) "s" else ""}? This is a permanent action and the files cannot be recovered"
-        )
+        val scrollState = rememberScrollState()
 
-        Text(
-            text = AnnotatedString.fromHtml("""
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScrollWithScrollbar(
+                    scrollState = scrollState
+                )
+        ) {
+            Text(
+                text = "Are you sure you want to delete ${state.selectedFiles.size} file${if (state.selectedFiles.size > 1) "s" else ""}? This is a permanent action and the files cannot be recovered"
+            )
+
+            Text(
+                text = AnnotatedString.fromHtml("""
                 <ul>
                     ${state.selectedFiles.joinToString("") { "<li>$it</li>" }}
                 </ul>
             """.trimIndent())
-        )
+            )
+        }
 
         Spacer(
             modifier = Modifier.height(4.dp)
@@ -861,7 +898,7 @@ fun FilesTab(
                             viewModel.performDownload(
                                 context = context,
                                 file = file,
-                                uri = state.selectedUri,
+                                uri = state.selectedUri!!,
                                 sendNotification = { content ->
                                     Notification.show(
                                         activity = activity,

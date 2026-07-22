@@ -22,12 +22,12 @@ import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.IconButton
 import com.stefdp.pterodactylpanel.network.client.models.ServerDatabase
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
 
 @Composable
 fun DatabaseDisplay(
     database: ServerDatabase,
-    viewModel: ClientServerViewModel
+    onShowDatabaseDetails: (databaseId: String) -> Unit,
+    onDeleteDatabase: (databaseId: String) -> Unit,
 ) {
     val databaseName = database.attributes.name
 
@@ -70,7 +70,7 @@ fun DatabaseDisplay(
                     icon = painterResource(R.drawable.visibility),
                     iconContentDescription = "Open Database Details",
                     onClick = {
-                        viewModel.setDatabaseToShowDetails(database.attributes.id)
+                        onShowDatabaseDetails(database.attributes.id)
                     },
                     border = true
                 )
@@ -85,7 +85,7 @@ fun DatabaseDisplay(
                     iconColor = MaterialTheme.colorScheme.error,
                     borderColor = MaterialTheme.colorScheme.error,
                     onClick = {
-                        viewModel.setDatabaseToDelete(database.attributes.id)
+                        onDeleteDatabase(database.attributes.id)
                     },
                     border = true
                 )

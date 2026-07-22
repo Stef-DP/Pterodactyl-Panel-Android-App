@@ -9,16 +9,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.res.painterResource
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.stefdp.pterodactylpanel.ApplicationApiKeyValidity
+import com.stefdp.pterodactylpanel.LocalApplicationApiKeyValidity
+import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.ConsoleTab
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.DatabasesTab
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.FileEditTab
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.FilesTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.console.ConsoleTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.DatabasesTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.FilesTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.SchedulesTab
 
 @Composable
 fun ClientServerScreen(
@@ -59,35 +66,48 @@ fun ClientServerScreen(
         )
     }
 
-    val scrollState = rememberScrollState()
+    Column {
+        Logger.debug("ClientServerScreen", LocalApplicationApiKeyValidity.current.toString())
 
-    val disabledScrollScreen = listOf(
-        ServerTab.FILES
-    )
+        val applicationApiKeyValidity = LocalApplicationApiKeyValidity.current
+        val openInNewIcon = painterResource(R.drawable.open_in_new)
 
-    Column(
-//        modifier = if (state.currentTab !in disabledScrollScreen) {
-//            Modifier
-//                .verticalScroll(scrollState)
-//                .scrollbar(
-//                    scrollState = scrollState,
-//                    direction = Orientation.Vertical
-//                )
-//            } else {
-//                Modifier
-//        }
-    ) {
-        val tabs = ServerTab.entries.map { serverTab ->
-            Tab(
-                label = serverTab.label,
-                id = serverTab.id,
-                active = serverTab == state.currentTab,
+        LaunchedEffect(applicationApiKeyValidity) {
+            Logger.debug("ClientServerScreen", "Application API key validity changed: $applicationApiKeyValidity")
+        }
+
+        val tabs by remember(
+            applicationApiKeyValidity,
+            state.currentTab
+        ) {
+            mutableStateOf(
+                value = (
+                    ServerTab.entries.map { serverTab ->
+                        Tab(
+                            label = serverTab.label,
+                            id = serverTab.id,
+                            active = serverTab == state.currentTab,
+                        )
+                    } + if (applicationApiKeyValidity == ApplicationApiKeyValidity.VALID) {
+                        Tab(
+                            icon = openInNewIcon,
+                            iconContentDescription = "Open in admin view",
+                            id = "admin",
+                            active = false,
+                            enabled = false // TODO: enabled when the admin side is done
+                        )
+                    } else null
+                ).filterNotNull()
             )
         }
 
         ScrollableTabRow(
             tabs = tabs,
             onTabClick = { tab ->
+                if (tab.id == "admin") {
+                    // TODO: navigate to admin screen
+                }
+
                 viewModel.setCurrentTab(ServerTab.valueOf(tab.id.uppercase()))
             }
         )
@@ -98,29 +118,18 @@ fun ClientServerScreen(
                     navController = navController,
                     context = context,
                     activity = activity,
-                    viewModel = viewModel,
-                    state = state
+                    server = state.server
                 )
             }
 
             ServerTab.FILES -> {
-                if (state.fileToEdit != null || state.createNewFile) {
-                    FileEditTab(
-                        navController = navController,
-                        context = context,
-                        activity = activity,
-                        viewModel = viewModel,
-                        state = state
-                    )
-                } else {
-                    FilesTab(
-                        navController = navController,
-                        context = context,
-                        activity = activity,
-                        viewModel = viewModel,
-                        state = state
-                    )
-                }
+                FilesTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    server = state.server,
+                    directory = directory,
+                )
             }
 
             ServerTab.DATABASES -> {
@@ -128,8 +137,16 @@ fun ClientServerScreen(
                     navController = navController,
                     context = context,
                     activity = activity,
-                    viewModel = viewModel,
-                    state = state
+                    server = state.server
+                )
+            }
+
+            ServerTab.SCHEDULES -> {
+                SchedulesTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    server = state.server
                 )
             }
 
