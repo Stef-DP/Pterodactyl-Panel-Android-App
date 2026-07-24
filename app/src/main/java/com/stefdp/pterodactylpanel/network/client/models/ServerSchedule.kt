@@ -12,6 +12,7 @@ data class ServerSchedule(
         val cron: Cron,
         @SerializedName("is_active") val isActive: Boolean,
         @SerializedName("is_processing") val isProcessing: Boolean,
+        @SerializedName("only_when_online") val onlyWhenOnline: Boolean,
         @SerializedName("last_run_at") val lastRunAt: String? = null,
         @SerializedName("next_run_at") val nextRunAt: String,
         @SerializedName("created_at") val createdAt: String,
@@ -35,17 +36,4 @@ data class ServerSchedule(
             )
         }
     }
-}
-
-enum class ServerScheduleAction(val value: String) {
-    @SerializedName("command")
-    COMMAND("command"),
-
-    @SerializedName("power")
-    POWER("power"),
-
-    @SerializedName("backup")
-    BACKUP("backup");
-
-    override fun toString(): String = value
 }
