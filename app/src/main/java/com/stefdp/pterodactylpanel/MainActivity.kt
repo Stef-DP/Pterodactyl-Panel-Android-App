@@ -95,6 +95,7 @@ val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: 
 }
 
 // TODO: trim() all user input fields
+// TODO: fix left/right padding on most Popups
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
