@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.client.server.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,12 @@ fun ScheduleDisplay(
             .fillMaxWidth()
             .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
             .background(MaterialTheme.colorScheme.outline)
+            .clickable(
+                enabled = true,
+                onClick = {
+                    onShowScheduleDetails(schedule.attributes.id)
+                }
+            )
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -70,39 +77,20 @@ fun ScheduleDisplay(
                 )
             }
 
-            Row(
-                modifier = Modifier.weight(0.5f),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                        .background(if (schedule.attributes.isActive) Green else MaterialTheme.colorScheme.background)
-                        .padding(
-                            start = 8.dp,
-                            end = 8.dp,
-                            top = 4.dp,
-                            bottom = 4.dp
-                        )
-                ) {
-                    Text(
-                        text = if (schedule.attributes.isActive) "Active" else "Inactive",
-                        color = MaterialTheme.colorScheme.onBackground
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                    .background(if (schedule.attributes.isActive) Green else MaterialTheme.colorScheme.background)
+                    .padding(
+                        start = 8.dp,
+                        end = 8.dp,
+                        top = 4.dp,
+                        bottom = 4.dp
                     )
-                }
-
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
-
-                IconButton(
-                    icon = painterResource(R.drawable.visibility),
-                    iconContentDescription = "Open Schedule Details",
-                    onClick = {
-                        onShowScheduleDetails(schedule.attributes.id)
-                    },
-                    border = true
+            ) {
+                Text(
+                    text = if (schedule.attributes.isActive) "Active" else "Inactive",
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -136,12 +124,13 @@ val schedule = ServerSchedule(
                         attributes = ServerScheduleTask.Attributes(
                             id = 1L,
                             sequenceId = 1L,
-                            action = "command",
+                            action = ServerScheduleTask.Attributes.Action.COMMAND,
                             payload = "echo 'Hello, World!'",
                             timeOffset = 0L,
                             isQueued = false,
                             createdAt = "2024-05-01T00:00:00Z",
-                            updatedAt = "2024-06-01T00:00:00Z"
+                            updatedAt = "2024-06-01T00:00:00Z",
+                            continueOnFailure = false
                         )
                     )
                 )

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 data class ClientServerSchedulesTabUiState(
     val isLoading: Boolean = false,
     val schedules: List<ServerSchedule> = emptyList(),
-    val scheduleToDisplayDetails: Long? = null,
+    val scheduleToDisplayDetails: Long? = 6L, // TODO: set back to null
     val scheduleToDelete: Long? = null,
     val scheduleToEdit: Long? = null,
     val showCreateSchedulePopup: Boolean = false,
@@ -31,6 +31,9 @@ data class ClientServerSchedulesTabUiState(
     val newScheduleShowCheatsheet: Boolean = false,
     val newScheduleOnlyWhenOnline: Boolean = true,
     val newScheduleEnabled: Boolean = true,
+    val showCreateScheduleTaskPopup: Boolean = false,
+    val scheduleTaskToDelete: Long? = null,
+    val scheduleTaskToEdit: Long? = null
 )
 
 class ClientServerSchedulesTabViewModel : ViewModel() {
@@ -272,6 +275,40 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
         _state.update {
             it.copy(
                 newScheduleEnabled = enabled
+            )
+        }
+    }
+
+    fun showCreateScheduleTaskPopup() {
+        _state.update {
+            it.copy(
+                showCreateScheduleTaskPopup = true
+            )
+        }
+    }
+
+    fun hideCreateScheduleTaskPopup(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showCreateScheduleTaskPopup = false
+            )
+        }
+    }
+
+    fun setScheduleTaskToDelete(scheduleTaskId: Long?) {
+        _state.update {
+            it.copy(
+                scheduleTaskToDelete = scheduleTaskId
+            )
+        }
+    }
+
+    fun setScheduleTaskToEdit(scheduleTaskId: Long?) {
+        _state.update {
+            it.copy(
+                scheduleTaskToEdit = scheduleTaskId
             )
         }
     }
