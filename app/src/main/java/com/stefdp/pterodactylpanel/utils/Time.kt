@@ -1,5 +1,9 @@
 package com.stefdp.pterodactylpanel.utils
 
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -52,4 +56,42 @@ fun formatMs(
     )
 
     return dateSegments.take(limit).joinToString(" ")
+}
+
+fun formatDate(
+    date: String,
+    short: Boolean = false,
+    dateOnly: Boolean = false,
+    timeOnly: Boolean = false,
+): String {
+    if (dateOnly) {
+        return Instant
+            .parse(date)
+            .atZone(ZoneOffset.systemDefault())
+            .format(
+                DateTimeFormatter.ofLocalizedDate(
+                    if (short) FormatStyle.SHORT else FormatStyle.MEDIUM
+                )
+            )
+    }
+
+    if (timeOnly) {
+        return Instant
+            .parse(date)
+            .atZone(ZoneOffset.systemDefault())
+            .format(
+                DateTimeFormatter.ofLocalizedTime(
+                    if (short) FormatStyle.SHORT else FormatStyle.MEDIUM
+                )
+            )
+    }
+
+    return Instant
+        .parse(date)
+        .atZone(ZoneOffset.systemDefault())
+        .format(
+            DateTimeFormatter.ofLocalizedDateTime(
+                if (short) FormatStyle.SHORT else FormatStyle.MEDIUM
+            )
+        )
 }
