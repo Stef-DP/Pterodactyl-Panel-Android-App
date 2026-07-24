@@ -428,7 +428,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("scheduleId") scheduleId: String,
+        @Path("scheduleId") scheduleId: Long,
     ): Response<ServerSchedule>
 
     @POST("servers/{serverId}/schedules")
@@ -446,9 +446,18 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("scheduleId") scheduleId: String,
+        @Path("scheduleId") scheduleId: Long,
         @Body data: UpdateServerScheduleBody
     ): Response<ServerSchedule>
+
+    @POST("servers/{serverId}/schedules/{scheduleId}/execute")
+    suspend fun executeServerSchedule(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: String,
+        @Path("scheduleId") scheduleId: Long,
+    ): Response<Unit>
 
     @DELETE("servers/{serverId}/schedules/{scheduleId}")
     suspend fun deleteServerSchedule(
@@ -456,7 +465,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("scheduleId") scheduleId: String,
+        @Path("scheduleId") scheduleId: Long,
     ): Response<Unit>
 
     @POST("servers/{serverId}/schedules/{scheduleId}/tasks")
@@ -465,7 +474,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("scheduleId") scheduleId: String,
+        @Path("scheduleId") scheduleId: Long,
         @Body data: CreateServerScheduleTaskBody
     ): Response<ServerScheduleTask>
 
@@ -475,8 +484,8 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("scheduleId") scheduleId: String,
-        @Path("taskId") taskId: String,
+        @Path("scheduleId") scheduleId: Long,
+        @Path("taskId") taskId: Long,
         @Body data: UpdateServerScheduleTaskBody
     ): Response<ServerScheduleTask>
 
@@ -486,8 +495,8 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("scheduleId") scheduleId: String,
-        @Path("taskId") taskId: String,
+        @Path("scheduleId") scheduleId: Long,
+        @Path("taskId") taskId: Long,
     ): Response<Unit>
 
     @GET("servers/{serverId}/network/allocations")
