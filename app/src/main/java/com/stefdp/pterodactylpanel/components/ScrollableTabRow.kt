@@ -42,8 +42,10 @@ fun ScrollableTabRow(
     LazyRow(
         state = listState,
         modifier = Modifier
+            .fillMaxWidth()
             .background(MaterialTheme.colorScheme.outline)
-            .horizontalLazyScrollbar(listState)
+            .horizontalLazyScrollbar(listState),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         items(tabs.size) { index ->
             val tab = tabs[index]
