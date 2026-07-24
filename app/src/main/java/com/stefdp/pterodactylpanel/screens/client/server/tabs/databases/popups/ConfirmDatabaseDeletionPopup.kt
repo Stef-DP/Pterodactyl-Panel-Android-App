@@ -81,7 +81,8 @@ fun ConfirmDatabaseDeletionPopup(
                     viewModel.setConfirmDeleteDatabaseNameValue(it)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                description = "Enter the database name to confirm deletion"
+                description = "Enter the database name to confirm deletion",
+                enabled = !state.isLoading
             )
 
             Row(

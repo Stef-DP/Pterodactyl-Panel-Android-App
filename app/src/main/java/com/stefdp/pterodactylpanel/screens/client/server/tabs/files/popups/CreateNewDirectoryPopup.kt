@@ -45,7 +45,7 @@ fun CreateNewDirectoryPopup(
         onDismissRequest = {
             viewModel.hideCreateNewDirectoryPopup()
         },
-        scrollable = true
+        scrollable = true,
     ) {
         Text(
             text = "Create New Directory",
@@ -62,7 +62,8 @@ fun CreateNewDirectoryPopup(
             },
             placeholder = "Directory Name",
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = !state.isLoading
         )
 
         FlowRow {

@@ -60,7 +60,8 @@ fun MoveRenameFilesPopup(
             },
             placeholder = "New Name",
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = !state.isLoading
         )
 
         Text(

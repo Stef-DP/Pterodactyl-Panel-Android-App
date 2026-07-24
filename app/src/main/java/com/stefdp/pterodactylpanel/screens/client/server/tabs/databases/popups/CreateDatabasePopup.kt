@@ -52,6 +52,7 @@ fun CreateDatabasePopup(
                     viewModel.setNewDatabaseName(it)
                 },
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -62,6 +63,7 @@ fun CreateDatabasePopup(
                 },
                 readOnly = true,
                 modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             Row(

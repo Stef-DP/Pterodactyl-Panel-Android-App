@@ -62,7 +62,8 @@ fun CreateNewFilePopup(
             },
             placeholder = "File Name",
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = !state.isLoading
         )
 
         FlowRow {

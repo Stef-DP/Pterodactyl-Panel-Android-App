@@ -31,6 +31,7 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
+import com.stefdp.pterodactylpanel.screens.client.server.components.ScheduleCronCheatsheet
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.ClientServerSchedulesTabUiState
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.ClientServerSchedulesTabViewModel
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
@@ -78,6 +79,7 @@ fun CreateNewSchedulePopup(
                         viewModel.setNewScheduleName(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 )
 
                 TextInput(
@@ -87,6 +89,7 @@ fun CreateNewSchedulePopup(
                         viewModel.setNewScheduleCronMinute(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 )
 
                 TextInput(
@@ -96,6 +99,7 @@ fun CreateNewSchedulePopup(
                         viewModel.setNewScheduleCronHour(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 )
 
                 TextInput(
@@ -105,6 +109,7 @@ fun CreateNewSchedulePopup(
                         viewModel.setNewScheduleCronDayOfMonth(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 )
 
                 TextInput(
@@ -114,6 +119,7 @@ fun CreateNewSchedulePopup(
                         viewModel.setNewScheduleCronMonth(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 )
 
                 TextInput(
@@ -123,6 +129,7 @@ fun CreateNewSchedulePopup(
                         viewModel.setNewScheduleCronDayOfWeek(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = !state.isLoading
                 )
 
                 Switch(
@@ -137,313 +144,7 @@ fun CreateNewSchedulePopup(
                 AnimatedVisibility(
                     visible = state.newScheduleShowCheatsheet
                 ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(12.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "*/5 * * * *",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Every 5 minutes"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "0 */1 * * *",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Every hour"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "0 8-12 * * *",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Hour range"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "0 0 * * *",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Once a day"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "0 0 * * MON",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Every Monday"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "*",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Any value"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = ",",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Value list separator"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "-",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Range values"
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(1.dp)
-                                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-                        )
-
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                    .background(MaterialTheme.colorScheme.surface)
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp,
-                                        top = 4.dp,
-                                        bottom = 4.dp
-                                    )
-                            ) {
-                                Text(
-                                    text = "/",
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-
-                            Text(
-                                text = "Step values"
-                            )
-                        }
-                    }
+                    ScheduleCronCheatsheet()
                 }
 
                 Switch(
@@ -452,7 +153,8 @@ fun CreateNewSchedulePopup(
                     checked = state.newScheduleOnlyWhenOnline,
                     onCheckedChange = {
                         viewModel.setNewScheduleOnlyWhenOnline(it)
-                    }
+                    },
+                    enabled = !state.isLoading
                 )
 
                 Switch(
@@ -461,7 +163,8 @@ fun CreateNewSchedulePopup(
                     checked = state.newScheduleEnabled,
                     onCheckedChange = {
                         viewModel.setNewScheduleEnabled(it)
-                    }
+                    },
+                    enabled = !state.isLoading
                 )
             }
 

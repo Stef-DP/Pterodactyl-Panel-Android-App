@@ -59,7 +59,8 @@ fun UpdateFilePermissionsPopup(
             ),
             placeholder = "New Permissions",
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            enabled = !state.isLoading
         )
 
         Spacer(
