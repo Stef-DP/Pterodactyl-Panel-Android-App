@@ -1,9 +1,9 @@
 package com.stefdp.pterodactylpanel.utils
 
 import java.time.Instant
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
+import java.util.Locale
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
@@ -64,34 +64,45 @@ fun formatDate(
     dateOnly: Boolean = false,
     timeOnly: Boolean = false,
 ): String {
-    if (dateOnly) {
+    if (short) {
+        val pattern = when {
+            dateOnly -> "yyyy-MM-dd"
+            timeOnly -> "hh:mm a"
+            else -> "yyyy-MM-dd, hh:mm a"
+        }
+
         return Instant
             .parse(date)
-            .atZone(ZoneOffset.systemDefault())
-            .format(
-                DateTimeFormatter.ofLocalizedDate(
-                    if (short) FormatStyle.SHORT else FormatStyle.MEDIUM
-                )
-            )
+            .atZone(ZoneId.systemDefault())
+            .format(DateTimeFormatter.ofPattern(pattern))
     }
 
-    if (timeOnly) {
-        return Instant
-            .parse(date)
-            .atZone(ZoneOffset.systemDefault())
-            .format(
-                DateTimeFormatter.ofLocalizedTime(
-                    if (short) FormatStyle.SHORT else FormatStyle.MEDIUM
-                )
-            )
-    }
-
-    return Instant
+    val dateTime = Instant
         .parse(date)
-        .atZone(ZoneOffset.systemDefault())
-        .format(
-            DateTimeFormatter.ofLocalizedDateTime(
-                if (short) FormatStyle.SHORT else FormatStyle.MEDIUM
-            )
-        )
+        .atZone(ZoneId.systemDefault())
+
+    val day = dateTime.dayOfMonth
+
+    val suffix = getOrdinalSuffix(day)
+
+    val pattern = when {
+        dateOnly -> "MMM d'$suffix'"
+        timeOnly -> "hh:mm a"
+        else -> "MMM d'$suffix', hh:mm a"
+    }
+
+    return dateTime.format(
+        DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH)
+    )
+}
+
+private fun getOrdinalSuffix(day: Int): String {
+    if (day in 11..13) return "th"
+
+    return when (day % 10) {
+        1 -> "st"
+        2 -> "nd"
+        3 -> "rd"
+        else -> "th"
+    }
 }
