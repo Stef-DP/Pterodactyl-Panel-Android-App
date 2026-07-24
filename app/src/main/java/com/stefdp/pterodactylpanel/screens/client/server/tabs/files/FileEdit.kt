@@ -45,6 +45,8 @@ import com.stefdp.pterodactylpanel.components.SelectOption
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.CreateNewFilePopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.UnsavedChangesPopup
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.ui.theme.languageToHighlightColors
 import com.stefdp.pterodactylpanel.ui.theme.supportedLanguages
@@ -74,162 +76,20 @@ fun FileEditTab(
         }
     }
 
-    Popup(
-        showPopup = state.showUnsavedFileWarningPopup,
-        onDismissRequest = {
-            viewModel.hideUnsavedFileWarningPopup()
-        },
-    ) {
-        Text(
-            text = "Unsaved Changes",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
-        )
+    UnsavedChangesPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel,
+        closeFileEditing = ::closeFileEditing
+    )
 
-        Text(
-            text = "You have unsaved changes. Are you sure you want to leave without saving?",
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.hideUnsavedFileWarningPopup()
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Keep Editing")
-            }
-
-            Button(
-                onClick = {
-                    closeFileEditing()
-                },
-                buttonType = ButtonType.PRIMARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Leave Without Saving")
-            }
-        }
-    }
-
-    Popup(
-        showPopup = state.showNewFileNamePopup,
-        onDismissRequest = {
-            viewModel.hideNewFileNamePopup()
-        },
-        scrollable = true
-    ) {
-        Text(
-            text = "Create New File",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
-        )
-
-        TextInput(
-            value = state.newFileName,
-            label = "Name",
-            onValueChange = { newValue ->
-                viewModel.setNewFileName(newValue)
-            },
-            placeholder = "File Name",
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-
-        FlowRow {
-            Text(
-                text = "This file will be created as"
-            )
-
-            val folderPathText = buildAnnotatedString {
-                append("/${state.filesPath.joinToString("/")}/")
-
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    val basePath = Paths.get("/")
-
-                    val absoluteNormalizedPath = basePath.resolve(state.newFileName.text).normalize()
-
-                    append(basePath.relativize(absoluteNormalizedPath).toString())
-                }
-            }
-
-            Text(
-                text = folderPathText,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(4.dp),
-                style = TextStyle(
-                    lineBreak = LineBreak.Simple,
-                    fontFamily = FontFamily.Monospace
-                )
-            )
-        }
-
-        Spacer(
-            modifier = Modifier.height(4.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.hideNewFileNamePopup()
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Cancel")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.saveFile(
-                        context = context,
-                        onError = { error ->
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = error,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "File created successfully",
-                                )
-                            }
-                        }
-                    )
-                },
-                buttonType = ButtonType.PRIMARY,
-                enabled = state.newFileName.text.isNotBlank() && !state.isLoading && !state.isFileSaving
-            ) {
-                Text("Create")
-            }
-        }
-    }
+    CreateNewFilePopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
 
     Column(
         modifier = Modifier

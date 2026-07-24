@@ -58,6 +58,10 @@ import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
 import com.stefdp.pterodactylpanel.screens.client.server.components.File
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.CreateNewDirectoryPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.DeleteFilesPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.MoveRenameFilesPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.UpdateFilePermissionsPopup
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.utils.PermissionModeRegex
 import com.stefdp.pterodactylpanel.utils.getFileInfo
@@ -119,411 +123,33 @@ fun FilesTab(
         )
     }
 
-    Popup(
-        showPopup = state.showNewDirectoryPopup,
-        onDismissRequest = {
-            viewModel.hideCreateNewDirectoryPopup()
-        },
-        scrollable = true
-    ) {
-        Text(
-            text = "Create New Directory",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
-        )
+    CreateNewDirectoryPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
 
-        TextInput(
-            value = state.newDirectoryName,
-            label = "Name",
-            onValueChange = { newValue ->
-                viewModel.setNewDirectoryName(newValue)
-            },
-            placeholder = "Directory Name",
-            modifier = Modifier
-                .fillMaxWidth()
-        )
+    MoveRenameFilesPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
 
-        FlowRow {
-            Text(
-                text = "This directory will be created as"
-            )
+    DeleteFilesPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
 
-            val folderPathText = buildAnnotatedString {
-                append("/${state.filesPath.joinToString("/")}/")
-
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    val basePath = Paths.get("/")
-
-                    val absoluteNormalizedPath = basePath.resolve(state.newDirectoryName.text).normalize()
-
-                    append(basePath.relativize(absoluteNormalizedPath).toString())
-                }
-            }
-
-            Text(
-                text = folderPathText,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(4.dp),
-                style = TextStyle(
-                    lineBreak = LineBreak.Simple,
-                    fontFamily = FontFamily.Monospace
-                )
-            )
-        }
-
-        Spacer(
-            modifier = Modifier.height(4.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.hideCreateNewDirectoryPopup()
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Cancel")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.createNewDirectory(
-                        context = context,
-                        onError = { error ->
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = error,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "Directory created successfully",
-                                )
-                            }
-                        }
-                    )
-                },
-                buttonType = ButtonType.PRIMARY,
-                enabled = state.newDirectoryName.text.isNotBlank() && !state.isLoading
-            ) {
-                Text("Create")
-            }
-        }
-    }
-
-    Popup(
-        showPopup = state.showMoveFilesPopup,
-        onDismissRequest = {
-            viewModel.hideMoveFilesPopup()
-        },
-        scrollable = true
-    ) {
-        Text(
-            text = if (state.isRename) "Rename File" else "Move Files",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
-        )
-
-        TextInput(
-            value = state.newDirectoryName,
-            label = if (state.selectedFiles.size > 1) "Directory Name" else "File Name",
-            onValueChange = { newValue ->
-                viewModel.setNewDirectoryName(newValue)
-            },
-            placeholder = "New Name",
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-
-        Text(
-            text = if (state.selectedFiles.size > 1) {
-                "Enter the new directory of these files or folders, relative to the current directory"
-            } else {
-                "Enter the new name and directory of this file or folder, relative to the current directory"
-            }
-        )
-
-        FlowRow {
-            Text(
-                text = "New Location:",
-                fontWeight = FontWeight.Bold
-            )
-
-            val folderPathText = buildAnnotatedString {
-                append("/${state.filesPath.joinToString("/")}/")
-
-                val basePath = Paths.get("/")
-
-                val absoluteNormalizedPath = basePath.resolve(state.newDirectoryName.text).normalize()
-
-                append(basePath.relativize(absoluteNormalizedPath).toString())
-            }
-
-            Text(
-                text = folderPathText,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(4.dp),
-                style = TextStyle(
-                    lineBreak = LineBreak.Simple,
-                    fontFamily = FontFamily.Monospace
-                )
-            )
-        }
-
-        Spacer(
-            modifier = Modifier.height(4.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.hideMoveFilesPopup()
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Cancel")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.moveFiles(
-                        context = context,
-                        onError = { error ->
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = error,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "Files moved successfully",
-                                )
-                            }
-                        }
-                    )
-                },
-                buttonType = ButtonType.PRIMARY,
-                enabled = state.newDirectoryName.text.isNotBlank() && !state.isLoading
-            ) {
-                Text(
-                    text = if (state.isRename) "Rename" else "Move"
-                )
-            }
-        }
-    }
-
-    Popup(
-        showPopup = state.showDeleteFilesPopup,
-        onDismissRequest = {
-            viewModel.hideDeleteFilesPopup()
-        },
-        scrollable = false
-    ) {
-        Text(
-            text = "Delete Files",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
-        )
-
-        val scrollState = rememberScrollState()
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .verticalScrollWithScrollbar(
-                    scrollState = scrollState
-                )
-        ) {
-            Text(
-                text = "Are you sure you want to delete ${state.selectedFiles.size} file${if (state.selectedFiles.size > 1) "s" else ""}? This is a permanent action and the files cannot be recovered"
-            )
-
-            Text(
-                text = AnnotatedString.fromHtml("""
-                <ul>
-                    ${state.selectedFiles.joinToString("") { "<li>$it</li>" }}
-                </ul>
-            """.trimIndent())
-            )
-        }
-
-        Spacer(
-            modifier = Modifier.height(4.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.hideDeleteFilesPopup()
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Cancel")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.deleteFiles(
-                        context = context,
-                        onError = { error ->
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = error,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "Files deleted successfully",
-                                )
-                            }
-                        }
-                    )
-                },
-                buttonType = ButtonType.ERROR,
-                enabled = !state.isLoading
-            ) {
-                Text("Delete")
-            }
-        }
-    }
-
-    Popup(
-        showPopup = state.showUpdatePermissionsPopup,
-        onDismissRequest = {
-            viewModel.hideUpdatePermissionsPopup()
-        },
-        scrollable = true
-    ) {
-        Text(
-            text = "Update Permissions",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
-        )
-
-        TextInput(
-            value = state.newPermissions,
-            label = "Permissions Mode",
-            onValueChange = { newValue ->
-                if (PermissionModeRegex.matches(newValue.text) && newValue.text.length <= 4) {
-                    viewModel.setNewPermissions(newValue)
-                }
-            },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
-            ),
-            placeholder = "New Permissions",
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-
-        Spacer(
-            modifier = Modifier.height(4.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.hideUpdatePermissionsPopup()
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Cancel")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.updateFilePermissions(
-                        context = context,
-                        onError = { error ->
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = error,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
-                        },
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "Permissions updated successfully",
-                                )
-                            }
-                        }
-                    )
-                },
-                buttonType = ButtonType.PRIMARY,
-                enabled = state.newPermissions.text.length in 3..4 && !state.isLoading
-            ) {
-                Text("Update")
-            }
-        }
-    }
+    UpdateFilePermissionsPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
 
     Column {
         Row(
