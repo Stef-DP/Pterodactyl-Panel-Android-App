@@ -102,6 +102,7 @@ val schedule = ServerSchedule(
     attributes = ServerSchedule.Attributes(
         id = 1L,
         name = "Test Schedule",
+        onlyWhenOnline = true,
         cron = ServerSchedule.Attributes.Cron(
             minute = "0",
             hour = "0",
@@ -130,7 +131,7 @@ val schedule = ServerSchedule(
                             isQueued = false,
                             createdAt = "2024-05-01T00:00:00Z",
                             updatedAt = "2024-06-01T00:00:00Z",
-                            continueOnFailure = false
+                            continueOnFailure = false,
                         )
                     )
                 )

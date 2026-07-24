@@ -1,12 +1,11 @@
 package com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups
 
-import android.R.attr.text
+import android.R.attr.enabled
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -32,12 +32,14 @@ import androidx.fragment.app.FragmentActivity
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.screens.client.server.components.ScheduleTaskDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.ClientServerSchedulesTabUiState
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.ClientServerSchedulesTabViewModel
 import com.stefdp.pterodactylpanel.ui.theme.Green
 import com.stefdp.pterodactylpanel.utils.formatDate
+import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
@@ -48,7 +50,13 @@ fun ScheduleDetailsPopup(
     viewModel: ClientServerSchedulesTabViewModel,
 ) {
     Popup(
-        showPopup = state.scheduleToDisplayDetails != null && !state.showCreateSchedulePopup,
+        showPopup =
+            state.scheduleToDisplayDetails != null &&
+            !state.showCreateSchedulePopup &&
+            state.scheduleToDelete == null &&
+            state.scheduleToEdit == null &&
+            state.scheduleTaskToEdit == null &&
+            state.scheduleTaskToDelete == null,
         onDismissRequest = {
             viewModel.setScheduleToDisplayDetails(null)
         },
@@ -94,48 +102,6 @@ fun ScheduleDetailsPopup(
             }
         }
 
-        val lastRun = if (schedule.lastRunAt != null) {
-            formatDate(
-                date = schedule.lastRunAt,
-                short = true
-            )
-        } else {
-            "N/A"
-        }
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append("Last run at: ")
-                }
-
-                append(lastRun)
-            }
-        )
-
-        val nextRun = formatDate(
-            date = schedule.nextRunAt,
-            short = true
-        )
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        fontWeight = FontWeight.Bold
-                    )
-                ) {
-                    append("Next run at: ")
-                }
-
-                append(nextRun)
-            }
-        )
-
         val scrollState = rememberScrollState()
 
         Column(
@@ -146,6 +112,7 @@ fun ScheduleDetailsPopup(
                 .verticalScrollWithScrollbar(
                     scrollState = scrollState
                 )
+                .weight(1f, fill = false)
         ) {
             @Composable
             fun CronStats(
@@ -192,6 +159,42 @@ fun ScheduleDetailsPopup(
                 )
             }
 
+            val lastRun = if (schedule.lastRunAt != null) {
+                formatDate(schedule.lastRunAt)
+            } else {
+                "N/A"
+            }
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Last run at: ")
+                    }
+
+                    append(lastRun)
+                }
+            )
+
+            val nextRun = formatDate(schedule.nextRunAt)
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Next run at: ")
+                    }
+
+                    append(nextRun)
+                }
+            )
+
             Divider()
 
             CronStats(
@@ -223,10 +226,17 @@ fun ScheduleDetailsPopup(
 
             val tasks = schedule.relationships.tasks.data
 
+            val lazyColumnListState = rememberLazyListState()
+
             LazyColumn(
-                modifier = Modifier.heightIn(
-                    max = 250.dp
-                ),
+                state = lazyColumnListState,
+                modifier = Modifier
+                    .heightIn(
+                        max = 250.dp
+                    )
+                    .verticalLazyScrollbar(
+                        listState = lazyColumnListState
+                    ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(tasks.size) { index ->
@@ -235,12 +245,107 @@ fun ScheduleDetailsPopup(
                     ScheduleTaskDisplay(
                         task = task,
                         onEdit = {
-                            // TODO
+                            viewModel.setScheduleTaskToEdit(task.attributes)
                         },
                         onDelete = {
-                            // TODO
+                            viewModel.setScheduleTaskToDelete(task.attributes.id)
                         }
                     )
+                }
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 12.dp,
+                    end = 12.dp,
+                    bottom = 12.dp
+                ),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        viewModel.setScheduleToDelete(schedule.id)
+                    },
+                    buttonType = ButtonType.ERROR,
+                    enabled = !state.isLoading
+                ) {
+                    Text("Delete")
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        viewModel.setScheduleToEdit(schedule)
+                    },
+                    buttonType = ButtonType.SECONDARY,
+                    enabled = !state.isLoading
+                ) {
+                    Text("Edit")
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (schedule.relationships.tasks.data.isNotEmpty()) {
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            viewModel.executeSchedule(
+                                context = context,
+                                onError = { error ->
+                                    Notification.show(
+                                        activity = activity,
+                                        duration = 3000L
+                                    ) {
+                                        Text(
+                                            text = error,
+                                            color = MaterialTheme.colorScheme.onError
+                                        )
+                                    }
+                                },
+                                onSuccess = {
+                                    Notification.show(
+                                        activity = activity,
+                                        duration = 3000L
+                                    ) {
+                                        Text(
+                                            text = "Schedule executed successfully",
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                            )
+                        },
+                        buttonType = ButtonType.PRIMARY,
+                        enabled = !state.isLoading,
+                    ) {
+                        Text(
+                            text = "Run Now"
+                        )
+                    }
+                }
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        viewModel.showCreateScheduleTaskPopup()
+                    },
+                    buttonType = ButtonType.PRIMARY,
+                    enabled = !state.isLoading
+                ) {
+                    Text("New Task")
                 }
             }
         }
@@ -250,25 +355,9 @@ fun ScheduleDetailsPopup(
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Button(
-                onClick = {
-                    viewModel.setScheduleToEdit(schedule.id)
-                },
-                buttonType = ButtonType.SECONDARY,
-                enabled = !state.isLoading
-            ) {
-                Text("Edit")
-            }
 
-            Button(
-                onClick = {
-                    viewModel.showCreateScheduleTaskPopup()
-                },
-                buttonType = ButtonType.PRIMARY,
-                enabled = !state.isLoading
-            ) {
-                Text("New Task")
-            }
+
+
         }
     }
 }

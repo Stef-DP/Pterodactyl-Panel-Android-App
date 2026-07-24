@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -45,6 +46,11 @@ import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.ScheduleDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.CreateNewSchedulePopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.CreateScheduleTaskPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.DeleteSchedulePopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.DeleteScheduleTaskPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.EditSchedulePopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.EditScheduleTaskPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.ScheduleDetailsPopup
 import com.stefdp.pterodactylpanel.ui.theme.Green
 import com.stefdp.pterodactylpanel.utils.shimmerable
@@ -95,6 +101,41 @@ fun SchedulesTab(
         viewModel = viewModel
     )
 
+    DeleteSchedulePopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    EditSchedulePopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    CreateScheduleTaskPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    EditScheduleTaskPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    DeleteScheduleTaskPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
     Button(
         onClick = {
             viewModel.showCreateSchedulePopup()
@@ -118,7 +159,8 @@ fun SchedulesTab(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "There are no schedules configured for this server"
+                text = "There are no schedules configured for this server",
+                textAlign = TextAlign.Center
             )
         }
 
@@ -144,7 +186,7 @@ fun SchedulesTab(
                        .fillMaxWidth()
                        .shimmerable(
                            enabled = true,
-                           height = 50.dp
+                           height = 60.dp
                        )
                 ) {}
             }
