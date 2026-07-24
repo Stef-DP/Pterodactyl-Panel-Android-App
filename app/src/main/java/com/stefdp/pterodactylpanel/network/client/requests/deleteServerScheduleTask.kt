@@ -12,8 +12,8 @@ private const val TAG = "ClientApi[deleteServerScheduleTask]"
 suspend fun deleteServerScheduleTask(
     context: Context,
     serverId: String,
-    scheduleId: String,
-    taskId: String,
+    scheduleId: Long,
+    taskId: Long,
 ): Result<Unit> {
     try {
         val secureStore = SecureStorage.getInstance(context)

@@ -14,7 +14,7 @@ private const val TAG = "ClientApi[updateServerSchedule]"
 suspend fun updateServerSchedule(
     context: Context,
     serverId: String,
-    scheduleId: String,
+    scheduleId: Long,
     dayOfMonth: String,
     dayOfWeek: String,
     hour: String,

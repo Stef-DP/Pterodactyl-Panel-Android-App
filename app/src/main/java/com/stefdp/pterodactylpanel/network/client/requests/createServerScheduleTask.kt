@@ -2,21 +2,20 @@ package com.stefdp.pterodactylpanel.network.client.requests
 
 import android.content.Context
 import com.google.gson.Gson
+import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
-import com.stefdp.pterodactylpanel.network.client.models.ServerScheduleAction
 import com.stefdp.pterodactylpanel.network.client.models.ServerScheduleTask
 import com.stefdp.pterodactylpanel.network.client.models.requests.CreateServerScheduleTaskBody
 import com.stefdp.pterodactylpanel.utils.SecureStorage
-import com.stefdp.pterodactylpanel.Logger
 
 private const val TAG = "ClientApi[createServerScheduleTask]"
 
 suspend fun createServerScheduleTask(
     context: Context,
     serverId: String,
-    scheduleId: String,
-    action: ServerScheduleAction,
+    scheduleId: Long,
+    action: ServerScheduleTask.Attributes.Action,
     payload: String,
     timeOffset: Long,
     sequenceId: Long? = null,
