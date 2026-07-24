@@ -132,10 +132,7 @@ data class ServerSubuser(
         SETTINGS_REINSTALL("settings.reinstall"),
 
         @SerializedName("activity.read")
-        ACTIVITY_READ("activity.read"),
-
-        @SerializedName("websocket.connect")
-        WEBSOCKET_CONNECT("websocket.connect");
+        ACTIVITY_READ("activity.read");
 
         override fun toString(): String = value
     }
