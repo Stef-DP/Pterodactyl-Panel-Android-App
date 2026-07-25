@@ -293,6 +293,13 @@ data class ServerSubuser(
             value = "activity.read",
             uiName = "Read",
             uiDescription = "Allows a user to view the activity logs for the server"
+        ),
+
+        @SerializedName("websocket.connect")
+        WEBSOCKET_CONNECT(
+            value = "websocket.connect",
+            uiName = "",
+            uiDescription = ""
         );
 
         override fun toString(): String = value
