@@ -36,7 +36,7 @@ import com.stefdp.pterodactylpanel.ui.theme.SecondaryDark
 @Composable
 fun ScheduleDisplay(
     schedule: ServerSchedule,
-    onShowScheduleDetails: (scheduleId: Long) -> Unit,
+    onShowScheduleDetails: () -> Unit,
 ) {
     val scheduleName = schedule.attributes.name
 
@@ -47,9 +47,7 @@ fun ScheduleDisplay(
             .background(MaterialTheme.colorScheme.outline)
             .clickable(
                 enabled = true,
-                onClick = {
-                    onShowScheduleDetails(schedule.attributes.id)
-                }
+                onClick = onShowScheduleDetails
             )
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)

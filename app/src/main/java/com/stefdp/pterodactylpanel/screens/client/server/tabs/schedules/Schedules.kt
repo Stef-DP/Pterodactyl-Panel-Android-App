@@ -204,8 +204,8 @@ fun SchedulesTab(
 
             ScheduleDisplay(
                 schedule = schedule,
-                onShowScheduleDetails = { scheduleId ->
-                    viewModel.setScheduleToDisplayDetails(scheduleId)
+                onShowScheduleDetails = {
+                    viewModel.setScheduleToDisplayDetails(schedule.attributes.id)
                 }
             )
         }

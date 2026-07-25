@@ -200,11 +200,11 @@ fun DatabasesTab(
                 DatabaseDisplay(
                     database = database,
                     hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_DELETE),
-                    onShowDatabaseDetails = { databaseId ->
-                        viewModel.setDatabaseToShowDetails(databaseId)
+                    onShowDatabaseDetails = {
+                        viewModel.setDatabaseToShowDetails(database.attributes.id)
                     },
-                    onDeleteDatabase = { databaseId ->
-                        viewModel.setDatabaseToDelete(databaseId)
+                    onDeleteDatabase = {
+                        viewModel.setDatabaseToDelete(database.attributes.id)
                     }
                 )
             }

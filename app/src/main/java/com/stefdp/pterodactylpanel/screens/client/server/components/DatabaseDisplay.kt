@@ -27,8 +27,8 @@ import com.stefdp.pterodactylpanel.network.client.models.ServerDatabase
 fun DatabaseDisplay(
     database: ServerDatabase,
     hasDeletePermission: Boolean,
-    onShowDatabaseDetails: (databaseId: String) -> Unit,
-    onDeleteDatabase: (databaseId: String) -> Unit,
+    onShowDatabaseDetails: () -> Unit,
+    onDeleteDatabase: () -> Unit,
 ) {
     val databaseName = database.attributes.name
 
@@ -70,9 +70,7 @@ fun DatabaseDisplay(
                 IconButton(
                     icon = painterResource(R.drawable.visibility),
                     iconContentDescription = "Open Database Details",
-                    onClick = {
-                        onShowDatabaseDetails(database.attributes.id)
-                    },
+                    onClick = onShowDatabaseDetails,
                     border = true
                 )
 
@@ -86,9 +84,7 @@ fun DatabaseDisplay(
                         iconContentDescription = "Delete Database",
                         iconColor = MaterialTheme.colorScheme.error,
                         borderColor = MaterialTheme.colorScheme.error,
-                        onClick = {
-                            onDeleteDatabase(database.attributes.id)
-                        },
+                        onClick = onDeleteDatabase,
                         border = true
                     )
                 }
