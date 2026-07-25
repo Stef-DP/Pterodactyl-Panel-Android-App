@@ -91,7 +91,7 @@ data class ServerSubuser(
             uiName = "Read",
             uiDescription = "Allows a user to view the contents of a directory, but not view the contents of or download files"
         ),
-//// TODO
+
         @SerializedName("file.read-content")
         FILE_READ_CONTENT(
             value = "file.read-content",

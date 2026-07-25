@@ -51,14 +51,15 @@ fun EditScheduleTaskPopup(
             text = "Edit Task",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(
+                bottom = 12.dp
+            )
         )
 
         val scrollState = rememberScrollState()
 
         Column(
             modifier = Modifier
-                .padding(12.dp)
                 .verticalScrollWithScrollbar(
                     scrollState = scrollState,
                 )

@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups
 
+import android.R.attr.bottom
 import android.R.attr.enabled
 import android.content.Context
 import androidx.compose.foundation.background
@@ -70,8 +71,7 @@ fun ScheduleDetailsPopup(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -110,7 +110,6 @@ fun ScheduleDetailsPopup(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp)
                 .verticalScrollWithScrollbar(
                     scrollState = scrollState
                 )
@@ -261,9 +260,7 @@ fun ScheduleDetailsPopup(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    bottom = 12.dp
+                    top = 8.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {

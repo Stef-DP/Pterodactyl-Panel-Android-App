@@ -51,7 +51,9 @@ fun CreateNewDirectoryPopup(
             text = "Create New Directory",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(
+                bottom = 12.dp
+            )
         )
 
         TextInput(

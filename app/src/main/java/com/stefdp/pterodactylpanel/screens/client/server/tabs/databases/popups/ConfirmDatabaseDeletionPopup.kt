@@ -46,14 +46,12 @@ fun ConfirmDatabaseDeletionPopup(
             text = "Confirm database deletion",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(
+                bottom = 12.dp
+            )
         )
 
         Column(
-            modifier = Modifier.padding(
-                start = 12.dp,
-                end = 12.dp
-            ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val warningString = buildAnnotatedString {

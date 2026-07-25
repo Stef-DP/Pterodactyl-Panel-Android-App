@@ -43,7 +43,9 @@ fun EditUserPopup(
             text = "Modify Permissions for $userName",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(
+                bottom = 8.dp
+            )
         )
 
         val scrollState = rememberScrollState()
@@ -52,7 +54,6 @@ fun EditUserPopup(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f, fill = false)
-                .padding(8.dp)
                 .verticalScrollWithScrollbar(
                     scrollState = scrollState
                 )
@@ -68,7 +69,10 @@ fun EditUserPopup(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(
+                    top = 8.dp
+                ),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(

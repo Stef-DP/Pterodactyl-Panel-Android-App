@@ -33,19 +33,15 @@ fun DeleteSchedulePopup(
             viewModel.setScheduleToDelete(null)
         },
     ) {
-        Column(
-            modifier = Modifier.padding(12.dp)
-        ) {
-            Text(
-                text = "Delete Schedule",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+        Text(
+            text = "Delete Schedule",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
 
-            Text(
-                text = "All tasks will be removed and any running processes will be terminated"
-            )
-        }
+        Text(
+            text = "All tasks will be removed and any running processes will be terminated"
+        )
 
         Row(
             modifier = Modifier

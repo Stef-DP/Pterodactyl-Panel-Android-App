@@ -30,6 +30,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -82,13 +83,14 @@ fun DatabasesTab(
 
     val state by viewModel.state.collectAsState()
 
-    if (state.server?.attributes?.featureLimits?.databases == 0) {
+    if (server?.attributes?.featureLimits?.databases == 0) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Databases cannot be created for this server"
+                text = "Databases cannot be created for this server",
+                textAlign = TextAlign.Center
             )
         }
 
@@ -129,7 +131,7 @@ fun DatabasesTab(
             modifier = Modifier.fillMaxWidth()
         ) {
             val allocatedDatabases = state.databases.size
-            val databaseLimit = state.server?.attributes?.featureLimits?.databases ?: 0
+            val databaseLimit = server?.attributes?.featureLimits?.databases ?: 0
 
             Text(
                 text = "$allocatedDatabases of $databaseLimit databases have been allocated to this server",

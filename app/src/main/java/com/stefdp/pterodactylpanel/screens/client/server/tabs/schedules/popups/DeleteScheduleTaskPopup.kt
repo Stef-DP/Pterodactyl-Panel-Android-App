@@ -33,19 +33,15 @@ fun DeleteScheduleTaskPopup(
             viewModel.setScheduleTaskToDelete(null)
         },
     ) {
-        Column(
-            modifier = Modifier.padding(12.dp)
-        ) {
-            Text(
-                text = "Confirm task deletion",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+        Text(
+            text = "Confirm task deletion",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
 
-            Text(
-                text = "Are you sure you want to delete this task? This action cannot be undone"
-            )
-        }
+        Text(
+            text = "Are you sure you want to delete this task? This action cannot be undone"
+        )
 
         Row(
             modifier = Modifier

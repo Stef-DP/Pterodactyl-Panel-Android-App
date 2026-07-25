@@ -33,21 +33,15 @@ fun DeleteUserPopup(
             viewModel.setUserToDelete(null)
         },
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Text(
-                text = "Delete This Subuser?",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+        Text(
+            text = "Delete This Subuser?",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+        )
 
-            Text(
-                text = "Are you sure you wish to remove this subuser? They will have all access to this server revoked immediately"
-            )
-        }
+        Text(
+            text = "Are you sure you wish to remove this subuser? They will have all access to this server revoked immediately"
+        )
 
         Row(
             modifier = Modifier

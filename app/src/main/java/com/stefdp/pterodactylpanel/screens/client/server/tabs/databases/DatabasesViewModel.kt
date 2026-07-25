@@ -23,7 +23,6 @@ data class ClientServerDatabasesTabUiState(
     val isLoading: Boolean = false,
     val isServerOwner: Boolean = false,
     val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
-    val server: GetServerResponse? = null,
     val databases: List<ServerDatabase> = emptyList(),
     val databaseToDelete: String? = null,
     val databaseToShowDetails: String? = null,
@@ -44,7 +43,6 @@ class ClientServerDatabasesTabViewModel : ViewModel() {
 
         _state.update {
             it.copy(
-                server = server,
                 isServerOwner = server?.meta?.isServerOwner ?: false,
                 userPermissions = server?.meta?.userPermissions ?: emptyList()
             )

@@ -45,7 +45,6 @@ fun CreateUserPopup(
             text = "Create New Subuser",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
         )
 
         val scrollState = rememberScrollState()
@@ -54,7 +53,6 @@ fun CreateUserPopup(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f, fill = false)
-                .padding(8.dp)
                 .verticalScrollWithScrollbar(
                     scrollState = scrollState
                 )
@@ -84,7 +82,10 @@ fun CreateUserPopup(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(
+                    top = 8.dp
+                ),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
