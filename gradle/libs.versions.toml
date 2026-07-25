@@ -41,6 +41,9 @@ compose-charts = "0.2.5"
 # Code Highlighting
 highlight = "2.3.0"
 
+# Gravatar
+gravatar = "2.5.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -91,6 +94,10 @@ compose-charts = { group = "io.github.ehsannarmani", name = "compose-charts", ve
 # Code Highlighting
 highlight-view = { group = "com.neoutils.highlight", name = "highlight-view", version.ref = "highlight" }
 highlight-compose = { group = "com.neoutils.highlight", name = "highlight-compose", version.ref = "highlight" }
+
+# Gravatar
+gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
+gravatar-ui = { group = "com.gravatar", name = "gravatar-ui", version.ref = "gravatar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -117,4 +117,8 @@ dependencies {
     // Code Highlighting
     implementation(libs.highlight.view)
     implementation(libs.highlight.compose)
+
+    // Gravatar
+    implementation(libs.gravatar)
+    implementation(libs.gravatar.ui)
 }
