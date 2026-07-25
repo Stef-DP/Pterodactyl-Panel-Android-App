@@ -7,7 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
+import com.stefdp.pterodactylpanel.network.client.requests.createServerSubuser
+import com.stefdp.pterodactylpanel.network.client.requests.deleteServerSubuser
 import com.stefdp.pterodactylpanel.network.client.requests.listServerSubusers
+import com.stefdp.pterodactylpanel.network.client.requests.updateServerSubuser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +26,7 @@ data class ClientServerUsersTabUiState(
     val userToEdit: String? = null,
     val userToDelete: String? = null,
     val newUserEmail: TextFieldValue = TextFieldValue(""),
-    val newSubuserPermissions: Map<ServerSubuser.Permissions, Boolean> = ServerSubuser.Permissions.entries.associateWith { false }
+    val newSubuserPermissions: Map<ServerSubuser.Permissions, Boolean> = emptyMap()
 )
 
 class ClientServerUsersTabViewModel : ViewModel() {
@@ -101,39 +104,220 @@ class ClientServerUsersTabViewModel : ViewModel() {
         }
     }
 
-    fun hideCreateScheduleTaskPopup(skipLoading: Boolean = false) {
+    fun hideCreateNewUserPopup(skipLoading: Boolean = false) {
         if (_state.value.isLoading && !skipLoading) return
 
         _state.update {
             it.copy(
-                showCreateNewUserPopup = false
+                showCreateNewUserPopup = false,
+                newSubuserPermissions = ServerSubuser.Permissions.entries.associateWith { false }
             )
+        }
+    }
+
+    fun createUser(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val createUserRes = createServerSubuser(
+                context = context,
+                serverId = serverId!!,
+                email = _state.value.newUserEmail.text,
+                permissions = _state.value.newSubuserPermissions.filter { it.value }.keys.toList()
+            )
+
+            createUserRes
+                .onSuccess {
+                    updateUsers(
+                        context = context,
+                        onSuccess = {
+                            hideCreateNewUserPopup(skipLoading = true)
+
+                            onSuccess()
+                        },
+                        onError = onError
+                    )
+                }
+                .onFailure { error ->
+                    Logger.debug("ClientServerUsersTabViewModel", "Failed to create server subuser: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to create server subuser: ${error.message}")
+                }
         }
     }
 
     fun setUserToEdit(
-        userId: String?,
+        subuser: ServerSubuser?,
         skipLoading: Boolean = false
     ) {
-        if (userId == null && _state.value.isLoading && !skipLoading) return
+        if (subuser == null && _state.value.isLoading && !skipLoading) return
 
-        _state.update {
-            it.copy(
-                userToEdit = userId
+        if (subuser == null) {
+            resetNewSubuserPermissions()
+
+            _state.update {
+                it.copy(
+                    userToEdit = null,
+                    newSubuserPermissions = ServerSubuser.Permissions.entries.associateWith { false }
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    userToEdit = subuser.attributes.uuid,
+                    newSubuserPermissions = ServerSubuser.Permissions.entries.associateWith { permission -> subuser.attributes.permissions.contains(permission) }
+                )
+            }
+        }
+    }
+
+    fun updateUser(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            val userUuid = _state.value.userToEdit
+
+            if (userUuid == null) {
+                onError("Missing user UUID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val updateUserRes = updateServerSubuser(
+                context = context,
+                serverId = serverId!!,
+                userUuid = userUuid,
+                permissions = _state.value.newSubuserPermissions.filter { it.value }.keys.toList()
             )
+
+            updateUserRes
+                .onSuccess {
+                    updateUsers(
+                        context = context,
+                        onSuccess = {
+                            setUserToEdit(null, skipLoading = true)
+
+                            onSuccess()
+                        },
+                        onError = onError
+                    )
+                }
+                .onFailure { error ->
+                    Logger.debug("ClientServerUsersTabViewModel", "Failed to update server subuser: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to update server subuser: ${error.message}")
+                }
         }
     }
 
     fun setUserToDelete(
-        userId: String?,
+        subuser: ServerSubuser?,
         skipLoading: Boolean = false
     ) {
-        if (userId == null && _state.value.isLoading && !skipLoading) return
+        if (subuser == null && _state.value.isLoading && !skipLoading) return
 
         _state.update {
             it.copy(
-                userToDelete = userId
+                userToDelete = subuser?.attributes?.uuid
             )
+        }
+    }
+
+    fun deleteUser(
+        context: Context,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            if (serverId == null) {
+                onError("Missing server ID")
+
+                return@launch
+            }
+
+            val userUuid = _state.value.userToDelete
+
+            if (userUuid == null) {
+                onError("Missing user UUID")
+
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val deleteUserRes = deleteServerSubuser(
+                context = context,
+                serverId = serverId!!,
+                userUuid = userUuid
+            )
+
+            deleteUserRes
+                .onSuccess {
+                    updateUsers(
+                        context = context,
+                        onSuccess = {
+                            setUserToDelete(null, skipLoading = true)
+
+                            onSuccess()
+                        },
+                        onError = onError
+                    )
+                }
+                .onFailure { error ->
+                    Logger.debug("ClientServerUsersTabViewModel", "Failed to delete server subuser: ${error.message}")
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+
+                    onError("Failed to delete server subuser: ${error.message}")
+                }
         }
     }
 
@@ -156,7 +340,9 @@ class ClientServerUsersTabViewModel : ViewModel() {
     fun resetNewSubuserPermissions() {
         _state.update {
             it.copy(
-                newSubuserPermissions = ServerSubuser.Permissions.entries.associateWith { false }
+                newSubuserPermissions = ServerSubuser.Permissions.entries.associateWith { permission ->
+                    permission == ServerSubuser.Permissions.WEBSOCKET_CONNECT
+                }
             )
         }
     }

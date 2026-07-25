@@ -30,7 +30,8 @@ import com.stefdp.pterodactylpanel.utils.toAnnotatedString
 @Composable
 fun SubuserPermissions(
     permissions: Map<ServerSubuser.Permissions, Boolean>,
-    updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit
+    updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit,
+    enabled: Boolean = true
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -46,7 +47,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.CONTROL_RESTART,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -59,7 +61,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.USER_DELETE,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -75,7 +78,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.FILE_SFTP,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -89,7 +93,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.BACKUP_RESTORE,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -102,7 +107,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.ALLOCATION_DELETE,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -114,7 +120,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.STARTUP_DOCKER_IMAGE
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -128,7 +135,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.DATABASE_VIEW_PASSWORD
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -141,7 +149,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.SCHEDULE_DELETE,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -152,7 +161,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.SETTINGS_REINSTALL,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
 
         SubuserPermissionContainer(
@@ -162,7 +172,8 @@ fun SubuserPermissions(
                 ServerSubuser.Permissions.ACTIVITY_READ,
             ),
             permissions = permissions,
-            updatePermissions = updatePermissions
+            updatePermissions = updatePermissions,
+            enabled = enabled
         )
     }
 }
@@ -173,7 +184,8 @@ fun SubuserPermissionContainer(
     description: String,
     permissionGroup: List<ServerSubuser.Permissions>,
     permissions: Map<ServerSubuser.Permissions, Boolean>,
-    updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit
+    updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit,
+    enabled: Boolean = true
 ) {
     Column {
         Row(
@@ -206,7 +218,8 @@ fun SubuserPermissionContainer(
                     }
 
                     updatePermissions(newPermissions)
-                }
+                },
+                enabled = enabled
             )
         }
 
@@ -236,7 +249,8 @@ fun SubuserPermissionContainer(
                         newPermissions[permission] = !newPermissions[permission]!!
 
                         updatePermissions(newPermissions)
-                    }
+                    },
+                    enabled = enabled
                 )
             }
         }

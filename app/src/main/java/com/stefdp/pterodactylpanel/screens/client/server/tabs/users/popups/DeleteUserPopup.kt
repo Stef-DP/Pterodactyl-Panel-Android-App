@@ -1,15 +1,11 @@
 package com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups
 
-import android.R.attr.enabled
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,64 +17,35 @@ import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
-import com.stefdp.pterodactylpanel.components.TextInput
-import com.stefdp.pterodactylpanel.screens.client.server.components.SubuserPermissions
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.ClientServerUsersTabUiState
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.ClientServerUsersTabViewModel
-import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
-fun CreateUserPopup(
+fun DeleteUserPopup(
     activity: FragmentActivity,
     context: Context,
     state: ClientServerUsersTabUiState,
     viewModel: ClientServerUsersTabViewModel,
 ) {
     Popup(
-        showPopup = state.showCreateNewUserPopup,
+        showPopup = state.userToDelete != null,
         onDismissRequest = {
-            viewModel.hideCreateNewUserPopup()
+            viewModel.setUserToDelete(null)
         },
-        scrollable = false
-    ){
-        Text(
-            text = "Create New Subuser",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(8.dp)
-        )
-
-        val scrollState = rememberScrollState()
-
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f, fill = false)
-                .padding(8.dp)
-                .verticalScrollWithScrollbar(
-                    scrollState = scrollState
-                )
+                .padding(12.dp)
         ) {
-            TextInput(
-                value = state.newUserEmail,
-                onValueChange = {
-                    viewModel.setNewUserEmail(it)
-                },
-                label = "User Email",
-                description = "Enter the email address of the user you wish to invite as a subuser for this server",
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = "Delete This Subuser?",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
             )
 
-            Spacer(
-                modifier = Modifier.height(4.dp)
-            )
-
-            SubuserPermissions(
-                permissions = state.newSubuserPermissions,
-                updatePermissions = { permission ->
-                    viewModel.setNewSubuserPermissions(permission)
-                },
-                enabled = !state.isLoading,
+            Text(
+                text = "Are you sure you wish to remove this subuser? They will have all access to this server revoked immediately"
             )
         }
 
@@ -89,7 +56,7 @@ fun CreateUserPopup(
         ) {
             Button(
                 onClick = {
-                    viewModel.hideCreateNewUserPopup()
+                    viewModel.setUserToDelete(null)
                 },
                 buttonType = ButtonType.SECONDARY,
                 enabled = !state.isLoading
@@ -99,19 +66,8 @@ fun CreateUserPopup(
 
             Button(
                 onClick = {
-                    viewModel.createUser(
+                    viewModel.deleteUser(
                         context = context,
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "Subuser created successfully",
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        },
                         onError = { error ->
                             Notification.show(
                                 activity = activity,
@@ -122,18 +78,23 @@ fun CreateUserPopup(
                                     color = MaterialTheme.colorScheme.error
                                 )
                             }
+                        },
+                        onSuccess = {
+                            Notification.show(
+                                activity = activity,
+                                duration = 3000L
+                            ) {
+                                Text(
+                                    text = "Subuser deleted successfully",
+                                )
+                            }
                         }
                     )
                 },
-                buttonType = ButtonType.PRIMARY,
-                enabled =
-                    state.newUserEmail.text.isNotBlank() &&
-                            state.newSubuserPermissions.values.any { it } &&
-                            !state.isLoading
+                buttonType = ButtonType.ERROR,
+                enabled = !state.isLoading
             ) {
-                Text(
-                    text = "Invite User"
-                )
+                Text("Delete")
             }
         }
     }

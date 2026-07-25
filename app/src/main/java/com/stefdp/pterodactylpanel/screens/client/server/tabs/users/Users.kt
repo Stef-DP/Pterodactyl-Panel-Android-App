@@ -26,6 +26,8 @@ import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.SubuserDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups.CreateUserPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups.DeleteUserPopup
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups.EditUserPopup
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
@@ -60,6 +62,20 @@ fun UsersTab(
     val state by viewModel.state.collectAsState()
 
     CreateUserPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    EditUserPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    DeleteUserPopup(
         activity = activity,
         context = context,
         state = state,
@@ -124,10 +140,10 @@ fun UsersTab(
                 SubuserDisplay(
                     subuser = subuser,
                     onEdit = {
-
+                        viewModel.setUserToEdit(subuser)
                     },
                     onDelete = {
-
+                        viewModel.setUserToDelete(subuser)
                     },
                     hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.USER_DELETE),
                     hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.USER_UPDATE)

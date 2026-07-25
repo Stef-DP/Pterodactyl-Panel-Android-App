@@ -14,6 +14,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.gravatar.types.Email
 import com.gravatar.ui.components.atomic.Avatar
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.IconButton
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
@@ -65,32 +69,49 @@ fun SubuserDisplay(
                 )
             }
 
-            Row(
-                modifier = Modifier.weight(0.5f),
-                horizontalArrangement = Arrangement.End,
+            val localLoggedUser = LocalLoggedUser.current
+
+            val isSelf by rememberSaveable(
+                localLoggedUser,
+                subuser
             ) {
-                if (hasUpdatePermission) {
-                    IconButton(
-                        icon = painterResource(R.drawable.edit),
-                        iconContentDescription = "Edit User",
-                        onClick = onEdit,
-                        border = true
-                    )
+                val userEmail = localLoggedUser?.attributes?.email
+
+                if (userEmail == null) {
+                    mutableStateOf(true)
+                } else {
+                    mutableStateOf(userEmail == subuser.attributes.email)
                 }
+            }
 
-                if (hasDeletePermission) {
-                    Spacer(
-                        modifier = Modifier.width(8.dp)
-                    )
+            if (!isSelf) {
+                Row(
+                    modifier = Modifier.weight(0.5f),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    if (hasUpdatePermission) {
+                        IconButton(
+                            icon = painterResource(R.drawable.edit),
+                            iconContentDescription = "Edit User",
+                            onClick = onEdit,
+                            border = true
+                        )
+                    }
 
-                    IconButton(
-                        icon = painterResource(R.drawable.delete),
-                        iconContentDescription = "Delete Database",
-                        iconColor = MaterialTheme.colorScheme.error,
-                        borderColor = MaterialTheme.colorScheme.error,
-                        onClick = onDelete,
-                        border = true
-                    )
+                    if (hasDeletePermission) {
+                        Spacer(
+                            modifier = Modifier.width(8.dp)
+                        )
+
+                        IconButton(
+                            icon = painterResource(R.drawable.delete),
+                            iconContentDescription = "Delete Database",
+                            iconColor = MaterialTheme.colorScheme.error,
+                            borderColor = MaterialTheme.colorScheme.error,
+                            onClick = onDelete,
+                            border = true
+                        )
+                    }
                 }
             }
         }
@@ -128,7 +149,7 @@ fun SubuserDisplay(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = subuser.attributes.permissions.size.toString(),
+                    text = (subuser.attributes.permissions.size - 1).toString(),
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge
                 )
