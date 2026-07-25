@@ -27,6 +27,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.console.ConsoleTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.DatabasesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.FilesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.SchedulesTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.UsersTab
 
 @Composable
 fun ClientServerScreen(
@@ -85,7 +86,7 @@ fun ClientServerScreen(
             mutableStateOf(
                 value = (
                     ServerTab.entries.map { serverTab ->
-                        val permission = ServerSubuser.Permissions.fromTab(serverTab)
+                        val permissions = ServerSubuser.Permissions.fromTab(serverTab)
 
                         if (state.server == null) {
                             return@map null
@@ -93,8 +94,8 @@ fun ClientServerScreen(
 
                         if (
                             !state.server!!.meta.isServerOwner &&
-                            permission != null &&
-                            !state.server!!.meta.userPermissions.contains(permission)
+                            permissions != null &&
+                            state.server!!.meta.userPermissions.any { permissions.contains(it) }
                         ) {
                             return@map null
                         }
@@ -165,6 +166,16 @@ fun ClientServerScreen(
                     server = state.server
                 )
             }
+
+            ServerTab.USERS -> {
+                UsersTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    server = state.server
+                )
+            }
+
 
              else -> {
                  Text("WIP")

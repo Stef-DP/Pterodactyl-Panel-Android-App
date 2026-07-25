@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 data class ClientServerUiState(
     val isLoading: Boolean = true,
     val server: GetServerResponse? = null,
-    val currentTab: ServerTab = ServerTab.SCHEDULES, // TODO: set this back to CONSOLE
+    val currentTab: ServerTab = ServerTab.USERS, // TODO: set this back to CONSOLE
 )
 
 class ClientServerViewModel : ViewModel() {
@@ -73,9 +73,13 @@ class ClientServerViewModel : ViewModel() {
         val isServerOwner = _state.value.server?.meta?.isServerOwner ?: false
         val userPermissions = _state.value.server?.meta?.userPermissions ?: emptyList()
 
-        val permission = ServerSubuser.Permissions.fromTab(tab)
+        val permissions = ServerSubuser.Permissions.fromTab(tab)
 
-        if (permission != null && !isServerOwner && !userPermissions.contains(permission)) return
+        if (
+            permissions != null &&
+            !isServerOwner &&
+            !userPermissions.any { permissions.contains(it) }
+        ) return
 
         _state.update {
             it.copy(currentTab = tab)
