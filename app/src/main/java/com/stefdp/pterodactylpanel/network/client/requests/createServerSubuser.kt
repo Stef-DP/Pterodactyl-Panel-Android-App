@@ -15,7 +15,7 @@ suspend fun createServerSubuser(
     context: Context,
     serverId: String,
     email: String,
-    permissions: List<String>
+    permissions: List<ServerSubuser.Permissions>
 ): Result<ServerSubuser> {
     try {
         val secureStore = SecureStorage.getInstance(context)

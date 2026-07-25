@@ -15,7 +15,7 @@ suspend fun updateServerSubuser(
     context: Context,
     serverId: String,
     userUuid: String,
-    permissions: List<String>
+    permissions: List<ServerSubuser.Permissions>
 ): Result<ServerSubuser> {
     try {
         val secureStore = SecureStorage.getInstance(context)
