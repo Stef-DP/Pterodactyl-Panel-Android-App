@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerDatabase
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.requests.ListServerDatabasesQueryInclude
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.createServerDatabase
@@ -20,6 +21,8 @@ import kotlinx.coroutines.launch
 
 data class ClientServerDatabasesTabUiState(
     val isLoading: Boolean = false,
+    val isServerOwner: Boolean = false,
+    val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val server: GetServerResponse? = null,
     val databases: List<ServerDatabase> = emptyList(),
     val databaseToDelete: String? = null,
@@ -40,7 +43,11 @@ class ClientServerDatabasesTabViewModel : ViewModel() {
         serverId = server?.attributes?.identifier
 
         _state.update {
-            it.copy(server = server)
+            it.copy(
+                server = server,
+                isServerOwner = server?.meta?.isServerOwner ?: false,
+                userPermissions = server?.meta?.userPermissions ?: emptyList()
+            )
         }
     }
 

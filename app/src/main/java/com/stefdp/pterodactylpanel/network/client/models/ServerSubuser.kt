@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.network.client.models
 
 import com.google.gson.annotations.SerializedName
+import com.stefdp.pterodactylpanel.screens.client.server.ServerTab
 
 data class ServerSubuser(
     val `object`: String = "server_subuser",
@@ -135,5 +136,22 @@ data class ServerSubuser(
         ACTIVITY_READ("activity.read");
 
         override fun toString(): String = value
+
+        companion object {
+            fun fromTab(tab: ServerTab): Permissions? {
+                return when (tab) {
+                    ServerTab.FILES -> FILE_READ
+                    ServerTab.DATABASES -> DATABASE_READ
+                    ServerTab.SCHEDULES -> SCHEDULE_READ
+                    ServerTab.USERS -> USER_READ
+                    ServerTab.BACKUPS -> BACKUP_READ
+                    ServerTab.NETWORK -> ALLOCATION_READ
+                    ServerTab.STARTUP -> STARTUP_READ
+                    ServerTab.SETTINGS -> SETTINGS_RENAME
+                    ServerTab.ACTIVITY -> ACTIVITY_READ
+                    else -> null
+                }
+            }
+        }
     }
 }

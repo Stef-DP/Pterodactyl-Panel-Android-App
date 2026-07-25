@@ -42,6 +42,7 @@ import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.TextInput
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.DatabaseDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.popups.ConfirmDatabaseDeletionPopup
@@ -105,7 +106,9 @@ fun DatabasesTab(
         activity = activity,
         context = context,
         state = state,
-        viewModel = viewModel
+        viewModel = viewModel,
+        hasViewPasswordPermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_VIEW_PASSWORD),
+        hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_UPDATE)
     )
 
     ConfirmDatabaseDeletionPopup(
@@ -133,15 +136,17 @@ fun DatabasesTab(
                 modifier = Modifier.weight(1f)
             )
 
-            Button(
-                onClick = {
-                    viewModel.showCreateDatabasePopup()
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "New Database"
-                )
+            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_CREATE)) {
+                Button(
+                    onClick = {
+                        viewModel.showCreateDatabasePopup()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "New Database"
+                    )
+                }
             }
         }
 
@@ -194,6 +199,7 @@ fun DatabasesTab(
 
                 DatabaseDisplay(
                     database = database,
+                    hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_DELETE),
                     onShowDatabaseDetails = { databaseId ->
                         viewModel.setDatabaseToShowDetails(databaseId)
                     },

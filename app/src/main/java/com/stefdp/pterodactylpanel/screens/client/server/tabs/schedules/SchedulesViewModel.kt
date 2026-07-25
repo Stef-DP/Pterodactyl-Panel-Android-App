@@ -8,6 +8,7 @@ import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerSchedule
 import com.stefdp.pterodactylpanel.network.client.models.ServerScheduleTask
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.createServerSchedule
 import com.stefdp.pterodactylpanel.network.client.requests.createServerScheduleTask
@@ -25,6 +26,8 @@ import kotlinx.coroutines.launch
 
 data class ClientServerSchedulesTabUiState(
     val isLoading: Boolean = false,
+    val isServerOwner: Boolean = false,
+    val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val schedules: List<ServerSchedule> = emptyList(),
     val scheduleToDisplayDetails: Long? = null,
     val scheduleToDelete: Long? = null,
@@ -69,6 +72,13 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
 
     fun init(server: GetServerResponse?) {
         this.serverId = server?.attributes?.identifier
+
+        _state.update {
+            it.copy(
+                isServerOwner = server?.meta?.isServerOwner ?: false,
+                userPermissions = server?.meta?.userPermissions ?: emptyList()
+            )
+        }
     }
 
     fun updateSchedules(

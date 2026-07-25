@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,13 +16,7 @@ import kotlinx.coroutines.launch
 data class ClientServerUiState(
     val isLoading: Boolean = true,
     val server: GetServerResponse? = null,
-
     val currentTab: ServerTab = ServerTab.SCHEDULES, // TODO: set this back to CONSOLE
-
-
-
-
-
 )
 
 class ClientServerViewModel : ViewModel() {
@@ -75,6 +70,13 @@ class ClientServerViewModel : ViewModel() {
     }
 
     fun setCurrentTab(tab: ServerTab) {
+        val isServerOwner = _state.value.server?.meta?.isServerOwner ?: false
+        val userPermissions = _state.value.server?.meta?.userPermissions ?: emptyList()
+
+        val permission = ServerSubuser.Permissions.fromTab(tab)
+
+        if (permission != null && !isServerOwner && !userPermissions.contains(permission)) return
+
         _state.update {
             it.copy(currentTab = tab)
         }

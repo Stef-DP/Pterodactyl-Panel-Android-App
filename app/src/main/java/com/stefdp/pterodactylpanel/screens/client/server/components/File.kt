@@ -45,6 +45,11 @@ private val zipMimetypes = listOf(
 fun File(
     file: ServerFile,
     isSelected: Boolean,
+    hasReadContentPermission: Boolean,
+    hasDeletePermission: Boolean,
+    hasArchivePermission: Boolean,
+    hasUpdatePermission: Boolean,
+    hasCreatePermission: Boolean,
     onSelectionToggle: () -> Unit,
     onClick: () -> Unit,
     onRename: () -> Unit,
@@ -64,7 +69,7 @@ fun File(
             .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
             .background(MaterialTheme.colorScheme.outline)
             .clickable(
-                enabled = true,
+                enabled = hasReadContentPermission,
                 onClick = onClick
             )
             .padding(8.dp)
@@ -115,26 +120,32 @@ fun File(
             }
 
             MoreActionsButton(
-                items = listOf(
-                    MoreActionsMenuItem(
-                        label = "Rename",
-                        icon = painterResource(R.drawable.edit),
-                        iconDescription = "Rename",
-                        onClick = onRename
-                    ),
-                    MoreActionsMenuItem(
-                        label = "Move",
-                        icon = painterResource(R.drawable.arrow_top_left),
-                        iconDescription = "Move",
-                        onClick = onMove
-                    ),
-                    MoreActionsMenuItem(
-                        label = "Permissions",
-                        icon = painterResource(R.drawable.key),
-                        iconDescription = "Change Permissions",
-                        onClick = onChangePermissions
-                    ),
-                    if (file.attributes.isFile) {
+                items = listOfNotNull(
+                    if (hasUpdatePermission) {
+                        MoreActionsMenuItem(
+                            label = "Rename",
+                            icon = painterResource(R.drawable.edit),
+                            iconDescription = "Rename",
+                            onClick = onRename
+                        )
+                    } else null,
+                    if (hasUpdatePermission) {
+                        MoreActionsMenuItem(
+                            label = "Move",
+                            icon = painterResource(R.drawable.arrow_top_left),
+                            iconDescription = "Move",
+                            onClick = onMove
+                        )
+                    } else null,
+                    if (hasUpdatePermission) {
+                        MoreActionsMenuItem(
+                            label = "Permissions",
+                            icon = painterResource(R.drawable.key),
+                            iconDescription = "Change Permissions",
+                            onClick = onChangePermissions
+                        )
+                    } else null,
+                    if (file.attributes.isFile && hasCreatePermission) {
                         MoreActionsMenuItem(
                             label = "Copy",
                             icon = painterResource(R.drawable.content_copy),
@@ -142,22 +153,24 @@ fun File(
                             onClick = onCopy
                         )
                     } else null,
-                    if (file.attributes.isFile && file.attributes.mimetype in zipMimetypes) {
-                        MoreActionsMenuItem(
-                            label = "Unarchive",
-                            icon = painterResource(R.drawable.unarchive),
-                            iconDescription = "Unarchive",
-                            onClick = onUnarchive
-                        )
-                    } else {
-                        MoreActionsMenuItem(
-                            label = "Archive",
-                            icon = painterResource(R.drawable.folder_zip_fill),
-                            iconDescription = "Archive",
-                            onClick = onArchive
-                        )
-                    },
-                    if (file.attributes.isFile) {
+                    if (hasArchivePermission) {
+                        if (file.attributes.isFile && file.attributes.mimetype in zipMimetypes) {
+                            MoreActionsMenuItem(
+                                label = "Unarchive",
+                                icon = painterResource(R.drawable.unarchive),
+                                iconDescription = "Unarchive",
+                                onClick = onUnarchive
+                            )
+                        } else {
+                            MoreActionsMenuItem(
+                                label = "Archive",
+                                icon = painterResource(R.drawable.folder_zip_fill),
+                                iconDescription = "Archive",
+                                onClick = onArchive
+                            )
+                        }
+                    } else null,
+                    if (file.attributes.isFile && hasReadContentPermission) {
                         MoreActionsMenuItem(
                             label = "Download",
                             icon = painterResource(R.drawable.download),
@@ -165,15 +178,17 @@ fun File(
                             onClick = onDownload
                         )
                     } else null,
-                    MoreActionsMenuItem(
-                        label = "Delete",
-                        icon = painterResource(R.drawable.delete),
-                        iconDescription = "Delete",
-                        onClick = onDelete,
-                        labelColor = MaterialTheme.colorScheme.error,
-                        iconColor = MaterialTheme.colorScheme.error
-                    )
-                ).filterNotNull()
+                    if (hasDeletePermission) {
+                        MoreActionsMenuItem(
+                            label = "Delete",
+                            icon = painterResource(R.drawable.delete),
+                            iconDescription = "Delete",
+                            onClick = onDelete,
+                            labelColor = MaterialTheme.colorScheme.error,
+                            iconColor = MaterialTheme.colorScheme.error
+                        )
+                    } else null
+                )
             )
         }
     }
@@ -206,7 +221,12 @@ fun FilePreview() {
                         onArchive = {},
                         onUnarchive = {},
                         onDownload = {},
-                        onDelete = {}
+                        onDelete = {},
+                        hasDeletePermission = true,
+                        hasReadContentPermission = true,
+                        hasArchivePermission = true,
+                        hasUpdatePermission = true,
+                        hasCreatePermission = true
                     )
 
                     File(
@@ -221,7 +241,12 @@ fun FilePreview() {
                         onArchive = {},
                         onUnarchive = {},
                         onDownload = {},
-                        onDelete = {}
+                        onDelete = {},
+                        hasDeletePermission = true,
+                        hasReadContentPermission = true,
+                        hasArchivePermission = true,
+                        hasUpdatePermission = true,
+                        hasCreatePermission = true
                     )
 
                     File(
@@ -236,7 +261,12 @@ fun FilePreview() {
                         onArchive = {},
                         onUnarchive = {},
                         onDownload = {},
-                        onDelete = {}
+                        onDelete = {},
+                        hasDeletePermission = true,
+                        hasReadContentPermission = true,
+                        hasArchivePermission = true,
+                        hasUpdatePermission = true,
+                        hasCreatePermission = true
                     )
 
                     File(
@@ -251,7 +281,12 @@ fun FilePreview() {
                         onArchive = {},
                         onUnarchive = {},
                         onDownload = {},
-                        onDelete = {}
+                        onDelete = {},
+                        hasDeletePermission = true,
+                        hasReadContentPermission = true,
+                        hasArchivePermission = true,
+                        hasUpdatePermission = true,
+                        hasCreatePermission = true
                     )
 
                     File(
@@ -266,7 +301,12 @@ fun FilePreview() {
                         onArchive = {},
                         onUnarchive = {},
                         onDownload = {},
-                        onDelete = {}
+                        onDelete = {},
+                        hasDeletePermission = true,
+                        hasReadContentPermission = true,
+                        hasArchivePermission = true,
+                        hasUpdatePermission = true,
+                        hasCreatePermission = true
                     )
                 }
             }

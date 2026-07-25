@@ -74,12 +74,18 @@ fun MoreActionsButton(
             }
         }
 
+        val isEnabled = enabled && items.isNotEmpty()
+
         IconButton(
             icon = painterResource(R.drawable.more_horiz),
             iconContentDescription = "More options",
-            iconColor = MaterialTheme.colorScheme.onSurface,
+            iconColor = if (isEnabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            },
             onClick = { expanded = true },
-            enabled = enabled
+            enabled = isEnabled
         )
     }
 }

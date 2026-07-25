@@ -66,6 +66,7 @@ import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.WebSocketConnectionStatus
 import com.stefdp.pterodactylpanel.screens.client.server.components.ChartContainer
@@ -218,58 +219,60 @@ fun ConsoleTab(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-            ) {
-                BasicTextField(
-                    state = state.commandToSend,
+            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_CONSOLE)) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(40.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .onKeyEvent { keyEvent ->
-                            if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
-                                viewModel.sendCommand()
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    BasicTextField(
+                        state = state.commandToSend,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = MaterialTheme.shapes.small
+                            )
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
+                                    viewModel.sendCommand()
 
-                                true
-                            } else {
-                                false
+                                    true
+                                } else {
+                                    false
+                                }
+                            },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        onKeyboardAction = {
+                            viewModel.sendCommand()
+                        },
+                        textStyle = LocalTextStyle.current.copy(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontFamily = FontFamily.Monospace
+                        ),
+                        lineLimits = TextFieldLineLimits.SingleLine,
+                        decorator = { innerTextField ->
+                            Box(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                if (state.commandToSend.text.isEmpty()) {
+                                    Text(
+                                        text = "Type a command...",
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                                        fontFamily = FontFamily.Monospace
+                                    )
+                                }
+                                innerTextField()
                             }
                         },
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    onKeyboardAction = {
-                        viewModel.sendCommand()
-                    },
-                    textStyle = LocalTextStyle.current.copy(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontFamily = FontFamily.Monospace
-                    ),
-                    lineLimits = TextFieldLineLimits.SingleLine,
-                    decorator = { innerTextField ->
-                        Box(
-                            modifier = Modifier.padding(horizontal = 12.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            if (state.commandToSend.text.isEmpty()) {
-                                Text(
-                                    text = "Type a command...",
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                                    fontFamily = FontFamily.Monospace
-                                )
-                            }
-                            innerTextField()
-                        }
-                    },
-                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                )
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    )
+                }
             }
         }
 
@@ -281,71 +284,77 @@ fun ConsoleTab(
                 bottom = 12.dp
             )
         ) {
-            Button(
-                onClick = {
-                    viewModel.sendPowerSignal(ServerPowerSignal.START)
-                },
-                enabled = !isWebSocketLoading && state.status == ServerState.OFFLINE,
-                buttonType = ButtonType.PRIMARY,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Start",
-                    color = if (!isWebSocketLoading && state.status == ServerState.OFFLINE) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                    }
-                )
-            }
-
-            val disallowedRestartStates = listOf(
-                ServerState.INSTALLING,
-                ServerState.SUSPENDED,
-            )
-
-            Button(
-                onClick = {
-                    viewModel.sendPowerSignal(ServerPowerSignal.RESTART)
-                },
-                enabled = !isWebSocketLoading && state.status !in disallowedRestartStates,
-                buttonType = ButtonType.SECONDARY,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Restart",
-                    color = if (!isWebSocketLoading && state.status !in disallowedRestartStates) {
-                        MaterialTheme.colorScheme.onSecondary
-                    } else {
-                        MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
-                    }
-                )
-            }
-
-            Button(
-                onClick = {
-                    if (state.status == ServerState.STOPPING) {
-                        viewModel.sendPowerSignal(ServerPowerSignal.KILL)
-                    } else {
-                        viewModel.sendPowerSignal(ServerPowerSignal.STOP)
-                    }
-                },
-                enabled = !isWebSocketLoading && state.status != ServerState.OFFLINE,
-                buttonType = ButtonType.ERROR,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = if (state.status == ServerState.STOPPING) {
-                        "Kill"
-                    } else {
-                        "Stop"
+            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_START)) {
+                Button(
+                    onClick = {
+                        viewModel.sendPowerSignal(ServerPowerSignal.START)
                     },
-                    color = if (isWebSocketLoading || state.status == ServerState.OFFLINE || state.status == ServerState.STOPPING) {
-                        MaterialTheme.colorScheme.onError.copy(alpha = 0.5f)
-                    } else {
-                        MaterialTheme.colorScheme.onError
-                    }
+                    enabled = !isWebSocketLoading && state.status == ServerState.OFFLINE,
+                    buttonType = ButtonType.PRIMARY,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Start",
+                        color = if (!isWebSocketLoading && state.status == ServerState.OFFLINE) {
+                            MaterialTheme.colorScheme.onPrimary
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                        }
+                    )
+                }
+            }
+
+            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_RESTART)) {
+                val disallowedRestartStates = listOf(
+                    ServerState.INSTALLING,
+                    ServerState.SUSPENDED,
                 )
+
+                Button(
+                    onClick = {
+                        viewModel.sendPowerSignal(ServerPowerSignal.RESTART)
+                    },
+                    enabled = !isWebSocketLoading && state.status !in disallowedRestartStates,
+                    buttonType = ButtonType.SECONDARY,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Restart",
+                        color = if (!isWebSocketLoading && state.status !in disallowedRestartStates) {
+                            MaterialTheme.colorScheme.onSecondary
+                        } else {
+                            MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
+                        }
+                    )
+                }
+            }
+
+            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_STOP)) {
+                Button(
+                    onClick = {
+                        if (state.status == ServerState.STOPPING) {
+                            viewModel.sendPowerSignal(ServerPowerSignal.KILL)
+                        } else {
+                            viewModel.sendPowerSignal(ServerPowerSignal.STOP)
+                        }
+                    },
+                    enabled = !isWebSocketLoading && state.status != ServerState.OFFLINE,
+                    buttonType = ButtonType.ERROR,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = if (state.status == ServerState.STOPPING) {
+                            "Kill"
+                        } else {
+                            "Stop"
+                        },
+                        color = if (isWebSocketLoading || state.status == ServerState.OFFLINE || state.status == ServerState.STOPPING) {
+                            MaterialTheme.colorScheme.onError.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.onError
+                        }
+                    )
+                }
             }
         }
 

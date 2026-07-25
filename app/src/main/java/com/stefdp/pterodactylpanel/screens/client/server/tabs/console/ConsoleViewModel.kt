@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerPowerSignal
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.getServerWebsocket
 import com.stefdp.pterodactylpanel.network.websocket.WebSocket
@@ -30,6 +31,8 @@ import java.util.Locale
 
 data class ClientServerConsoleTabUiState(
     val server: GetServerResponse? = null,
+    val isServerOwner: Boolean = false,
+    val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val connectionState: WebSocketConnectionStatus = WebSocketConnectionStatus.DISCONNECTED,
     val logs: List<String> = emptyList(),
     val status: ServerState = ServerState.OFFLINE,
@@ -97,7 +100,11 @@ class ClientServerConsoleTabViewModel(
         serverId = server?.attributes?.identifier
 
         _state.update {
-            it.copy(server = server)
+            it.copy(
+                server = server,
+                isServerOwner = server?.meta?.isServerOwner ?: false,
+                userPermissions = server?.meta?.userPermissions ?: emptyList()
+            )
         }
     }
 

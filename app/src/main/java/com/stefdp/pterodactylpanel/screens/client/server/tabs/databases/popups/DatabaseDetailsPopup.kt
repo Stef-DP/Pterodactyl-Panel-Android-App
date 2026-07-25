@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.popups
 
+import android.R.attr.password
 import android.content.ClipData
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,8 @@ fun DatabaseDetailsPopup(
     context: Context,
     state: ClientServerDatabasesTabUiState,
     viewModel: ClientServerDatabasesTabViewModel,
+    hasViewPasswordPermission: Boolean,
+    hasUpdatePermission: Boolean,
 ) {
     val clipboardManager = LocalClipboard.current
 
@@ -124,29 +127,33 @@ fun DatabaseDetailsPopup(
 
             val password = database.relationships?.password?.attributes?.password ?: "Unknown Password"
 
-            TextInput(
-                label = "Password",
-                value = TextFieldValue(password),
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = painterResource(R.drawable.content_copy),
-                onTrailingIconPress = {
-                    coroutineScope.launch {
-                        val clipData = ClipData.newPlainText(
-                            "Database Password",
-                            password
-                        ).toClipEntry()
+            if (hasViewPasswordPermission) {
+                TextInput(
+                    label = "Password",
+                    value = TextFieldValue(password),
+                    onValueChange = {},
+                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    trailingIcon = painterResource(R.drawable.content_copy),
+                    onTrailingIconPress = {
+                        coroutineScope.launch {
+                            val clipData = ClipData.newPlainText(
+                                "Database Password",
+                                password
+                            ).toClipEntry()
 
-                        clipboardManager.setClipEntry(clipData)
+                            clipboardManager.setClipEntry(clipData)
+                        }
                     }
-                }
-            )
+                )
+            }
 
             val databaseName = database.name
 
             val jdbcConnectionString = if (database.relationships?.password?.attributes?.password != null) {
-                "jdbc:mysql://$username:$password@$endpoint/$databaseName"
+                "jdbc:mysql://$username${
+                    if (hasViewPasswordPermission) ":$password" else ""
+                }@$endpoint/$databaseName"
             } else {
                 "Unknown JDBC Connection String"
             }
@@ -185,38 +192,40 @@ fun DatabaseDetailsPopup(
                     Text("Close")
                 }
 
-                Button(
-                    onClick = {
-                        viewModel.rotateDatabasePassword(
-                            context = context,
-                            databaseId = database.id,
-                            onError = { error ->
-                                Notification.show(
-                                    activity = activity,
-                                    duration = 3000L
-                                ) {
-                                    Text(
-                                        text = error,
-                                        color = MaterialTheme.colorScheme.error
-                                    )
+                if (hasUpdatePermission) {
+                    Button(
+                        onClick = {
+                            viewModel.rotateDatabasePassword(
+                                context = context,
+                                databaseId = database.id,
+                                onError = { error ->
+                                    Notification.show(
+                                        activity = activity,
+                                        duration = 3000L
+                                    ) {
+                                        Text(
+                                            text = error,
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                },
+                                onSuccess = {
+                                    Notification.show(
+                                        activity = activity,
+                                        duration = 3000L
+                                    ) {
+                                        Text(
+                                            text = "Database password rotated successfully",
+                                        )
+                                    }
                                 }
-                            },
-                            onSuccess = {
-                                Notification.show(
-                                    activity = activity,
-                                    duration = 3000L
-                                ) {
-                                    Text(
-                                        text = "Database password rotated successfully",
-                                    )
-                                }
-                            }
-                        )
-                    },
-                    buttonType = ButtonType.ERROR,
-                    enabled = !state.isLoading
-                ) {
-                    Text("Rotate Password")
+                            )
+                        },
+                        buttonType = ButtonType.ERROR,
+                        enabled = !state.isLoading
+                    ) {
+                        Text("Rotate Password")
+                    }
                 }
             }
         }

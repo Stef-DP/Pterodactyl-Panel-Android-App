@@ -22,6 +22,7 @@ import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.console.ConsoleTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.DatabasesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.FilesTab
@@ -78,11 +79,26 @@ fun ClientServerScreen(
 
         val tabs by remember(
             applicationApiKeyValidity,
-            state.currentTab
+            state.currentTab,
+            state.server,
         ) {
             mutableStateOf(
                 value = (
                     ServerTab.entries.map { serverTab ->
+                        val permission = ServerSubuser.Permissions.fromTab(serverTab)
+
+                        if (state.server == null) {
+                            return@map null
+                        }
+
+                        if (
+                            !state.server!!.meta.isServerOwner &&
+                            permission != null &&
+                            !state.server!!.meta.userPermissions.contains(permission)
+                        ) {
+                            return@map null
+                        }
+
                         Tab(
                             label = serverTab.label,
                             id = serverTab.id,

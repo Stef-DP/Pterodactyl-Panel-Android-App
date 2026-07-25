@@ -48,6 +48,8 @@ fun ScheduleDetailsPopup(
     context: Context,
     state: ClientServerSchedulesTabUiState,
     viewModel: ClientServerSchedulesTabViewModel,
+    hasUpdatePermission: Boolean,
+    hasDeletePermission: Boolean
 ) {
     Popup(
         showPopup =
@@ -265,87 +267,95 @@ fun ScheduleDetailsPopup(
                 ),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        viewModel.setScheduleToDelete(schedule.id)
-                    },
-                    buttonType = ButtonType.ERROR,
-                    enabled = !state.isLoading
+            if (hasDeletePermission || hasUpdatePermission) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Delete")
-                }
+                    if (hasDeletePermission) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                viewModel.setScheduleToDelete(schedule.id)
+                            },
+                            buttonType = ButtonType.ERROR,
+                            enabled = !state.isLoading
+                        ) {
+                            Text("Delete")
+                        }
+                    }
 
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        viewModel.setScheduleToEdit(schedule)
-                    },
-                    buttonType = ButtonType.SECONDARY,
-                    enabled = !state.isLoading
-                ) {
-                    Text("Edit")
+                    if (hasUpdatePermission) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                viewModel.setScheduleToEdit(schedule)
+                            },
+                            buttonType = ButtonType.SECONDARY,
+                            enabled = !state.isLoading
+                        ) {
+                            Text("Edit")
+                        }
+                    }
                 }
             }
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (schedule.relationships.tasks.data.isNotEmpty()) {
+            if (hasUpdatePermission) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    if (schedule.relationships.tasks.data.isNotEmpty()) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                viewModel.executeSchedule(
+                                    context = context,
+                                    onError = { error ->
+                                        Notification.show(
+                                            activity = activity,
+                                            duration = 3000L
+                                        ) {
+                                            Text(
+                                                text = error,
+                                                color = MaterialTheme.colorScheme.onError
+                                            )
+                                        }
+                                    },
+                                    onSuccess = {
+                                        Notification.show(
+                                            activity = activity,
+                                            duration = 3000L
+                                        ) {
+                                            Text(
+                                                text = "Schedule executed successfully",
+                                                color = MaterialTheme.colorScheme.onBackground
+                                            )
+                                        }
+                                    }
+                                )
+                            },
+                            buttonType = ButtonType.PRIMARY,
+                            enabled = !state.isLoading,
+                        ) {
+                            Text(
+                                text = "Run Now"
+                            )
+                        }
+                    }
+
                     Button(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            viewModel.executeSchedule(
-                                context = context,
-                                onError = { error ->
-                                    Notification.show(
-                                        activity = activity,
-                                        duration = 3000L
-                                    ) {
-                                        Text(
-                                            text = error,
-                                            color = MaterialTheme.colorScheme.onError
-                                        )
-                                    }
-                                },
-                                onSuccess = {
-                                    Notification.show(
-                                        activity = activity,
-                                        duration = 3000L
-                                    ) {
-                                        Text(
-                                            text = "Schedule executed successfully",
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    }
-                                }
-                            )
+                            viewModel.showCreateScheduleTaskPopup()
                         },
                         buttonType = ButtonType.PRIMARY,
-                        enabled = !state.isLoading,
+                        enabled = !state.isLoading
                     ) {
-                        Text(
-                            text = "Run Now"
-                        )
+                        Text("New Task")
                     }
-                }
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        viewModel.showCreateScheduleTaskPopup()
-                    },
-                    buttonType = ButtonType.PRIMARY,
-                    enabled = !state.isLoading
-                ) {
-                    Text("New Task")
                 }
             }
         }

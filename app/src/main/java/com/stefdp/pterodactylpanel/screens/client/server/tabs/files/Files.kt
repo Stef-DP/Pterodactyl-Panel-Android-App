@@ -55,6 +55,7 @@ import com.stefdp.pterodactylpanel.components.Checkbox
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.TextInput
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
 import com.stefdp.pterodactylpanel.screens.client.server.components.File
@@ -152,107 +153,109 @@ fun FilesTab(
     )
 
     Column {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(
-                onClick = {
-                    viewModel.showCreateNewDirectoryPopup()
-                },
-                enabled = !state.isLoading,
-                buttonType = ButtonType.SECONDARY,
-                modifier = Modifier.weight(1f)
+        if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_CREATE)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Create Directory",
-                    color = if (state.isLoading) {
-                        MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
-                    } else {
-                        MaterialTheme.colorScheme.onSecondary
+                Button(
+                    onClick = {
+                        viewModel.showCreateNewDirectoryPopup()
                     },
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            val filePicker = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.OpenMultipleDocuments()
-            ) { uris ->
-                if (uris.isNotEmpty()) {
-                    val files = uris.mapNotNull { uri ->
-                        getFileInfo(context, uri)?.let { (name, _, mimeType) ->
-                            UploadFile(
-                                uri = uri,
-                                name = name,
-                                mimeType = mimeType
-                            )
-                        }
-                    }
-
-                    viewModel.uploadFiles(
-                        context = context,
-                        files = files,
-                        onError = { error ->
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = error,
-                                    color = MaterialTheme.colorScheme.error
-                                )
-                            }
+                    enabled = !state.isLoading,
+                    buttonType = ButtonType.SECONDARY,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Create Directory",
+                        color = if (state.isLoading) {
+                            MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.onSecondary
                         },
-                        onSuccess = {
-                            Notification.show(
-                                activity = activity,
-                                duration = 3000L
-                            ) {
-                                Text(
-                                    text = "Files uploaded successfully",
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                val filePicker = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.OpenMultipleDocuments()
+                ) { uris ->
+                    if (uris.isNotEmpty()) {
+                        val files = uris.mapNotNull { uri ->
+                            getFileInfo(context, uri)?.let { (name, _, mimeType) ->
+                                UploadFile(
+                                    uri = uri,
+                                    name = name,
+                                    mimeType = mimeType
                                 )
                             }
+                        }
+
+                        viewModel.uploadFiles(
+                            context = context,
+                            files = files,
+                            onError = { error ->
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = error,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            },
+                            onSuccess = {
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = "Files uploaded successfully",
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        filePicker.launch(arrayOf("*/*"))
+                    },
+                    enabled = !state.isLoading,
+                    buttonType = ButtonType.PRIMARY,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Upload",
+                        color = if (state.isLoading) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
                         }
                     )
                 }
-            }
 
-            Button(
-                onClick = {
-                    filePicker.launch(arrayOf("*/*"))
-                },
-                enabled = !state.isLoading,
-                buttonType = ButtonType.PRIMARY,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "Upload",
-                    color = if (state.isLoading) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary
-                    }
-                )
-            }
-
-            Button(
-                onClick = {
-                    viewModel.setCreateNewFile(true)
-                    viewModel.setSelectedLanguage(HighlightLanguage.PLAIN_TEXT)
-                },
-                enabled = !state.isLoading,
-                buttonType = ButtonType.PRIMARY,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = "New File",
-                    color = if (state.isLoading) {
-                        MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                    } else {
-                        MaterialTheme.colorScheme.onPrimary
-                    }
-                )
+                Button(
+                    onClick = {
+                        viewModel.setCreateNewFile(true)
+                        viewModel.setSelectedLanguage(HighlightLanguage.PLAIN_TEXT)
+                    },
+                    enabled = !state.isLoading,
+                    buttonType = ButtonType.PRIMARY,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "New File",
+                        color = if (state.isLoading) {
+                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.onPrimary
+                        }
+                    )
+                }
             }
         }
 
@@ -382,6 +385,11 @@ fun FilesTab(
                     File(
                         file = file,
                         isSelected = file.attributes.name in state.selectedFiles,
+                        hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_DELETE),
+                        hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_UPDATE),
+                        hasCreatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_CREATE),
+                        hasArchivePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_ARCHIVE),
+                        hasReadContentPermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_READ_CONTENT),
                         onSelectionToggle = {
                             viewModel.toggleFileSelection(file.attributes.name)
                         },
@@ -544,94 +552,108 @@ fun FilesTab(
             }
         }
 
-        AnimatedVisibility(
-            visible = state.selectedFiles.isNotEmpty()
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = 4.dp
-                ),
-                verticalAlignment = Alignment.CenterVertically
+        val bottomUiPermissions = listOf(
+            ServerSubuser.Permissions.FILE_DELETE,
+            ServerSubuser.Permissions.FILE_UPDATE,
+            ServerSubuser.Permissions.FILE_ARCHIVE
+        )
+
+        if (state.isServerOwner || state.userPermissions.any { it in bottomUiPermissions }) {
+            AnimatedVisibility(
+                visible = state.selectedFiles.isNotEmpty()
             ) {
-                Button(
-                    onClick = {
-                        viewModel.showMoveFilesPopup()
-                    },
-                    enabled = !state.isLoading,
-                    buttonType = ButtonType.PRIMARY,
-                    modifier = Modifier.weight(1f)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = 4.dp
+                    ),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = "Move",
-                        color = if (state.isLoading) {
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                        } else {
-                            MaterialTheme.colorScheme.onPrimary
-                        },
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.archiveFiles(
-                            context = context,
-                            onError = { error ->
-                                Notification.show(
-                                    activity = activity,
-                                    duration = 3000L
-                                ) {
-                                    Text(
-                                        text = error,
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                }
+                    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_UPDATE)) {
+                        Button(
+                            onClick = {
+                                viewModel.showMoveFilesPopup()
                             },
-                            onSuccess = {
-                                Notification.show(
-                                    activity = activity,
-                                    duration = 3000L
-                                ) {
-                                    Text(
-                                        text = "Files archived successfully",
-                                    )
-                                }
-                            }
-                        )
-                    },
-                    enabled = !state.isLoading,
-                    buttonType = ButtonType.PRIMARY,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Archive",
-                        color = if (state.isLoading) {
-                            MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
-                        } else {
-                            MaterialTheme.colorScheme.onPrimary
+                            enabled = !state.isLoading,
+                            buttonType = ButtonType.PRIMARY,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "Move",
+                                color = if (state.isLoading) {
+                                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimary
+                                },
+                                textAlign = TextAlign.Center
+                            )
                         }
-                    )
-                }
+                    }
 
-                Button(
-                    onClick = {
-                        viewModel.showDeleteFilesPopup()
-                    },
-                    enabled = !state.isLoading,
-                    buttonType = ButtonType.ERROR,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Delete",
-                        color = if (state.isLoading) {
-                            MaterialTheme.colorScheme.onError.copy(alpha = 0.5f)
-                        } else {
-                            MaterialTheme.colorScheme.onError
+                    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_ARCHIVE)) {
+                        Button(
+                            onClick = {
+                                viewModel.archiveFiles(
+                                    context = context,
+                                    onError = { error ->
+                                        Notification.show(
+                                            activity = activity,
+                                            duration = 3000L
+                                        ) {
+                                            Text(
+                                                text = error,
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    },
+                                    onSuccess = {
+                                        Notification.show(
+                                            activity = activity,
+                                            duration = 3000L
+                                        ) {
+                                            Text(
+                                                text = "Files archived successfully",
+                                            )
+                                        }
+                                    }
+                                )
+                            },
+                            enabled = !state.isLoading,
+                            buttonType = ButtonType.PRIMARY,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "Archive",
+                                color = if (state.isLoading) {
+                                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimary
+                                }
+                            )
                         }
-                    )
+                    }
+
+                    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_DELETE)) {
+                        Button(
+                            onClick = {
+                                viewModel.showDeleteFilesPopup()
+                            },
+                            enabled = !state.isLoading,
+                            buttonType = ButtonType.ERROR,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "Delete",
+                                color = if (state.isLoading) {
+                                    MaterialTheme.colorScheme.onError.copy(alpha = 0.5f)
+                                } else {
+                                    MaterialTheme.colorScheme.onError
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }

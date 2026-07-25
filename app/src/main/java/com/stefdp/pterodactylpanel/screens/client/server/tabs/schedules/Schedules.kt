@@ -43,6 +43,7 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.ScheduleDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.CreateNewSchedulePopup
@@ -98,7 +99,9 @@ fun SchedulesTab(
         activity = activity,
         context = context,
         state = state,
-        viewModel = viewModel
+        viewModel = viewModel,
+        hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.SCHEDULE_DELETE),
+        hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.SCHEDULE_UPDATE)
     )
 
     DeleteSchedulePopup(
@@ -136,21 +139,23 @@ fun SchedulesTab(
         viewModel = viewModel
     )
 
-    Button(
-        onClick = {
-            viewModel.showCreateSchedulePopup()
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                top = 12.dp,
-                start = 12.dp,
-                end = 12.dp
+    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.SCHEDULE_CREATE)) {
+        Button(
+            onClick = {
+                viewModel.showCreateSchedulePopup()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    top = 12.dp,
+                    start = 12.dp,
+                    end = 12.dp
+                )
+        ) {
+            Text(
+                text = "Create Schedule"
             )
-    ) {
-        Text(
-            text = "Create Schedule"
-        )
+        }
     }
 
     if (state.schedules.isEmpty()) {

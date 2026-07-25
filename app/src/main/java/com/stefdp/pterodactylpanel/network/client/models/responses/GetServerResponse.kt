@@ -2,6 +2,7 @@ package com.stefdp.pterodactylpanel.network.client.models.responses
 
 import com.google.gson.annotations.SerializedName
 import com.stefdp.pterodactylpanel.network.client.models.Server
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 
 data class GetServerResponse(
     val `object`: String = "server",
@@ -10,6 +11,6 @@ data class GetServerResponse(
 ) {
     data class Meta(
         @SerializedName("is_server_owner") val isServerOwner: Boolean,
-        @SerializedName("user_permissions") val userPermissions: List<String>
+        @SerializedName("user_permissions") val userPermissions: List<ServerSubuser.Permissions>
     )
 }

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerFile
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.requests.RenameServerFilesBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.UpdateServerFilesPermissionsBody
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
@@ -43,6 +44,8 @@ import kotlinx.coroutines.withContext
 
 data class ClientServerFilesTabUiState(
     val isLoading: Boolean = false,
+    val isServerOwner: Boolean = false,
+    val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val files: List<ServerFile> = emptyList(),
     val selectedFiles: List<String> = emptyList(),
     val filesPath: List<String> = listOf(
@@ -95,7 +98,9 @@ class ClientServerFilesTabViewModel : ViewModel() {
 
             _state.update {
                 it.copy(
-                    selectedUri = fileDownloadFolderUri
+                    selectedUri = fileDownloadFolderUri,
+                    isServerOwner = server?.meta?.isServerOwner ?: false,
+                    userPermissions = server?.meta?.userPermissions ?: emptyList()
                 )
             }
 

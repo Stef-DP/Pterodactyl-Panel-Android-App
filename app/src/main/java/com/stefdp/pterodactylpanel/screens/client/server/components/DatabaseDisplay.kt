@@ -26,6 +26,7 @@ import com.stefdp.pterodactylpanel.network.client.models.ServerDatabase
 @Composable
 fun DatabaseDisplay(
     database: ServerDatabase,
+    hasDeletePermission: Boolean,
     onShowDatabaseDetails: (databaseId: String) -> Unit,
     onDeleteDatabase: (databaseId: String) -> Unit,
 ) {
@@ -75,20 +76,22 @@ fun DatabaseDisplay(
                     border = true
                 )
 
-                Spacer(
-                    modifier = Modifier.width(8.dp)
-                )
+                if (hasDeletePermission) {
+                    Spacer(
+                        modifier = Modifier.width(8.dp)
+                    )
 
-                IconButton(
-                    icon = painterResource(R.drawable.delete),
-                    iconContentDescription = "Delete Database",
-                    iconColor = MaterialTheme.colorScheme.error,
-                    borderColor = MaterialTheme.colorScheme.error,
-                    onClick = {
-                        onDeleteDatabase(database.attributes.id)
-                    },
-                    border = true
-                )
+                    IconButton(
+                        icon = painterResource(R.drawable.delete),
+                        iconContentDescription = "Delete Database",
+                        iconColor = MaterialTheme.colorScheme.error,
+                        borderColor = MaterialTheme.colorScheme.error,
+                        onClick = {
+                            onDeleteDatabase(database.attributes.id)
+                        },
+                        border = true
+                    )
+                }
             }
         }
     }
