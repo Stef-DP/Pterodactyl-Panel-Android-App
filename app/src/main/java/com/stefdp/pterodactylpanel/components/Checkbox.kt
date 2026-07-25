@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.components
 
+import android.R.attr.checked
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,12 +26,13 @@ import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 
 @Composable
 fun Checkbox(
+    modifier: Modifier = Modifier,
     checked: Boolean,
     onToggle: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     Box(
-        Modifier
+        modifier
             .size(20.dp)
             .clip(RoundedCornerShape(4.dp))
             .border(
