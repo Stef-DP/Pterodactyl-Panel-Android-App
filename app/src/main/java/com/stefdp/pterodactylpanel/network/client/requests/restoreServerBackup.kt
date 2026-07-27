@@ -14,7 +14,7 @@ suspend fun restoreServerBackup(
     context: Context,
     serverId: String,
     backupId: String,
-    truncate: Boolean? = null,
+    truncate: Boolean,
 ): Result<Unit> {
     try {
         val secureStore = SecureStorage.getInstance(context)
