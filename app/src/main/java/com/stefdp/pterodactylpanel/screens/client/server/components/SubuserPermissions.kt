@@ -31,6 +31,7 @@ import com.stefdp.pterodactylpanel.utils.toAnnotatedString
 fun SubuserPermissions(
     permissions: Map<ServerSubuser.Permissions, Boolean>,
     updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit,
+    allowedPermissions: List<ServerSubuser.Permissions>,
     enabled: Boolean = true
 ) {
     Column(
@@ -48,6 +49,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -62,6 +64,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -79,6 +82,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -94,6 +98,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -108,6 +113,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -121,6 +127,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -136,6 +143,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -150,6 +158,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -162,6 +171,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
 
@@ -173,6 +183,7 @@ fun SubuserPermissions(
             ),
             permissions = permissions,
             updatePermissions = updatePermissions,
+            allowedPermissions = allowedPermissions,
             enabled = enabled
         )
     }
@@ -185,6 +196,7 @@ fun SubuserPermissionContainer(
     permissionGroup: List<ServerSubuser.Permissions>,
     permissions: Map<ServerSubuser.Permissions, Boolean>,
     updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit,
+    allowedPermissions: List<ServerSubuser.Permissions>,
     enabled: Boolean = true
 ) {
     Column {
@@ -214,12 +226,14 @@ fun SubuserPermissionContainer(
                     val currentState = permissionGroup.all { permissions[it] == true }
 
                     permissionGroup.forEach { permission ->
-                        newPermissions[permission] = !currentState
+                        if (permission in allowedPermissions) {
+                            newPermissions[permission] = !currentState
+                        }
                     }
 
                     updatePermissions(newPermissions)
                 },
-                enabled = enabled
+                enabled = enabled && permissionGroup.any { it in allowedPermissions }
             )
         }
 
@@ -250,7 +264,7 @@ fun SubuserPermissionContainer(
 
                         updatePermissions(newPermissions)
                     },
-                    enabled = enabled
+                    enabled = enabled && permission in allowedPermissions
                 )
             }
         }
@@ -284,6 +298,12 @@ fun Preview() {
                         ServerSubuser.Permissions.CONTROL_START to false,
                         ServerSubuser.Permissions.CONTROL_STOP to true,
                         ServerSubuser.Permissions.CONTROL_RESTART to false,
+                    ),
+                    allowedPermissions = listOf(
+                        ServerSubuser.Permissions.CONTROL_CONSOLE,
+                        ServerSubuser.Permissions.CONTROL_START,
+                        ServerSubuser.Permissions.CONTROL_STOP,
+                        ServerSubuser.Permissions.CONTROL_RESTART,
                     ),
                     updatePermissions = {
                     }

@@ -77,6 +77,7 @@ fun CreateUserPopup(
                     viewModel.setNewSubuserPermissions(permission)
                 },
                 enabled = !state.isLoading,
+                allowedPermissions = state.userPermissions
             )
         }
 

@@ -64,6 +64,7 @@ fun EditUserPopup(
                     viewModel.setNewSubuserPermissions(permission)
                 },
                 enabled = !state.isLoading,
+                allowedPermissions = state.userPermissions
             )
         }
 
