@@ -650,7 +650,7 @@ interface PterodactylClientApiService {
         @Path("backupId") backupId: String,
     ): Response<ServerBackup>
 
-    @GET("servers/{serverId}/backups/{backupId}")
+    @DELETE("servers/{serverId}/backups/{backupId}")
     suspend fun deleteServerBackup(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
