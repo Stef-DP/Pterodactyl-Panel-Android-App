@@ -187,7 +187,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                 )
             }
 
-            val fileName = backup.attributes.name
+            val fileName = backup.attributes.name + ".tar.gz"
 
             val tempFile = java.io.File(context.cacheDir, fileName)
             val tempDestinationPath = tempFile.absolutePath
@@ -222,7 +222,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                             val fileUri = DocumentsContract.createDocument(
                                 context.contentResolver,
                                 docUri,
-                                "application/gzip",
+                                "application/octet-stream",
                                 fileName
                             )
 
