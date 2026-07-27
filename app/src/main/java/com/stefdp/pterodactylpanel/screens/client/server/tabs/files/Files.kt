@@ -6,22 +6,16 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,19 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.fromHtml
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,24 +36,19 @@ import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Checkbox
 import com.stefdp.pterodactylpanel.components.Notification
-import com.stefdp.pterodactylpanel.components.Popup
-import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.UploadFile
-import com.stefdp.pterodactylpanel.screens.client.server.components.File
+import com.stefdp.pterodactylpanel.screens.client.server.components.FileDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.CreateNewDirectoryPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.DeleteFilesPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.MoveRenameFilesPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.UpdateFilePermissionsPopup
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
-import com.stefdp.pterodactylpanel.utils.PermissionModeRegex
 import com.stefdp.pterodactylpanel.utils.getFileInfo
 import com.stefdp.pterodactylpanel.utils.linuxPermissionToInt
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
-import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
-import java.nio.file.Paths
 
 @Composable
 fun FilesTab(
@@ -382,7 +360,7 @@ fun FilesTab(
                         }
                     }
 
-                    File(
+                    FileDisplay(
                         file = file,
                         isSelected = file.attributes.name in state.selectedFiles,
                         hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_DELETE),
@@ -526,7 +504,7 @@ fun FilesTab(
                             if (state.selectedUri == null) {
                                 directoryPicker.launch(null)
 
-                                return@File
+                                return@FileDisplay
                             }
 
                             viewModel.performDownload(

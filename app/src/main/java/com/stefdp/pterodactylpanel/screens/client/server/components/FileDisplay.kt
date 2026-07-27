@@ -42,7 +42,7 @@ private val zipMimetypes = listOf(
 )
 
 @Composable
-fun File(
+fun FileDisplay(
     file: ServerFile,
     isSelected: Boolean,
     hasReadContentPermission: Boolean,
@@ -196,7 +196,7 @@ fun File(
 
 @Preview
 @Composable
-fun FilePreview() {
+fun FileDisplayPreview() {
     PterodactylPanelTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -209,7 +209,7 @@ fun FilePreview() {
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.padding(12.dp)
                 ) {
-                    File(
+                    FileDisplay(
                         file = testFile,
                         isSelected = true,
                         onSelectionToggle = {},
@@ -229,7 +229,7 @@ fun FilePreview() {
                         hasCreatePermission = true
                     )
 
-                    File(
+                    FileDisplay(
                         file = testFile,
                         isSelected = false,
                         onSelectionToggle = {},
@@ -249,7 +249,7 @@ fun FilePreview() {
                         hasCreatePermission = true
                     )
 
-                    File(
+                    FileDisplay(
                         file = testFolder,
                         isSelected = true,
                         onSelectionToggle = {},
@@ -269,7 +269,7 @@ fun FilePreview() {
                         hasCreatePermission = true
                     )
 
-                    File(
+                    FileDisplay(
                         file = testZipFile,
                         isSelected = false,
                         onSelectionToggle = {},
@@ -289,7 +289,7 @@ fun FilePreview() {
                         hasCreatePermission = true
                     )
 
-                    File(
+                    FileDisplay(
                         file = testFile,
                         isSelected = false,
                         onSelectionToggle = {},

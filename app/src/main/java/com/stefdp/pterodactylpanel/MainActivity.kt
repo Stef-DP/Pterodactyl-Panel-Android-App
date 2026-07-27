@@ -95,7 +95,7 @@ val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: 
 }
 
 // TODO: trim() all user input fields
-// TODO: fix left/right padding on most Popups
+// TODO: add "show others' servers" switch in main servers list
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
@@ -254,9 +254,7 @@ fun AppNavigation(
 ) {
     NavHost(
         navController = navController,
-        // TODO: revert this to LoadingScreen, it's just for debug
-        startDestination = ClientServerScreen(serverId = "86623816"),
-//        startDestination = LoadingScreen,
+        startDestination = if (IS_DEBUG) ClientServerScreen(serverId = "86623816") else LoadingScreen,
         enterTransition = {
             slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(400))
         },
