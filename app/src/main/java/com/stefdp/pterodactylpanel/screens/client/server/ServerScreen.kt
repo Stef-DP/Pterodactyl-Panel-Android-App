@@ -23,6 +23,7 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.BackupsTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.console.ConsoleTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.DatabasesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.FilesTab
@@ -176,6 +177,14 @@ fun ClientServerScreen(
                 )
             }
 
+            ServerTab.BACKUPS -> {
+                BackupsTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    server = state.server
+                )
+            }
 
              else -> {
                  Text("WIP")
