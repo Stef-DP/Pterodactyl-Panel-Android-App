@@ -52,7 +52,8 @@ fun RestoreBackupPopup(
             checked = state.restoreDeleteAllFiles,
             onCheckedChange = {
                 viewModel.setRestoreDeleteAllFiles(it)
-            }
+            },
+            enabled = !state.isLoading
         )
 
         Row(

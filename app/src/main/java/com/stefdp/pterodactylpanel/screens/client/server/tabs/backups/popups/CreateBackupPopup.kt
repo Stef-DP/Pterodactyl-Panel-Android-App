@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,6 +45,9 @@ fun CreateBackupPopup(
             text = "Create Server Backup",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(
+                bottom = 8.dp
+            )
         )
 
         val scrollState = rememberScrollState()
@@ -61,7 +65,8 @@ fun CreateBackupPopup(
                 },
                 label = "Backup Name",
                 description = "If provided, the name that should be used to reference this backup",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -73,7 +78,8 @@ fun CreateBackupPopup(
                 description = "Enter the files or folders to ignore while generating this backup. Leave blank to use the contents of the .pteroignore file in the root of the server directory if present. Wildcard matching of files and folders is supported in addition to negating a rule by prefixing the path with an exclamation point",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp)
+                    .height(150.dp),
+                enabled = !state.isLoading
             )
 
             Switch(
@@ -82,13 +88,17 @@ fun CreateBackupPopup(
                     viewModel.setNewBackupLocked(it)
                 },
                 label = "Locked",
-                description = "Prevents this backup from being deleted until explicitly unlocked"
+                description = "Prevents this backup from being deleted until explicitly unlocked",
+                enabled = !state.isLoading
             )
         }
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(
+                    top = 8.dp
+                ),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
@@ -122,16 +132,16 @@ fun CreateBackupPopup(
                                 duration = 3000L
                             ) {
                                 Text(
-                                    text = "Backup restored successfully",
+                                    text = "Backup started successfully",
                                 )
                             }
                         }
                     )
                 },
-                buttonType = ButtonType.ERROR,
+                buttonType = ButtonType.PRIMARY,
                 enabled = !state.isLoading
             ) {
-                Text("Restore")
+                Text("Start Backup")
             }
         }
     }
