@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -138,12 +139,17 @@ fun DatabasesTab(
                 modifier = Modifier.weight(1f)
             )
 
+            Spacer(
+                modifier = Modifier.width(4.dp)
+            )
+
             if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_CREATE)) {
                 Button(
                     onClick = {
                         viewModel.showCreateDatabasePopup()
                     },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enabled = allocatedDatabases < databaseLimit && !state.isLoading
                 ) {
                     Text(
                         text = "New Database"
@@ -162,7 +168,8 @@ fun DatabasesTab(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "It looks like you have no databases"
+                    text = "It looks like you have no databases",
+                    textAlign = TextAlign.Center
                 )
             }
 
