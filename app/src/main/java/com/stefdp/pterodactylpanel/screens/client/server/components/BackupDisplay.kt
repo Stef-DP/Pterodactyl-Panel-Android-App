@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -71,19 +73,25 @@ fun BackupDisplay(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = if (backup.attributes.isLocked) {
-                        painterResource(R.drawable.lock)
-                    } else {
-                        painterResource(R.drawable.inventory_2_fill)
-                    },
-                    tint = if (backup.attributes.isLocked) {
-                        Yellow
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                    },
-                    contentDescription = "Backup Icon",
-                )
+                if (backup.attributes.checksum == null) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(25.dp)
+                    )
+                } else {
+                    Icon(
+                        painter = if (backup.attributes.isLocked) {
+                            painterResource(R.drawable.lock)
+                        } else {
+                            painterResource(R.drawable.inventory_2_fill)
+                        },
+                        tint = if (backup.attributes.isLocked) {
+                            Yellow
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                        },
+                        contentDescription = "Backup Icon",
+                    )
+                }
 
                 Column {
                     Text(
