@@ -3,7 +3,6 @@ package com.stefdp.pterodactylpanel.screens.client.server.tabs.backups
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.text.TextUtils.isEmpty
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +37,6 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.BackupDisplay
-import com.stefdp.pterodactylpanel.screens.client.server.components.DatabaseDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.CreateBackupPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.DeleteBackupPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.RestoreBackupPopup
@@ -79,7 +77,7 @@ fun BackupsTab(
 
     val state by viewModel.state.collectAsState()
 
-    if (server?.attributes?.featureLimits?.databases == 0) {
+    if (server?.attributes?.featureLimits?.backups == 0) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -134,20 +132,6 @@ fun BackupsTab(
             modifier = Modifier.height(4.dp)
         )
 
-        if (state.backups.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "It looks like there are no backups currently stored for this server",
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            return@Column
-        }
-
         RestoreBackupPopup(
             activity = activity,
             context = context,
@@ -175,6 +159,20 @@ fun BackupsTab(
             state = state,
             viewModel = viewModel
         )
+
+        if (state.backups.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "It looks like there are no backups currently stored for this server",
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            return@Column
+        }
 
         val lazyColumnListState = rememberLazyListState()
 
@@ -292,7 +290,6 @@ fun BackupsTab(
                     hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_DELETE),
                     hasRestorePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_RESTORE),
                     hasDownloadPermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_DOWNLOAD),
-                    enabled = !state.isLoading
                 )
             }
         }
