@@ -1,9 +1,5 @@
 package com.stefdp.pterodactylpanel.screens.client.server.components
 
-import android.R.attr.contentDescription
-import android.R.attr.fontWeight
-import android.R.attr.label
-import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,7 +47,6 @@ fun BackupDisplay(
     hasDeletePermission: Boolean,
     hasRestorePermission: Boolean,
     hasDownloadPermission: Boolean,
-    enabled: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -156,7 +151,6 @@ fun BackupDisplay(
                         )
                     } else null
                 ),
-                enabled = enabled
             )
         }
 
@@ -235,7 +229,6 @@ fun BackupDisplayPreview() {
                         onLock = {},
                         onUnlock = {},
                         onDelete = {},
-                        enabled = true
                     )
                 }
             }
