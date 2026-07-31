@@ -91,6 +91,34 @@ fun BackupsTab(
         return
     }
 
+    RestoreBackupPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    UnlockBackupPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    DeleteBackupPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
+    CreateBackupPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -130,34 +158,6 @@ fun BackupsTab(
 
         Spacer(
             modifier = Modifier.height(4.dp)
-        )
-
-        RestoreBackupPopup(
-            activity = activity,
-            context = context,
-            state = state,
-            viewModel = viewModel
-        )
-
-        UnlockBackupPopup(
-            activity = activity,
-            context = context,
-            state = state,
-            viewModel = viewModel
-        )
-
-        DeleteBackupPopup(
-            activity = activity,
-            context = context,
-            state = state,
-            viewModel = viewModel
-        )
-
-        CreateBackupPopup(
-            activity = activity,
-            context = context,
-            state = state,
-            viewModel = viewModel
         )
 
         if (state.backups.isEmpty()) {
