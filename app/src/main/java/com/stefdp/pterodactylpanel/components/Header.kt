@@ -71,7 +71,7 @@ fun Header(
         ) {
             IconButton(
                 onClick = onMenuClick,
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier.padding(start = 16.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.menu),

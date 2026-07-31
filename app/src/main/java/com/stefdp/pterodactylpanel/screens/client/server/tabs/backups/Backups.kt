@@ -157,7 +157,7 @@ fun BackupsTab(
         }
 
         Spacer(
-            modifier = Modifier.height(4.dp)
+            modifier = Modifier.height(8.dp)
         )
 
         if (state.backups.isEmpty()) {
@@ -183,7 +183,7 @@ fun BackupsTab(
                 .verticalLazyScrollbar(
                     listState = lazyColumnListState
                 ),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (state.isLoading) {
                 items(10) {

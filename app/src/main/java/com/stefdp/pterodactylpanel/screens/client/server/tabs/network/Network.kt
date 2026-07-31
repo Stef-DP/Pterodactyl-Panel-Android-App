@@ -137,7 +137,7 @@ fun NetworkTab(
         }
 
         Spacer(
-            modifier = Modifier.height(4.dp)
+            modifier = Modifier.height(8.dp)
         )
 
         val lazyColumnListState = rememberLazyListState()
@@ -149,9 +149,9 @@ fun NetworkTab(
                 .verticalLazyScrollbar(
                     listState = lazyColumnListState
                 ),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            if (state.isLoading) {
+            if (state.allocations.isEmpty()) {
                 items(5) {
                     Box(
                         modifier = Modifier
@@ -172,6 +172,7 @@ fun NetworkTab(
 
                 AllocationDisplay(
                     allocation = allocation,
+                    isLoading = state.isLoading,
                     onDelete = {
                         viewModel.setAllocationToDelete(allocation.attributes.id)
                     },

@@ -40,6 +40,7 @@ import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 
 @Composable
 fun AllocationDisplay(
+    isLoading: Boolean,
     allocation: ServerAllocation,
     onMakePrimary: () -> Unit,
     onDelete: () -> Unit,
@@ -92,11 +93,11 @@ fun AllocationDisplay(
                 .fillMaxWidth()
                 .height(100.dp),
             singleLine = false,
-            enabled = hasUpdatePermission,
+            enabled = hasUpdatePermission && !isLoading,
             trailingIcon = painterResource(R.drawable.save),
             onTrailingIconPress = {
                 onUpdateNotes(notes.text)
-            }
+            },
         )
 
         Row(
@@ -112,8 +113,8 @@ fun AllocationDisplay(
                         ButtonType.TERTIARY
                     },
                     modifier = Modifier.weight(1f),
-                    enabled = !allocation.attributes.isDefault,
-                    hideDisabledColors = true
+                    enabled = !allocation.attributes.isDefault && !isLoading,
+                    hideDisabledColors = !isLoading
                 ) {
                     Text(
                         text = if (allocation.attributes.isDefault) {
@@ -129,7 +130,8 @@ fun AllocationDisplay(
                 Button(
                     onClick = onDelete,
                     buttonType = ButtonType.ERROR,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enabled = !isLoading
                 ) {
                     Text("Delete")
                 }
@@ -207,7 +209,8 @@ fun AllocationDisplayPreview() {
                         hasUpdatePermission = true,
                         onMakePrimary = {},
                         onDelete = {},
-                        onUpdateNotes = {}
+                        onUpdateNotes = {},
+                        isLoading = false
                     )
 
                     AllocationDisplay(
@@ -216,7 +219,8 @@ fun AllocationDisplayPreview() {
                         hasUpdatePermission = true,
                         onMakePrimary = {},
                         onDelete = {},
-                        onUpdateNotes = {}
+                        onUpdateNotes = {},
+                        isLoading = false
                     )
                 }
             }

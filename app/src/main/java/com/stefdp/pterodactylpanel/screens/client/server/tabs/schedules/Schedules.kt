@@ -182,7 +182,7 @@ fun SchedulesTab(
                 listState = lazyColumnListState
             )
             .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         if (state.isLoading) {
             items(10) {
