@@ -39,24 +39,29 @@ fun getOutlinedTextFieldColors(displayDisabledColor: Boolean = true) = OutlinedT
 )
 
 @Composable
-fun getButtonColors(buttonType: ButtonType = ButtonType.PRIMARY): ButtonColors {
+fun getButtonColors(
+    buttonType: ButtonType = ButtonType.PRIMARY,
+    hideDisabledColors: Boolean = false
+): ButtonColors {
     val containerColor = when (buttonType) {
         ButtonType.PRIMARY -> MaterialTheme.colorScheme.primary
         ButtonType.SECONDARY -> MaterialTheme.colorScheme.secondary
+        ButtonType.TERTIARY -> MaterialTheme.colorScheme.background
         ButtonType.ERROR -> MaterialTheme.colorScheme.error
     }
 
     val contentColor = when (buttonType) {
         ButtonType.PRIMARY -> MaterialTheme.colorScheme.onPrimary
         ButtonType.SECONDARY -> MaterialTheme.colorScheme.onSecondary
+        ButtonType.TERTIARY -> MaterialTheme.colorScheme.onSurface
         ButtonType.ERROR -> MaterialTheme.colorScheme.onError
     }
 
     return ButtonDefaults.buttonColors().copy(
         containerColor = containerColor,
         contentColor = contentColor,
-        disabledContainerColor = containerColor.copy(alpha = 0.5f),
-        disabledContentColor = contentColor.copy(alpha = 0.5f)
+        disabledContainerColor = if (hideDisabledColors) containerColor else containerColor.copy(alpha = 0.5f),
+        disabledContentColor = if (hideDisabledColors) contentColor else contentColor.copy(alpha = 0.5f)
     )
 }
 

@@ -33,12 +33,13 @@ fun Button(
     enabled: Boolean = true,
     buttonType: ButtonType = ButtonType.PRIMARY,
     shape: Shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp),
-    colors: ButtonColors = getButtonColors(buttonType),
+    hideDisabledColors: Boolean = false,
+    colors: ButtonColors = getButtonColors(buttonType, hideDisabledColors),
     elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
     border: BorderStroke? = null,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     interactionSource: MutableInteractionSource? = null,
-    content: @Composable (RowScope.() -> Unit)
+    content: @Composable (RowScope.() -> Unit),
 ) {
     NativeButton(
         onClick = onClick,
@@ -57,6 +58,7 @@ fun Button(
 enum class ButtonType {
     PRIMARY,
     SECONDARY,
+    TERTIARY,
     ERROR,
 }
 
