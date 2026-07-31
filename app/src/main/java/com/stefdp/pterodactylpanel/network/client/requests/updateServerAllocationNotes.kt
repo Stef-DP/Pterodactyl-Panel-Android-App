@@ -14,7 +14,7 @@ private const val TAG = "ClientApi[updateServerAllocationNotes]"
 suspend fun updateServerAllocationNotes(
     context: Context,
     serverId: String,
-    allocationId: String,
+    allocationId: Long,
     notes: String
 ): Result<ServerAllocation> {
     try {

@@ -521,7 +521,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("allocationId") allocationId: String,
+        @Path("allocationId") allocationId: Long,
     ): Response<ServerAllocation>
 
     @POST("servers/{serverId}/network/allocations/{allocationId}")
@@ -530,7 +530,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("allocationId") allocationId: String,
+        @Path("allocationId") allocationId: Long,
         @Body data: UpdateServerAllocationNotesBody
     ): Response<ServerAllocation>
 
@@ -540,7 +540,7 @@ interface PterodactylClientApiService {
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
-        @Path("allocationId") allocationId: String,
+        @Path("allocationId") allocationId: Long,
     ): Response<Unit>
 
     @GET("servers/{serverId}/users")

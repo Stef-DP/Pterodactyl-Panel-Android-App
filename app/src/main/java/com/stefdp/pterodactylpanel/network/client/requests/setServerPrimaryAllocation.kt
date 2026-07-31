@@ -13,7 +13,7 @@ private const val TAG = "ClientApi[setServerPrimaryAllocation]"
 suspend fun setServerPrimaryAllocation(
     context: Context,
     serverId: String,
-    allocationId: String,
+    allocationId: Long,
 ): Result<ServerAllocation> {
     try {
         val secureStore = SecureStorage.getInstance(context)

@@ -12,7 +12,7 @@ private const val TAG = "ClientApi[deleteServerAllocation]"
 suspend fun deleteServerAllocation(
     context: Context,
     serverId: String,
-    allocationId: String,
+    allocationId: Long,
 ): Result<Unit> {
     try {
         val secureStore = SecureStorage.getInstance(context)
