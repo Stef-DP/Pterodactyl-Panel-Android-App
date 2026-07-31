@@ -34,7 +34,7 @@ This will create an APK in `app/build/outputs/apk/release/app-release(-unsigned)
 
 # Support
 
-You can support me by sponsoring on [GitHub](https://github.com/sponsors/Stef-00012) or donatng on [Stripe](https://donate.stripe.com/00w3cvef7bHyfyHdoK63K00) or [Ko-Fi](https://ko-fi.com/stef_dp)
+You can support me by sponsoring on [GitHub](https://github.com/sponsors/Stef-DP) or donatng on [Stripe](https://donate.stripe.com/00w3cvef7bHyfyHdoK63K00) or [Ko-Fi](https://ko-fi.com/stef_dp)
 
 # AI Usage
 
