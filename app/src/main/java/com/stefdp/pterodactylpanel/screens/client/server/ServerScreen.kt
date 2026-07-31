@@ -27,6 +27,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.BackupsTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.console.ConsoleTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.DatabasesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.FilesTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.network.NetworkTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.SchedulesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.UsersTab
 
@@ -179,6 +180,15 @@ fun ClientServerScreen(
 
             ServerTab.BACKUPS -> {
                 BackupsTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    server = state.server
+                )
+            }
+
+            ServerTab.NETWORK -> {
+                NetworkTab(
                     navController = navController,
                     context = context,
                     activity = activity,
