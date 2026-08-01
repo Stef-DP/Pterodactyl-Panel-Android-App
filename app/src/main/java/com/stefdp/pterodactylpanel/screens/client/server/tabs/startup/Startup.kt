@@ -28,20 +28,20 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Select
 import com.stefdp.pterodactylpanel.components.SelectOption
 import com.stefdp.pterodactylpanel.components.TextInput
+import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.StartupVariableDisplay
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
 @Composable
 fun StartupTab(
-    navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerStartupTabViewModel = viewModel(),
@@ -70,6 +70,12 @@ fun StartupTab(
     val state by viewModel.state.collectAsState()
 
     val lazyColumnListState = rememberLazyListState()
+
+    val hasUpdatePermission = hasPermission(
+        isServerOwner = state.isServerOwner,
+        userPermissions = state.userPermissions,
+        requiredPermission = ServerSubuser.Permissions.STARTUP_UPDATE
+    )
 
     LazyColumn(
         state = lazyColumnListState,
@@ -173,7 +179,11 @@ fun StartupTab(
                             }
                         )
                     },
-                    enabled = !state.isLoading
+                    enabled = !state.isLoading && hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.STARTUP_DOCKER_IMAGE
+                    )
                 )
             }
         }
@@ -200,7 +210,7 @@ fun StartupTab(
 
             StartupVariableDisplay(
                 variable = variable,
-                enabled = !state.isLoading,
+                enabled = !state.isLoading && hasUpdatePermission,
                 onVariableUpdate = { newValue ->
                     viewModel.updateVariable(
                         context = context,
