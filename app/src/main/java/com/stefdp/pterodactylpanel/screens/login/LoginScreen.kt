@@ -7,6 +7,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,6 +50,7 @@ fun LoginScreen(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
+    innerPadding: PaddingValues,
     viewModel: LoginViewModel = viewModel()
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -65,7 +67,9 @@ fun LoginScreen(
     val state by viewModel.state.collectAsState()
 
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding),
         contentAlignment = Alignment.Center
     ) {
         Box(

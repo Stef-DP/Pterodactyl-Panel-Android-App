@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ fun ClientServersScreen(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
+    innerPadding: PaddingValues,
     viewModel: ClientServersViewModel = viewModel()
 ) {
     val localLoggedUser = LocalLoggedUser.current
@@ -80,7 +82,9 @@ fun ClientServersScreen(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
     ) {
         LazyColumn(
             state = lazyColumnListState,

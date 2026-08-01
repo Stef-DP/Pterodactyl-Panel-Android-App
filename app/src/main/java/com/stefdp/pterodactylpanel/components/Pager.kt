@@ -58,7 +58,11 @@ fun Pager(
     enabled: Boolean
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 12.dp
+            ),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         val firstPageButtonEnabled = enabled && currentPage > 1

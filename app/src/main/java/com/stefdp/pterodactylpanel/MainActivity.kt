@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -65,6 +66,7 @@ import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.loading.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.login.LoginScreen
@@ -73,7 +75,6 @@ import com.stefdp.pterodactylpanel.utils.NetworkMonitor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 
 const val BASE_CORNER_RADIUS = 10
 
@@ -182,10 +183,14 @@ class MainActivity : FragmentActivity() {
                             color = MaterialTheme.colorScheme.background
                         ) {
                             ModalNavigationDrawer(
-                                modifier = Modifier.padding(innerPadding),
+                                modifier = Modifier.fillMaxSize(),
                                 drawerState = drawerState,
                                 drawerContent = {
                                     Sidebar(
+                                        modifier = Modifier.padding(
+                                            top = innerPadding.calculateTopPadding(),
+                                            bottom = innerPadding.calculateBottomPadding()
+                                        ),
                                         onItemClick = { screen ->
                                             coroutineScope.launch { drawerState.close() }
                                             navController.navigate(screen)
@@ -196,12 +201,13 @@ class MainActivity : FragmentActivity() {
                                         }
                                     )
                                 },
-//                                gesturesEnabled = currentDestination?.route !in invalidRoutes
+                                gesturesEnabled = currentDestination?.route !in invalidRoutes
                             ) {
                                 AppNavigation(
                                     navController = navController,
                                     context = context,
-                                    activity = activity
+                                    activity = activity,
+                                    innerPadding = innerPadding
                                 )
                             }
                         }
@@ -250,11 +256,12 @@ class MainActivity : FragmentActivity() {
 fun AppNavigation(
     navController: NavHostController,
     context: Context,
-    activity: FragmentActivity
+    activity: FragmentActivity,
+    innerPadding: PaddingValues
 ) {
     NavHost(
         navController = navController,
-        startDestination = if (IS_DEBUG) ClientServerScreen(serverId = "cb71da0a") else LoadingScreen,
+        startDestination = if (IS_DEBUG) DEBUG_SCREEN else LoadingScreen,
         enterTransition = {
             slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(400))
         },
@@ -272,7 +279,8 @@ fun AppNavigation(
             LoadingScreen(
                 navController = navController,
                 activity = activity,
-                context = context
+                context = context,
+                innerPadding = innerPadding
             )
         }
 
@@ -280,7 +288,8 @@ fun AppNavigation(
             LoginScreen(
                 navController = navController,
                 activity = activity,
-                context = context
+                context = context,
+                innerPadding = innerPadding
             )
         }
 
@@ -288,7 +297,8 @@ fun AppNavigation(
             ClientServersScreen(
                 navController = navController,
                 activity = activity,
-                context = context
+                context = context,
+                innerPadding = innerPadding
             )
         }
 
@@ -303,6 +313,7 @@ fun AppNavigation(
                 navController = navController,
                 activity = activity,
                 context = context,
+                innerPadding = innerPadding,
                 serverId = clientServerScreen.serverId,
                 directory = clientServerScreen.directory
             )

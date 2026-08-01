@@ -5,6 +5,9 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
@@ -23,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,6 +58,7 @@ fun ClientServerScreen(
     navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
+    innerPadding: PaddingValues,
     serverId: String,
     directory: String? = null,
     viewModel: ClientServerViewModel = viewModel()
@@ -88,15 +93,16 @@ fun ClientServerScreen(
         )
     }
 
-    Column {
-        Logger.debug("ClientServerScreen", LocalApplicationApiKeyValidity.current.toString())
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
+    ) {
         val applicationApiKeyValidity = LocalApplicationApiKeyValidity.current
         val openInNewIcon = painterResource(R.drawable.open_in_new)
-
-        LaunchedEffect(applicationApiKeyValidity) {
-            Logger.debug("ClientServerScreen", "Application API key validity changed: $applicationApiKeyValidity")
-        }
 
         val tabs by remember(
             applicationApiKeyValidity,
@@ -149,126 +155,134 @@ fun ClientServerScreen(
             }
         )
 
-        if (state.server?.attributes?.isSuspended == true) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 24.dp
-                        )
-                        .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                        .background(MaterialTheme.colorScheme.onBackground)
-                        .padding(12.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier
+                .padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+                )
+        ) {
+            if (state.server?.attributes?.isSuspended == true) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.cloud_off),
-                        contentDescription = "Suspended",
-                        tint = MaterialTheme.colorScheme.surfaceDim,
+                    Column(
                         modifier = Modifier
-                            .requiredSize(60.dp)
                             .padding(
-                                bottom = 8.dp
+                                horizontal = 24.dp
                             )
-                    )
+                            .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                            .background(MaterialTheme.colorScheme.onBackground)
+                            .padding(12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.cloud_off),
+                            contentDescription = "Suspended",
+                            tint = MaterialTheme.colorScheme.surfaceDim,
+                            modifier = Modifier
+                                .requiredSize(60.dp)
+                                .padding(
+                                    bottom = 8.dp
+                                )
+                        )
 
-                    Text(
-                        text = "Server Suspended",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.surfaceDim,
-                        textAlign = TextAlign.Center
-                    )
+                        Text(
+                            text = "Server Suspended",
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.surfaceDim,
+                            textAlign = TextAlign.Center
+                        )
 
-                    Text(
-                        text = "This server is suspended and cannot be accessed",
-                        color = MaterialTheme.colorScheme.surfaceDim,
-                        textAlign = TextAlign.Center
-                    )
+                        Text(
+                            text = "This server is suspended and cannot be accessed",
+                            color = MaterialTheme.colorScheme.surfaceDim,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
-        }
 
-        when (state.currentTab) {
-            ServerTab.CONSOLE -> {
-                ConsoleTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
+            when (state.currentTab) {
+                ServerTab.CONSOLE -> {
+                    ConsoleTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.FILES -> {
+                    FilesTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server,
+                        directory = directory,
+                    )
+                }
+
+                ServerTab.DATABASES -> {
+                    DatabasesTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.SCHEDULES -> {
+                    SchedulesTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.USERS -> {
+                    UsersTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.BACKUPS -> {
+                    BackupsTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.NETWORK -> {
+                    NetworkTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.STARTUP -> {
+                    StartupTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server
+                    )
+                }
+
+                ServerTab.SETTINGS -> {
+                    SettingsTab(
+                        context = context,
+                        activity = activity,
+                        server = state.server,
+                    )
+                }
+
+                else -> {
+                    Text("WIP")
+                }
             }
-
-            ServerTab.FILES -> {
-                FilesTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server,
-                    directory = directory,
-                )
-            }
-
-            ServerTab.DATABASES -> {
-                DatabasesTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
-            }
-
-            ServerTab.SCHEDULES -> {
-                SchedulesTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
-            }
-
-            ServerTab.USERS -> {
-                UsersTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
-            }
-
-            ServerTab.BACKUPS -> {
-                BackupsTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
-            }
-
-            ServerTab.NETWORK -> {
-                NetworkTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
-            }
-
-            ServerTab.STARTUP -> {
-                StartupTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server
-                )
-            }
-
-            ServerTab.SETTINGS -> {
-                SettingsTab(
-                    context = context,
-                    activity = activity,
-                    server = state.server,
-                )
-            }
-
-             else -> {
-                 Text("WIP")
-             }
         }
     }
 }

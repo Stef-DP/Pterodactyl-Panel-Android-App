@@ -39,7 +39,8 @@ const val DRAWER_CORNER_RADIUS = BASE_CORNER_RADIUS + 5
 fun Sidebar(
     onItemClick: (AppScreen) -> Unit,
     navController: NavHostController,
-    closeSidebar: () -> Unit
+    closeSidebar: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
@@ -47,6 +48,7 @@ fun Sidebar(
     val currentUser = LocalLoggedUser.current
 
     ModalDrawerSheet(
+        modifier = modifier,
         drawerContainerColor = MaterialTheme.colorScheme.surface,
         drawerShape = RoundedCornerShape(
             topEnd = DRAWER_CORNER_RADIUS.dp,

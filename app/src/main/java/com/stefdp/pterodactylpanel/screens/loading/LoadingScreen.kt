@@ -3,9 +3,11 @@ package com.stefdp.pterodactylpanel.screens.loading
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ fun LoadingScreen(
     navController: NavHostController,
     activity: FragmentActivity,
     context: Context,
+    innerPadding: PaddingValues,
     viewModel: LoadingViewModel = viewModel()
 ) {
     val updateLoggedUser = LocalUpdateLoggedUser.current
@@ -82,7 +85,9 @@ fun LoadingScreen(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
     ) {
         Text(
             text = "Loading...",
