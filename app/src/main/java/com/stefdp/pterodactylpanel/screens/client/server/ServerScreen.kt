@@ -143,7 +143,7 @@ fun ClientServerScreen(
                                 state.isLoading && state.userPermissions.isEmpty()
                             )
                         ) {
-                            if (tab.id == ServerTab.CONSOLE.id)
+                            if (tab.id == ServerTab.CONSOLE.id) return@map tab
                             return@map null
                         }
 
