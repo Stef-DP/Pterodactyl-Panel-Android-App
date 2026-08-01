@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 data class ClientServerUiState(
     val isLoading: Boolean = true,
     val server: GetServerResponse? = null,
-    val currentTab: ServerTab = ServerTab.STARTUP, // TODO: set this back to CONSOLE
+    val currentTab: ServerTab = ServerTab.SETTINGS, // TODO: set this back to CONSOLE
 )
 
 class ClientServerViewModel : ViewModel() {
