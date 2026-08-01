@@ -7,12 +7,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,39 +19,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import androidx.navigation.NavHostController
 import com.neoutils.highlight.compose.remember.rememberTextFieldValue
 import com.neoutils.highlight.core.Highlight
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
-import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.Select
 import com.stefdp.pterodactylpanel.components.SelectOption
 import com.stefdp.pterodactylpanel.components.TextInput
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerUiState
-import com.stefdp.pterodactylpanel.screens.client.server.ClientServerViewModel
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.CreateNewFilePopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.UnsavedChangesPopup
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.ui.theme.languageToHighlightColors
 import com.stefdp.pterodactylpanel.ui.theme.supportedLanguages
-import java.nio.file.Paths
 
 @Composable
 fun FileEditTab(
-    navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerFilesTabViewModel,

@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Checkbox
@@ -53,7 +52,6 @@ import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
 @Composable
 fun FilesTab(
-    navController: NavHostController,
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerFilesTabViewModel = viewModel(),
@@ -72,7 +70,6 @@ fun FilesTab(
 
     if (state.fileToEdit != null || state.createNewFile) {
         FileEditTab(
-            navController = navController,
             context = context,
             activity = activity,
             viewModel = viewModel,
