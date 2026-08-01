@@ -23,7 +23,7 @@ data class Server(
         @SerializedName("docker_image") val dockerImage: String,
         @SerializedName("egg_features") val eggFeatures: List<String>,
         @SerializedName("feature_limits") val featureLimits: FeatureLimits,
-        val status: ServerStatus? = null,
+        val status: Status? = null,
         @SerializedName("is_suspended") val isSuspended: Boolean,
         @SerializedName("is_installing") val isInstalling: Boolean,
         @SerializedName("is_transferring") val isTransferring: Boolean,
@@ -49,6 +49,25 @@ data class Server(
             val allocations: Int,
             val backups: Int
         )
+
+        enum class Status(val value: String) {
+            @SerializedName("installing")
+            INSTALLING("installing"),
+
+            @SerializedName("install_failed")
+            INSTALL_FAILED("install_failed"),
+
+            @SerializedName("reinstall_failed")
+            REINSTALL_FAILED("reinstall_failed"),
+
+            @SerializedName("suspended")
+            SUSPENDED("suspended"),
+
+            @SerializedName("restoring_backup")
+            RESTORING_BACKUP("restoring_backup");
+
+            override fun toString(): String = value
+        }
 
         data class Relationships(
             val allocations: Allocations,
