@@ -321,6 +321,7 @@ fun AppNavigation(
                 isTransferring = clientServerScreen.isServerTransferring,
                 isNodeUnderMaintenance = clientServerScreen.isServerNodeUnderMaintenance,
                 isRestoringBackup = clientServerScreen.isServerRestoringBackup,
+                isServerOwner = clientServerScreen.isServerOwner
             )
         }
 

@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ClientServersUiState(
+    val isServerOwner: Boolean = false,
     val servers: List<Server>? = null,
     val pagination: ListServersResponse.Meta.Pagination? = null,
     val page: Long = 1,
@@ -62,7 +63,7 @@ class ClientServersViewModel : ViewModel() {
             _state.update {
                 it.copy(
                     servers = servers?.data ?: emptyList(),
-                    pagination = servers?.meta?.pagination
+                    pagination = servers?.meta?.pagination,
                 )
             }
         }

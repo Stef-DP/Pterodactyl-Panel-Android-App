@@ -52,6 +52,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.Schedule
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.settings.SettingsTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.startup.StartupTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.UsersTab
+import com.stefdp.pterodactylpanel.utils.hasPermission
 
 @Composable
 fun ClientServerScreen(
@@ -66,6 +67,7 @@ fun ClientServerScreen(
     isTransferring: Boolean = false,
     isNodeUnderMaintenance: Boolean = false,
     isRestoringBackup: Boolean = false,
+    isServerOwner: Boolean = false,
     viewModel: ClientServerViewModel = viewModel()
 ) {
     // TODO: uncomment this, it's just for debug
@@ -88,6 +90,7 @@ fun ClientServerScreen(
             isTransferring = isTransferring,
             isNodeUnderMaintenance = isNodeUnderMaintenance,
             isRestoringBackup = isRestoringBackup,
+            isServerOwner = isServerOwner,
             directory = directory,
             onError = { error ->
                 Notification.show(
@@ -128,23 +131,33 @@ fun ClientServerScreen(
                     ServerTab.entries.map { serverTab ->
                         val permissions = ServerSubuser.Permissions.fromTab(serverTab)
 
-                        if (state.server == null) {
-                            return@map null
-                        }
-
-                        if (
-                            !state.server!!.meta.isServerOwner &&
-                            permissions != null &&
-                            state.server!!.meta.userPermissions.any { permissions.contains(it) }
-                        ) {
-                            return@map null
-                        }
-
-                        Tab(
+                        val tab = Tab(
                             label = serverTab.label,
                             id = serverTab.id,
                             active = serverTab == state.currentTab,
                         )
+
+                        if (
+                            state.server == null ||
+                            (
+                                state.isLoading && state.userPermissions.isEmpty()
+                            )
+                        ) {
+                            if (tab.id == ServerTab.CONSOLE.id)
+                            return@map null
+                        }
+
+                        if (
+                            !hasPermission(
+                                isServerOwner = state.isServerOwner,
+                                userPermissions = state.userPermissions,
+                                requiredPermissions = permissions
+                            )
+                        ) {
+                            return@map null
+                        }
+
+                        return@map tab
                     } + if (applicationApiKeyValidity == ApplicationApiKeyValidity.VALID) {
                         Tab(
                             icon = openInNewIcon,
@@ -166,7 +179,8 @@ fun ClientServerScreen(
                 }
 
                 viewModel.setCurrentTab(ServerTab.valueOf(tab.id.uppercase()))
-            }
+            },
+            enabled = state.server != null && !state.isLoading
         )
 
         var refreshIndex by rememberSaveable {

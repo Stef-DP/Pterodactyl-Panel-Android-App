@@ -174,7 +174,9 @@ fun ClientServersScreen(
                                         isServerInstalling = server.attributes.isInstalling,
                                         isServerTransferring = server.attributes.isTransferring,
                                         isServerNodeUnderMaintenance = server.attributes.isNodeUnderMaintenance,
-                                        isServerRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP
+                                        isServerRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP,
+                                        isServerOwner = server.attributes.serverOwner,
+
                                     )
                                 )
                             }

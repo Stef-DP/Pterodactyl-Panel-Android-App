@@ -25,7 +25,8 @@ data class ClientServerScreen(
     val isServerInstalling: Boolean = false,
     val isServerTransferring: Boolean = false,
     val isServerNodeUnderMaintenance: Boolean = false,
-    val isServerRestoringBackup: Boolean = false
+    val isServerRestoringBackup: Boolean = false,
+    val isServerOwner: Boolean = false,
 ) : AppScreen
 
 @Serializable

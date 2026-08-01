@@ -18,6 +18,8 @@ import kotlinx.coroutines.launch
 data class ClientServerUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
+    val isServerOwner: Boolean = false,
+    val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val server: GetServerResponse? = null,
     val currentTab: ServerTab = ServerTab.SETTINGS, // TODO: set this back to CONSOLE
     val isSuspended: Boolean = false,
@@ -42,6 +44,7 @@ class ClientServerViewModel : ViewModel() {
         isTransferring: Boolean = false,
         isNodeUnderMaintenance: Boolean = false,
         isRestoringBackup: Boolean = false,
+        isServerOwner: Boolean = false,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
@@ -54,7 +57,8 @@ class ClientServerViewModel : ViewModel() {
                     isInstalling = isInstalling,
                     isTransferring = isTransferring,
                     isNodeUnderMaintenance = isNodeUnderMaintenance,
-                    isRestoringBackup = isRestoringBackup
+                    isRestoringBackup = isRestoringBackup,
+                    isServerOwner = isServerOwner,
                 )
             }
 
@@ -80,7 +84,9 @@ class ClientServerViewModel : ViewModel() {
                             isInstalling = server.attributes.isInstalling,
                             isTransferring = server.attributes.isTransferring,
                             isNodeUnderMaintenance = server.attributes.isNodeUnderMaintenance,
-                            isRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP
+                            isRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP,
+                            isServerOwner = server.meta.isServerOwner,
+                            userPermissions = server.meta.userPermissions
                         )
                     }
                 }
