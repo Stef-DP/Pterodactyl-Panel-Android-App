@@ -21,6 +21,11 @@ object ClientAccountSettingsScreen : AppScreen
 data class ClientServerScreen(
     val serverId: String,
     val directory: String? = null,
+    val isServerSuspended: Boolean = false,
+    val isServerInstalling: Boolean = false,
+    val isServerTransferring: Boolean = false,
+    val isServerNodeUnderMaintenance: Boolean = false,
+    val isServerRestoringBackup: Boolean = false
 ) : AppScreen
 
 @Serializable
