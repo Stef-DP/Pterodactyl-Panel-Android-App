@@ -22,6 +22,13 @@ data class ServerSubuser(
         val uiName: String,
         val uiDescription: String
     ) {
+        @SerializedName("*")
+        ADMIN(
+            value = "*",
+            uiName = "",
+            uiDescription = ""
+        ),
+
         @SerializedName("control.console")
         CONTROL_CONSOLE(
             value = "control.console",
@@ -298,6 +305,27 @@ data class ServerSubuser(
         @SerializedName("websocket.connect")
         WEBSOCKET_CONNECT(
             value = "websocket.connect",
+            uiName = "",
+            uiDescription = ""
+        ),
+
+        @SerializedName("admin.websocket.errors")
+        ADMIN_WEBSOCKET_ERRORS(
+            value = "admin.websocket.errors",
+            uiName = "",
+            uiDescription = ""
+        ),
+
+        @SerializedName("admin.websocket.install")
+        ADMIN_WEBSOCKET_INSTALL(
+            value = "admin.websocket.install",
+            uiName = "",
+            uiDescription = ""
+        ),
+
+        @SerializedName("admin.websocket.transfer")
+        ADMIN_WEBSOCKET_TRANSFER(
+            value = "admin.websocket.transfer",
             uiName = "",
             uiDescription = ""
         );

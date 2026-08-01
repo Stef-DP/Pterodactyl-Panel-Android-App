@@ -54,6 +54,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.E
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.EditScheduleTaskPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.popups.ScheduleDetailsPopup
 import com.stefdp.pterodactylpanel.ui.theme.Green
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
@@ -100,8 +101,16 @@ fun SchedulesTab(
         context = context,
         state = state,
         viewModel = viewModel,
-        hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.SCHEDULE_DELETE),
-        hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.SCHEDULE_UPDATE)
+        hasDeletePermission = hasPermission(
+            isServerOwner = state.isServerOwner,
+            userPermissions = state.userPermissions,
+            requiredPermission = ServerSubuser.Permissions.SCHEDULE_DELETE
+        ),
+        hasUpdatePermission = hasPermission(
+            isServerOwner = state.isServerOwner,
+            userPermissions = state.userPermissions,
+            requiredPermission = ServerSubuser.Permissions.SCHEDULE_UPDATE
+        )
     )
 
     DeleteSchedulePopup(
@@ -139,7 +148,13 @@ fun SchedulesTab(
         viewModel = viewModel
     )
 
-    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.SCHEDULE_CREATE)) {
+    if (
+        hasPermission(
+            isServerOwner = state.isServerOwner,
+            userPermissions = state.userPermissions,
+            requiredPermission = ServerSubuser.Permissions.SCHEDULE_CREATE
+        )
+    ) {
         Button(
             onClick = {
                 viewModel.showCreateSchedulePopup()

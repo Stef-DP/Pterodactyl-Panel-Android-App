@@ -28,6 +28,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.components.SubuserDispl
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups.CreateUserPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups.DeleteUserPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.popups.EditUserPopup
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
@@ -82,7 +83,13 @@ fun UsersTab(
         viewModel = viewModel
     )
 
-    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.USER_CREATE)) {
+    if (
+        hasPermission(
+            isServerOwner = state.isServerOwner,
+            userPermissions = state.userPermissions,
+            requiredPermission = ServerSubuser.Permissions.USER_CREATE
+        )
+    ) {
         Button(
             onClick = {
                 viewModel.showCreateNewUserPopup()
@@ -145,8 +152,16 @@ fun UsersTab(
                     onDelete = {
                         viewModel.setUserToDelete(subuser)
                     },
-                    hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.USER_DELETE),
-                    hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.USER_UPDATE)
+                    hasDeletePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.USER_DELETE
+                    ),
+                    hasUpdatePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.USER_UPDATE
+                    )
                 )
             }
         }

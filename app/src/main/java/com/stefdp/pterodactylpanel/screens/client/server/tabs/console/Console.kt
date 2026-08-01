@@ -72,6 +72,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.WebSocketConnectionStat
 import com.stefdp.pterodactylpanel.screens.client.server.components.ChartContainer
 import com.stefdp.pterodactylpanel.screens.client.server.components.StatsDisplay
 import com.stefdp.pterodactylpanel.ui.theme.Yellow
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.scrollbar
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
@@ -219,7 +220,13 @@ fun ConsoleTab(
                 }
             }
 
-            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_CONSOLE)) {
+            if (
+                hasPermission(
+                    isServerOwner = state.isServerOwner,
+                    userPermissions = state.userPermissions,
+                    requiredPermission = ServerSubuser.Permissions.CONTROL_CONSOLE
+                )
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -284,7 +291,11 @@ fun ConsoleTab(
                 bottom = 12.dp
             )
         ) {
-            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_START)) {
+            if (hasPermission(
+                    isServerOwner = state.isServerOwner,
+                    userPermissions = state.userPermissions,
+                    requiredPermission = ServerSubuser.Permissions.CONTROL_START
+                )) {
                 Button(
                     onClick = {
                         viewModel.sendPowerSignal(ServerPowerSignal.START)
@@ -304,7 +315,13 @@ fun ConsoleTab(
                 }
             }
 
-            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_RESTART)) {
+            if (
+                hasPermission(
+                    isServerOwner = state.isServerOwner,
+                    userPermissions = state.userPermissions,
+                    requiredPermission = ServerSubuser.Permissions.CONTROL_RESTART
+                )
+            ) {
                 val disallowedRestartStates = listOf(
                     ServerState.INSTALLING,
                     ServerState.SUSPENDED,
@@ -329,7 +346,13 @@ fun ConsoleTab(
                 }
             }
 
-            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.CONTROL_STOP)) {
+            if (
+                hasPermission(
+                    isServerOwner = state.isServerOwner,
+                    userPermissions = state.userPermissions,
+                    requiredPermission = ServerSubuser.Permissions.CONTROL_STOP
+                )
+            ) {
                 Button(
                     onClick = {
                         if (state.status == ServerState.STOPPING) {

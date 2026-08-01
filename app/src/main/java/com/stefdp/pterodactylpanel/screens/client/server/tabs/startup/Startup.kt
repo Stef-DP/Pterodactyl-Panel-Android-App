@@ -1,12 +1,9 @@
 package com.stefdp.pterodactylpanel.screens.client.server.tabs.startup
 
-import HumanReadableRes.image
-import android.R.attr.label
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,14 +30,13 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Select
 import com.stefdp.pterodactylpanel.components.SelectOption
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
-import com.stefdp.pterodactylpanel.screens.client.server.components.StartupContainer
 import com.stefdp.pterodactylpanel.screens.client.server.components.StartupVariableDisplay
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.ClientServerSchedulesTabViewModel
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
 @Composable
@@ -86,8 +82,14 @@ fun StartupTab(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
-            StartupContainer(
-                title = "Startup Command"
+            Container(
+                title = {
+                    Text(
+                        text = "Startup Command",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             ) {
                 Box(
                     modifier = Modifier
@@ -108,8 +110,14 @@ fun StartupTab(
         }
 
         item {
-            StartupContainer(
-                title = "Docker Image"
+            Container(
+                title = {
+                    Text(
+                        text = "Docker Image",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             ) {
                 if (state.dockerImages.size <= 1) {
                     TextInput(
@@ -120,7 +128,7 @@ fun StartupTab(
                         modifier = Modifier.fillMaxWidth(),
                     )
 
-                    return@StartupContainer
+                    return@Container
                 }
 
                 Select(

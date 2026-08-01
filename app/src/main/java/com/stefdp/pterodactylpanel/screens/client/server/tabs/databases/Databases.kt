@@ -50,6 +50,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.components.DatabaseDisp
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.popups.ConfirmDatabaseDeletionPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.popups.CreateDatabasePopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.popups.DatabaseDetailsPopup
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 import kotlinx.coroutines.launch
@@ -110,8 +111,16 @@ fun DatabasesTab(
         context = context,
         state = state,
         viewModel = viewModel,
-        hasViewPasswordPermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_VIEW_PASSWORD),
-        hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_UPDATE)
+        hasViewPasswordPermission = hasPermission(
+            isServerOwner = state.isServerOwner,
+            userPermissions = state.userPermissions,
+            requiredPermission = ServerSubuser.Permissions.DATABASE_VIEW_PASSWORD
+        ),
+        hasUpdatePermission = hasPermission(
+            isServerOwner = state.isServerOwner,
+            userPermissions = state.userPermissions,
+            requiredPermission = ServerSubuser.Permissions.DATABASE_UPDATE
+        )
     )
 
     ConfirmDatabaseDeletionPopup(
@@ -143,7 +152,13 @@ fun DatabasesTab(
                 modifier = Modifier.width(4.dp)
             )
 
-            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_CREATE)) {
+            if (
+                hasPermission(
+                    isServerOwner = state.isServerOwner,
+                    userPermissions = state.userPermissions,
+                    requiredPermission = ServerSubuser.Permissions.DATABASE_CREATE
+                )
+            ) {
                 Button(
                     onClick = {
                         viewModel.showCreateDatabasePopup()
@@ -208,7 +223,11 @@ fun DatabasesTab(
 
                 DatabaseDisplay(
                     database = database,
-                    hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.DATABASE_DELETE),
+                    hasDeletePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.DATABASE_DELETE
+                    ),
                     onShowDatabaseDetails = {
                         viewModel.setDatabaseToShowDetails(database.attributes.id)
                     },

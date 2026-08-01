@@ -7,6 +7,7 @@ import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -75,10 +76,15 @@ class ClientServerViewModel : ViewModel() {
 
         val permissions = ServerSubuser.Permissions.fromTab(tab)
 
+        val hasPermission = hasPermission(
+            isServerOwner = isServerOwner,
+            userPermissions = userPermissions,
+            requiredPermissions = permissions
+        )
+
         if (
             permissions != null &&
-            !isServerOwner &&
-            !userPermissions.any { permissions.contains(it) }
+            !hasPermission
         ) return
 
         _state.update {

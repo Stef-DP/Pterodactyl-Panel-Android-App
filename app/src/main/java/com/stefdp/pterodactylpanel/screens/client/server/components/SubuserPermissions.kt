@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.components.Checkbox
+import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.LabeledCheckbox
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
@@ -199,19 +200,8 @@ fun SubuserPermissionContainer(
     allowedPermissions: List<ServerSubuser.Permissions>,
     enabled: Boolean = true
 ) {
-    Column {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(
-                    topStart = BASE_CORNER_RADIUS.dp,
-                    topEnd = BASE_CORNER_RADIUS.dp
-                ))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    Container(
+        title = {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
@@ -236,37 +226,25 @@ fun SubuserPermissionContainer(
                 enabled = enabled && permissionGroup.any { it in allowedPermissions }
             )
         }
+    ) {
+        Text(
+            text = description.toAnnotatedString()
+        )
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(
-                    bottomStart = BASE_CORNER_RADIUS.dp,
-                    bottomEnd = BASE_CORNER_RADIUS.dp
-                ))
-                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.7f))
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Text(
-                text = description.toAnnotatedString()
+        permissionGroup.forEach { permission ->
+            LabeledCheckbox(
+                label = permission.uiName,
+                description = permission.uiDescription,
+                checked = permissions[permission] ?: false,
+                onToggle = {
+                    val newPermissions = permissions.toMutableMap()
+
+                    newPermissions[permission] = !newPermissions[permission]!!
+
+                    updatePermissions(newPermissions)
+                },
+                enabled = enabled && permission in allowedPermissions
             )
-
-            permissionGroup.forEach { permission ->
-                LabeledCheckbox(
-                    label = permission.uiName,
-                    description = permission.uiDescription,
-                    checked = permissions[permission] ?: false,
-                    onToggle = {
-                        val newPermissions = permissions.toMutableMap()
-
-                        newPermissions[permission] = !newPermissions[permission]!!
-
-                        updatePermissions(newPermissions)
-                    },
-                    enabled = enabled && permission in allowedPermissions
-                )
-            }
         }
     }
 }

@@ -46,6 +46,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.MoveR
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups.UpdateFilePermissionsPopup
 import com.stefdp.pterodactylpanel.ui.theme.HighlightLanguage
 import com.stefdp.pterodactylpanel.utils.getFileInfo
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.linuxPermissionToInt
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
@@ -131,7 +132,13 @@ fun FilesTab(
     )
 
     Column {
-        if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_CREATE)) {
+        if (
+            hasPermission(
+                isServerOwner = state.isServerOwner,
+                userPermissions = state.userPermissions,
+                requiredPermission = ServerSubuser.Permissions.FILE_CREATE
+            )
+        ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(12.dp),
@@ -363,11 +370,31 @@ fun FilesTab(
                     FileDisplay(
                         file = file,
                         isSelected = file.attributes.name in state.selectedFiles,
-                        hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_DELETE),
-                        hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_UPDATE),
-                        hasCreatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_CREATE),
-                        hasArchivePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_ARCHIVE),
-                        hasReadContentPermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_READ_CONTENT),
+                        hasDeletePermission = hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_DELETE
+                        ),
+                        hasUpdatePermission = hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_UPDATE
+                        ),
+                        hasCreatePermission = hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_CREATE
+                        ),
+                        hasArchivePermission = hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_ARCHIVE
+                        ),
+                        hasReadContentPermission = hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_READ_CONTENT
+                        ),
                         onSelectionToggle = {
                             viewModel.toggleFileSelection(file.attributes.name)
                         },
@@ -536,7 +563,13 @@ fun FilesTab(
             ServerSubuser.Permissions.FILE_ARCHIVE
         )
 
-        if (state.isServerOwner || state.userPermissions.any { it in bottomUiPermissions }) {
+        if (
+            hasPermission(
+                isServerOwner = state.isServerOwner,
+                userPermissions = state.userPermissions,
+                requiredPermissions = bottomUiPermissions
+            )
+        ) {
             AnimatedVisibility(
                 visible = state.selectedFiles.isNotEmpty()
             ) {
@@ -549,7 +582,13 @@ fun FilesTab(
                     ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_UPDATE)) {
+                    if (
+                        hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_UPDATE
+                        )
+                    ) {
                         Button(
                             onClick = {
                                 viewModel.showMoveFilesPopup()
@@ -570,7 +609,13 @@ fun FilesTab(
                         }
                     }
 
-                    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_ARCHIVE)) {
+                    if (
+                        hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_ARCHIVE
+                        )
+                    ) {
                         Button(
                             onClick = {
                                 viewModel.archiveFiles(
@@ -613,7 +658,13 @@ fun FilesTab(
                         }
                     }
 
-                    if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.FILE_DELETE)) {
+                    if (
+                        hasPermission(
+                            isServerOwner = state.isServerOwner,
+                            userPermissions = state.userPermissions,
+                            requiredPermission = ServerSubuser.Permissions.FILE_DELETE
+                        )
+                    ) {
                         Button(
                             onClick = {
                                 viewModel.showDeleteFilesPopup()

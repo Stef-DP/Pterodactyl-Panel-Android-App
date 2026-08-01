@@ -1,9 +1,10 @@
-package com.stefdp.pterodactylpanel.screens.client.server.components
+package com.stefdp.pterodactylpanel.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,13 +24,15 @@ import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 
 @Composable
-fun StartupContainer(
-    title: String,
-    content: @Composable () -> Unit
+fun Container(
+    title: @Composable RowScope.() -> Unit,
+    titleArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
+    titleAlignment: Alignment.Vertical = Alignment.CenterVertically,
+    content: @Composable () -> Unit,
 ) {
     Column {
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = titleArrangement,
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(
@@ -38,13 +41,9 @@ fun StartupContainer(
                 ))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = titleAlignment,
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-            )
+            title()
         }
 
         Column(
@@ -65,7 +64,7 @@ fun StartupContainer(
 
 @Preview
 @Composable
-fun StartupContainerPreview() {
+fun ContainerPreview() {
     PterodactylPanelTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -75,8 +74,12 @@ fun StartupContainerPreview() {
                 color = MaterialTheme.colorScheme.background
             ) {
                 Column {
-                    StartupContainer(
-                        title = "test"
+                    Container(
+                        title = {
+                            Text(
+                                text = "Title",
+                            )
+                        }
                     ) {
                         Text("hello")
                     }

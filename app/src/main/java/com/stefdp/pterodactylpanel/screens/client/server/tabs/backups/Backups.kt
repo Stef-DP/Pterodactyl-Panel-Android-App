@@ -41,6 +41,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.Cre
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.DeleteBackupPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.RestoreBackupPopup
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.popups.UnlockBackupPopup
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
@@ -141,7 +142,13 @@ fun BackupsTab(
                 modifier = Modifier.width(4.dp)
             )
 
-            if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_CREATE)) {
+            if (
+                hasPermission(
+                    isServerOwner = state.isServerOwner,
+                    userPermissions = state.userPermissions,
+                    requiredPermission = ServerSubuser.Permissions.BACKUP_CREATE
+                )
+            ) {
                 Button(
                     onClick = {
                         viewModel.showCreateBackupPopup()
@@ -287,9 +294,21 @@ fun BackupsTab(
                     onDelete = {
                         viewModel.setBackupToDelete(backup.attributes.uuid)
                     },
-                    hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_DELETE),
-                    hasRestorePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_RESTORE),
-                    hasDownloadPermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.BACKUP_DOWNLOAD),
+                    hasDeletePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.BACKUP_DELETE
+                    ),
+                    hasRestorePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.BACKUP_RESTORE
+                    ),
+                    hasDownloadPermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.BACKUP_DOWNLOAD
+                    ),
                 )
             }
         }

@@ -33,6 +33,7 @@ import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.screens.client.server.components.AllocationDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.network.popups.DeleteAllocationPopup
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 
@@ -96,7 +97,13 @@ fun NetworkTab(
                     modifier = Modifier.width(4.dp)
                 )
 
-                if (state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.ALLOCATION_CREATE)) {
+                if (
+                    hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.ALLOCATION_CREATE
+                    )
+                ) {
                     Button(
                         onClick = {
                             viewModel.createAllocation(
@@ -233,8 +240,16 @@ fun NetworkTab(
                             }
                         )
                     },
-                    hasDeletePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.ALLOCATION_DELETE),
-                    hasUpdatePermission = state.isServerOwner || state.userPermissions.contains(ServerSubuser.Permissions.ALLOCATION_UPDATE)
+                    hasDeletePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.ALLOCATION_DELETE
+                    ),
+                    hasUpdatePermission = hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermission = ServerSubuser.Permissions.ALLOCATION_UPDATE
+                    )
                 )
             }
         }
