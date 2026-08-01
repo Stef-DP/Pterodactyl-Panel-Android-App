@@ -35,12 +35,14 @@ import com.stefdp.pterodactylpanel.utils.horizontalLazyScrollbar
 @Composable
 fun ScrollableTabRow(
     tabs: List<Tab>,
-    onTabClick: (tab: Tab) -> Unit
+    onTabClick: (tab: Tab) -> Unit,
+    enabled: Boolean = true
 ) {
     val listState = rememberLazyListState()
 
     LazyRow(
         state = listState,
+        userScrollEnabled = enabled,
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.outline)
@@ -54,7 +56,7 @@ fun ScrollableTabRow(
                 modifier = Modifier
                     .width(IntrinsicSize.Max)
                     .clickable(
-                        enabled = tab.enabled,
+                        enabled = enabled && tab.enabled,
                         onClick = { onTabClick(tab) }
                     )
             ) {
@@ -70,7 +72,7 @@ fun ScrollableTabRow(
                             painter = tab.icon,
                             contentDescription = tab.iconContentDescription,
                             modifier = Modifier.padding(16.dp),
-                            tint = if (tab.enabled) {
+                            tint = if (enabled && tab.enabled) {
                                 MaterialTheme.colorScheme.onSurface
                             } else {
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
@@ -85,7 +87,7 @@ fun ScrollableTabRow(
                                 top = 16.dp,
                                 bottom = 16.dp
                             ),
-                            color = if (tab.enabled) {
+                            color = if (enabled && tab.enabled) {
                                 MaterialTheme.colorScheme.onSurface
                             } else {
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
@@ -99,7 +101,7 @@ fun ScrollableTabRow(
                         .fillMaxWidth()
                         .height(4.dp)
                         .background(
-                            if (tab.active) {
+                            if (enabled && tab.active) {
                                 MaterialTheme.colorScheme.primary
                             } else {
                                 Color.Transparent
