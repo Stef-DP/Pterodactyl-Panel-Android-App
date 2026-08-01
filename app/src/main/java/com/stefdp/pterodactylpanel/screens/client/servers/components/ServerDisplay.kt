@@ -44,6 +44,13 @@ fun ServerDisplay(
     statsLoading: Boolean,
     onOpen: () -> Unit
 ) {
+    val isDisabled =
+        server.attributes.isSuspended ||
+        server.attributes.isNodeUnderMaintenance ||
+        server.attributes.isInstalling ||
+        server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP ||
+        server.attributes.isTransferring
+
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
@@ -51,7 +58,7 @@ fun ServerDisplay(
             .height(IntrinsicSize.Max)
             .background(MaterialTheme.colorScheme.surface)
             .clickable(
-                enabled = !server.attributes.isSuspended,
+                enabled = !isDisabled,
                 onClick = onOpen
             )
     ) {
@@ -68,7 +75,7 @@ fun ServerDisplay(
                 Text(
                     text = server.attributes.name,
                     modifier = Modifier.weight(0.9f),
-                    color = if (server.attributes.isSuspended) {
+                    color = if (isDisabled) {
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     } else {
                         MaterialTheme.colorScheme.onSurface
@@ -78,11 +85,30 @@ fun ServerDisplay(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    if (server.attributes.isSuspended) {
+                    if (isDisabled) {
+                        val pillColor = when {
+                            server.attributes.isSuspended -> MaterialTheme.colorScheme.error
+                            server.attributes.isNodeUnderMaintenance -> Yellow
+                            server.attributes.isInstalling -> MaterialTheme.colorScheme.primary
+                            server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP -> MaterialTheme.colorScheme.primary
+                            server.attributes.isTransferring -> MaterialTheme.colorScheme.primary
+
+                            else -> Yellow
+                        }
+
+                        val pillText = when {
+                            server.attributes.isSuspended -> "Suspended"
+                            server.attributes.isNodeUnderMaintenance -> "Maintenance"
+                            server.attributes.isInstalling -> "Installing"
+                            server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP -> "Restoring Backup"
+                            server.attributes.isTransferring -> "Transferring"
+                            else -> ""
+                        }
+
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                                .background(MaterialTheme.colorScheme.error)
+                                .background(pillColor)
                                 .padding(
                                     top = 4.dp,
                                     bottom = 4.dp,
@@ -91,7 +117,7 @@ fun ServerDisplay(
                                 )
                         ) {
                             Text(
-                                text = "Suspended",
+                                text = pillText,
                                 color = MaterialTheme.colorScheme.onError
                             )
                         }
