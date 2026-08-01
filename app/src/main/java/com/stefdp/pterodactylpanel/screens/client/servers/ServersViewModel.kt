@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 data class ClientServersUiState(
     val servers: List<Server>? = null,
     val pagination: ListServersResponse.Meta.Pagination? = null,
-    val page: Long = 1
+    val page: Long = 1,
+    val isRefreshing: Boolean = false
 )
 
 class ClientServersViewModel : ViewModel() {
@@ -33,9 +34,17 @@ class ClientServersViewModel : ViewModel() {
         filterDescription: String? = null,
         filterAny: String? = null,
         type: GetServersQueryType = GetServersQueryType.OWNER,
-        page: Long? = null
+        page: Long? = null,
+        isRefresh: Boolean = false
     )  {
         viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    servers = null,
+                    isRefreshing = isRefresh
+                )
+            }
+
             val serversRes = listServers(
                 context = context,
                 filterName = filterName,
@@ -45,7 +54,7 @@ class ClientServersViewModel : ViewModel() {
                 filterAny = filterAny,
                 type = type,
                 perPage = 10,
-                page = page
+                page = page,
             )
 
             val servers = serversRes.getOrNull()

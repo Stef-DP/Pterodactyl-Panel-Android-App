@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,6 +28,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.components.Pager
+import com.stefdp.pterodactylpanel.components.PullToRefreshBox
+import com.stefdp.pterodactylpanel.network.client.models.Server
 import com.stefdp.pterodactylpanel.network.client.models.ServerStats
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
@@ -34,6 +37,7 @@ import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.components.ServerDisplay
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
+import kotlinx.coroutines.launch
 
 @Composable
 fun ClientServersScreen(
@@ -81,110 +85,128 @@ fun ClientServersScreen(
         lazyColumnListState.animateScrollToItem(0)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
-    ) {
-        LazyColumn(
-            state = lazyColumnListState,
-            modifier = Modifier
-                .verticalLazyScrollbar(
-                    listState = lazyColumnListState,
-                )
-                .weight(1f)
-                .padding(
-                    start = 12.dp,
-                    end = 12.dp,
-                    top = 12.dp
-                ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            if (state.servers == null) {
-                items(10) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .shimmerable(
-                                enabled = true,
-                                height = 160.dp,
-                            )
-                    ) {}
-                }
+    val coroutineScope = rememberCoroutineScope()
 
-                return@LazyColumn
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = {
+            coroutineScope.launch {
+                updateData(page = state.page)
             }
-
-            state.servers?.let { servers ->
-                if (servers.isEmpty()) {
-                    item {
-                        Text(
-                            text = "There are no servers to display"
-                        )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            LazyColumn(
+                state = lazyColumnListState,
+                modifier = Modifier
+                    .verticalLazyScrollbar(
+                        listState = lazyColumnListState,
+                    )
+                    .weight(1f)
+                    .padding(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = 12.dp
+                    ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                if (state.servers == null) {
+                    items(10) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .shimmerable(
+                                    enabled = true,
+                                    height = 160.dp,
+                                )
+                        ) {}
                     }
 
                     return@LazyColumn
                 }
 
-                items(servers.size) { index ->
-                    val server = servers[index]
-
-                    var serverStats by rememberSaveable {
-                        mutableStateOf<ServerStats?>(null)
-                    }
-
-                    var serverStatsLoading by rememberSaveable {
-                        mutableStateOf(true)
-                    }
-
-                    LaunchedEffect(Unit) {
-                        val serverStatsRes = viewModel.getServerStats(
-                            context = context,
-                            serverId = server.attributes.identifier
-                        )
-
-                        serverStats = serverStatsRes
-                        serverStatsLoading = false
-                    }
-
-                    ServerDisplay(
-                        context = context,
-                        server = server,
-                        serverStats = serverStats,
-                        statsLoading = serverStatsLoading,
-                        onOpen = {
-                            navController.navigate(
-                                ClientServerScreen(serverId = server.attributes.identifier)
+                state.servers?.let { servers ->
+                    if (servers.isEmpty()) {
+                        item {
+                            Text(
+                                text = "There are no servers to display"
                             )
                         }
-                    )
+
+                        return@LazyColumn
+                    }
+
+                    items(servers.size) { index ->
+                        val server = servers[index]
+
+                        var serverStats by rememberSaveable {
+                            mutableStateOf<ServerStats?>(null)
+                        }
+
+                        var serverStatsLoading by rememberSaveable {
+                            mutableStateOf(true)
+                        }
+
+                        LaunchedEffect(Unit) {
+                            val serverStatsRes = viewModel.getServerStats(
+                                context = context,
+                                serverId = server.attributes.identifier
+                            )
+
+                            serverStats = serverStatsRes
+                            serverStatsLoading = false
+                        }
+
+                        ServerDisplay(
+                            context = context,
+                            server = server,
+                            serverStats = serverStats,
+                            statsLoading = serverStatsLoading,
+                            onOpen = {
+                                navController.navigate(
+                                    ClientServerScreen(
+                                        serverId = server.attributes.identifier,
+                                        isServerSuspended = server.attributes.isSuspended,
+                                        isServerInstalling = server.attributes.isInstalling,
+                                        isServerTransferring = server.attributes.isTransferring,
+                                        isServerNodeUnderMaintenance = server.attributes.isNodeUnderMaintenance,
+                                        isServerRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP
+                                    )
+                                )
+                            }
+                        )
+                    }
                 }
             }
+
+            Spacer(
+                modifier = Modifier.height(8.dp)
+            )
+
+            Pager(
+                currentPage = state.page,
+                totalPages = state.pagination?.total ?: 1,
+                enabled = state.servers != null && !state.servers.isNullOrEmpty(),
+                onFirstPageClick = {
+                    viewModel.setPage(1)
+                },
+                onPreviousPageClick = {
+                    viewModel.setPage(state.page - 1)
+                },
+                onCustomPageInput = { page ->
+                    viewModel.setPage(page)
+                },
+                onNextPageClick = {
+                    viewModel.setPage(state.page + 1)
+                },
+                onLastPageClick = {
+                    viewModel.setPage(state.pagination?.total ?: 1)
+                }
+            )
         }
-
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
-
-        Pager(
-            currentPage = state.page,
-            totalPages = state.pagination?.total ?: 1,
-            enabled = state.servers != null && !state.servers.isNullOrEmpty(),
-            onFirstPageClick = {
-                viewModel.setPage(1)
-            },
-            onPreviousPageClick = {
-                viewModel.setPage(state.page - 1)
-            },
-            onCustomPageInput = { page ->
-                viewModel.setPage(page)
-            },
-            onNextPageClick = {
-                viewModel.setPage(state.page + 1)
-            },
-            onLastPageClick = {
-                viewModel.setPage(state.pagination?.total ?: 1)
-            }
-        )
     }
 }
