@@ -8,7 +8,7 @@ data class ServerEggVariable(
 ) {
     data class Attributes(
         val name: String,
-        val description: String,
+        val description: String? = null,
         @SerializedName("env_variable") val envVariable: String,
         @SerializedName("default_value") val defaultValue: String? = null,
         @SerializedName("server_value") val serverValue: String? = null,
