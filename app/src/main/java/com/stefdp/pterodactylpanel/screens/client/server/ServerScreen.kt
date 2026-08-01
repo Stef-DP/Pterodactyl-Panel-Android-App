@@ -29,6 +29,7 @@ import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.Database
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.files.FilesTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.network.NetworkTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.schedules.SchedulesTab
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.startup.StartupTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.users.UsersTab
 
 @Composable
@@ -189,6 +190,15 @@ fun ClientServerScreen(
 
             ServerTab.NETWORK -> {
                 NetworkTab(
+                    navController = navController,
+                    context = context,
+                    activity = activity,
+                    server = state.server
+                )
+            }
+
+            ServerTab.STARTUP -> {
+                StartupTab(
                     navController = navController,
                     context = context,
                     activity = activity,

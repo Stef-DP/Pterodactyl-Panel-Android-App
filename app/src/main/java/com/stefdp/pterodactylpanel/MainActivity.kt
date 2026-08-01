@@ -254,7 +254,7 @@ fun AppNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = if (IS_DEBUG) ClientServerScreen(serverId = "86623816") else LoadingScreen,
+        startDestination = if (IS_DEBUG) ClientServerScreen(serverId = "cb71da0a") else LoadingScreen,
         enterTransition = {
             slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(400))
         },
