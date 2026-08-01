@@ -37,8 +37,9 @@ fun UsersTab(
     activity: FragmentActivity,
     viewModel: ClientServerUsersTabViewModel = viewModel(),
     server: GetServerResponse?,
+    refreshIndex: Int
 ) {
-    LaunchedEffect(server) {
+    LaunchedEffect(server, refreshIndex) {
         viewModel.init(server)
 
         viewModel.updateUsers(

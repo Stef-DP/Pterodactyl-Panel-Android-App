@@ -56,11 +56,12 @@ fun FilesTab(
     activity: FragmentActivity,
     viewModel: ClientServerFilesTabViewModel = viewModel(),
     server: GetServerResponse?,
-    directory: String?
+    directory: String?,
+    refreshIndex: Int
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(server) {
+    LaunchedEffect(server, refreshIndex) {
         viewModel.init(
             context = context,
             server = server,
@@ -81,7 +82,7 @@ fun FilesTab(
 
     val listState = rememberLazyListState()
 
-    LaunchedEffect(state.filesPath) {
+    LaunchedEffect(state.filesPath, refreshIndex) {
         listState.animateScrollToItem(0)
 
         viewModel.updateFiles(

@@ -41,9 +41,10 @@ fun NetworkTab(
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerNetworkTabViewModel = viewModel(),
-    server: GetServerResponse?
+    server: GetServerResponse?,
+    refreshIndex: Int
 ) {
-    LaunchedEffect(server) {
+    LaunchedEffect(server, refreshIndex) {
         viewModel.init(server)
 
         viewModel.updateAllocations(

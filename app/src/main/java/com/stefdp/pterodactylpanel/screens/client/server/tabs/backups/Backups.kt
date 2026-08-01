@@ -49,9 +49,10 @@ fun BackupsTab(
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerBackupsTabViewModel = viewModel(),
-    server: GetServerResponse?
+    server: GetServerResponse?,
+    refreshIndex: Int
 ) {
-    LaunchedEffect(server) {
+    LaunchedEffect(server, refreshIndex) {
         viewModel.init(
             context = context,
             server = server,

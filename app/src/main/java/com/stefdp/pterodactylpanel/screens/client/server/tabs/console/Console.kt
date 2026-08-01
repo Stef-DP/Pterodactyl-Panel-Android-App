@@ -87,13 +87,14 @@ fun ConsoleTab(
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerConsoleTabViewModel = viewModel(),
-    server: GetServerResponse?
+    server: GetServerResponse?,
+    refreshIndex: Int
 ) {
     val state by viewModel.state.collectAsState()
 
     val locale = LocalLocale.current.platformLocale
 
-    DisposableEffect(server) {
+    DisposableEffect(server, refreshIndex) {
         viewModel.init(server)
 
         viewModel.connectToWebSocket(

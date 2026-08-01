@@ -41,11 +41,12 @@ fun SchedulesTab(
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerSchedulesTabViewModel = viewModel(),
-    server: GetServerResponse?
+    server: GetServerResponse?,
+    refreshIndex: Int
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(server) {
+    LaunchedEffect(server, refreshIndex) {
         viewModel.init(server)
 
         viewModel.updateSchedules(

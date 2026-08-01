@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.network.client.models.Server
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.requests.getServer
@@ -15,9 +16,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ClientServerUiState(
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val server: GetServerResponse? = null,
     val currentTab: ServerTab = ServerTab.SETTINGS, // TODO: set this back to CONSOLE
+    val isSuspended: Boolean = false,
+    val isInstalling: Boolean = false,
+    val isTransferring: Boolean = false,
+    val isNodeUnderMaintenance: Boolean = false,
+    val isRestoringBackup: Boolean = false
 )
 
 class ClientServerViewModel : ViewModel() {
@@ -30,10 +37,26 @@ class ClientServerViewModel : ViewModel() {
         context: Context,
         serverId: String,
         directory: String?,
+        isSuspended: Boolean = false,
+        isInstalling: Boolean = false,
+        isTransferring: Boolean = false,
+        isNodeUnderMaintenance: Boolean = false,
+        isRestoringBackup: Boolean = false,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
             this@ClientServerViewModel.serverId = serverId
+
+            _state.update {
+                it.copy(
+                    isLoading = true,
+                    isSuspended = isSuspended,
+                    isInstalling = isInstalling,
+                    isTransferring = isTransferring,
+                    isNodeUnderMaintenance = isNodeUnderMaintenance,
+                    isRestoringBackup = isRestoringBackup
+                )
+            }
 
             if (directory != null) {
                 _state.update {
@@ -52,7 +75,12 @@ class ClientServerViewModel : ViewModel() {
                 .onSuccess { server ->
                     _state.update {
                         it.copy(
-                            server = server
+                            server = server,
+                            isSuspended = server.attributes.isSuspended,
+                            isInstalling = server.attributes.isInstalling,
+                            isTransferring = server.attributes.isTransferring,
+                            isNodeUnderMaintenance = server.attributes.isNodeUnderMaintenance,
+                            isRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP
                         )
                     }
                 }

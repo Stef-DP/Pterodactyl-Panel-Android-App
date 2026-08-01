@@ -315,7 +315,12 @@ fun AppNavigation(
                 context = context,
                 innerPadding = innerPadding,
                 serverId = clientServerScreen.serverId,
-                directory = clientServerScreen.directory
+                directory = clientServerScreen.directory,
+                isSuspended = clientServerScreen.isServerSuspended,
+                isInstalling = clientServerScreen.isServerInstalling,
+                isTransferring = clientServerScreen.isServerTransferring,
+                isNodeUnderMaintenance = clientServerScreen.isServerNodeUnderMaintenance,
+                isRestoringBackup = clientServerScreen.isServerRestoringBackup,
             )
         }
 

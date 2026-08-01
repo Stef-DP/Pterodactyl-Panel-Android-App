@@ -52,9 +52,10 @@ fun SettingsTab(
     context: Context,
     activity: FragmentActivity,
     viewModel: ClientServerSettingsTabViewModel = viewModel(),
-    server: GetServerResponse?
+    server: GetServerResponse?,
+    refreshIndex: Int
 ) {
-    LaunchedEffect(server) {
+    LaunchedEffect(server, refreshIndex) {
         viewModel.init(server)
     }
 

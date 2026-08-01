@@ -1,6 +1,5 @@
 package com.stefdp.pterodactylpanel.screens.client.server
 
-import android.R.attr.text
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.layout.waterfallPadding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -21,8 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,9 +37,9 @@ import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.ApplicationApiKeyValidity
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.LocalApplicationApiKeyValidity
-import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.components.PullToRefreshBox
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
@@ -61,6 +61,11 @@ fun ClientServerScreen(
     innerPadding: PaddingValues,
     serverId: String,
     directory: String? = null,
+    isSuspended: Boolean = false,
+    isInstalling: Boolean = false,
+    isTransferring: Boolean = false,
+    isNodeUnderMaintenance: Boolean = false,
+    isRestoringBackup: Boolean = false,
     viewModel: ClientServerViewModel = viewModel()
 ) {
     // TODO: uncomment this, it's just for debug
@@ -74,10 +79,15 @@ fun ClientServerScreen(
 
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(serverId) {
+    fun reload() {
         viewModel.init(
             context = context,
             serverId = serverId,
+            isSuspended = isSuspended,
+            isInstalling = isInstalling,
+            isTransferring = isTransferring,
+            isNodeUnderMaintenance = isNodeUnderMaintenance,
+            isRestoringBackup = isRestoringBackup,
             directory = directory,
             onError = { error ->
                 Notification.show(
@@ -91,6 +101,10 @@ fun ClientServerScreen(
                 }
             }
         )
+    }
+
+    LaunchedEffect(serverId) {
+        reload()
     }
 
     Column(
@@ -155,132 +169,336 @@ fun ClientServerScreen(
             }
         )
 
-        Column(
-            modifier = Modifier
-                .padding(
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                )
+        var refreshIndex by rememberSaveable {
+            mutableIntStateOf(0)
+        }
+
+        PullToRefreshBox(
+            isRefreshing = state.isRefreshing,
+            onRefresh = {
+                reload()
+
+                refreshIndex += 1
+            }
         ) {
-            if (state.server?.attributes?.isSuspended == true) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 24.dp
-                            )
-                            .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                            .background(MaterialTheme.colorScheme.onBackground)
-                            .padding(12.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                        end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+                    )
+            ) {
+                if (state.isSuspended) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.cloud_off),
-                            contentDescription = "Suspended",
-                            tint = MaterialTheme.colorScheme.surfaceDim,
+                        Column(
                             modifier = Modifier
-                                .requiredSize(60.dp)
                                 .padding(
-                                    bottom = 8.dp
+                                    horizontal = 24.dp
                                 )
-                        )
+                                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                                .background(MaterialTheme.colorScheme.onBackground)
+                                .padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cloud_off),
+                                contentDescription = "Suspended",
+                                tint = MaterialTheme.colorScheme.surfaceDim,
+                                modifier = Modifier
+                                    .requiredSize(60.dp)
+                                    .padding(
+                                        bottom = 8.dp
+                                    )
+                            )
 
-                        Text(
-                            text = "Server Suspended",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.surfaceDim,
-                            textAlign = TextAlign.Center
-                        )
+                            Text(
+                                text = "Server Suspended",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
 
-                        Text(
-                            text = "This server is suspended and cannot be accessed",
-                            color = MaterialTheme.colorScheme.surfaceDim,
-                            textAlign = TextAlign.Center
+                            Text(
+                                text = "This server is suspended and cannot be accessed",
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    return@Column
+                }
+
+                if (state.isNodeUnderMaintenance) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 24.dp
+                                )
+                                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                                .background(MaterialTheme.colorScheme.onBackground)
+                                .padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cloud_off),
+                                contentDescription = "Suspended",
+                                tint = MaterialTheme.colorScheme.surfaceDim,
+                                modifier = Modifier
+                                    .requiredSize(60.dp)
+                                    .padding(
+                                        bottom = 8.dp
+                                    )
+                            )
+
+                            Text(
+                                text = "Node under Maintenance",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Text(
+                                text = "The node of this server is currently under maintenance",
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    return@Column
+                }
+
+                if (state.isInstalling) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 24.dp
+                                )
+                                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                                .background(MaterialTheme.colorScheme.onBackground)
+                                .padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cloud_off),
+                                contentDescription = "Suspended",
+                                tint = MaterialTheme.colorScheme.surfaceDim,
+                                modifier = Modifier
+                                    .requiredSize(60.dp)
+                                    .padding(
+                                        bottom = 8.dp
+                                    )
+                            )
+
+                            Text(
+                                text = "Running Installer",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Text(
+                                text = "Your server should be ready soon, please try again in a few minutes",
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    return@Column
+                }
+
+                if (state.isRestoringBackup) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 24.dp
+                                )
+                                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                                .background(MaterialTheme.colorScheme.onBackground)
+                                .padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cloud_off),
+                                contentDescription = "Suspended",
+                                tint = MaterialTheme.colorScheme.surfaceDim,
+                                modifier = Modifier
+                                    .requiredSize(60.dp)
+                                    .padding(
+                                        bottom = 8.dp
+                                    )
+                            )
+
+                            Text(
+                                text = "Restoring from Backup",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Text(
+                                text = "Your server is currently being restored from a backup, please check back in a few minutes",
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    return@Column
+                }
+
+                if (state.isTransferring) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 24.dp
+                                )
+                                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
+                                .background(MaterialTheme.colorScheme.onBackground)
+                                .padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.cloud_off),
+                                contentDescription = "Suspended",
+                                tint = MaterialTheme.colorScheme.surfaceDim,
+                                modifier = Modifier
+                                    .requiredSize(60.dp)
+                                    .padding(
+                                        bottom = 8.dp
+                                    )
+                            )
+
+                            Text(
+                                text = "Transferring",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+
+                            Text(
+                                text = "Your server is being transferred to a new node, please check back later",
+                                color = MaterialTheme.colorScheme.surfaceDim,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
+                    return@Column
+                }
+
+                when (state.currentTab) {
+                    ServerTab.CONSOLE -> {
+                        ConsoleTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
                         )
                     }
-                }
-            }
 
-            when (state.currentTab) {
-                ServerTab.CONSOLE -> {
-                    ConsoleTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.FILES -> {
+                        FilesTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            directory = directory,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.FILES -> {
-                    FilesTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server,
-                        directory = directory,
-                    )
-                }
+                    ServerTab.DATABASES -> {
+                        DatabasesTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.DATABASES -> {
-                    DatabasesTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.SCHEDULES -> {
+                        SchedulesTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.SCHEDULES -> {
-                    SchedulesTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.USERS -> {
+                        UsersTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.USERS -> {
-                    UsersTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.BACKUPS -> {
+                        BackupsTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.BACKUPS -> {
-                    BackupsTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.NETWORK -> {
+                        NetworkTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.NETWORK -> {
-                    NetworkTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.STARTUP -> {
+                        StartupTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.STARTUP -> {
-                    StartupTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server
-                    )
-                }
+                    ServerTab.SETTINGS -> {
+                        SettingsTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
+                    }
 
-                ServerTab.SETTINGS -> {
-                    SettingsTab(
-                        context = context,
-                        activity = activity,
-                        server = state.server,
-                    )
-                }
-
-                else -> {
-                    Text("WIP")
+                    else -> {
+                        Text("WIP")
+                    }
                 }
             }
         }
