@@ -161,7 +161,7 @@ fun DatabasesTab(
             modifier = Modifier.height(4.dp)
         )
 
-        if (state.databases.isEmpty()) {
+        if (state.databases.isEmpty() && !state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center

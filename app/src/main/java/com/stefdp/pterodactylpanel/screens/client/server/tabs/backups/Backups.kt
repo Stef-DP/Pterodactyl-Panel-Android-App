@@ -166,7 +166,7 @@ fun BackupsTab(
             modifier = Modifier.height(8.dp)
         )
 
-        if (state.backups.isEmpty()) {
+        if (state.backups.isEmpty() && !state.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center

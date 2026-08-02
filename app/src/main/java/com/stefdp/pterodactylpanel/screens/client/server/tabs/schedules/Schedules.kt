@@ -150,7 +150,7 @@ fun SchedulesTab(
         }
     }
 
-    if (state.schedules.isEmpty()) {
+    if (state.schedules.isEmpty() && !state.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
