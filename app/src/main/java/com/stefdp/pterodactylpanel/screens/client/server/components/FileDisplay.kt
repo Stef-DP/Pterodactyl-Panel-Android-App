@@ -106,7 +106,9 @@ fun FileDisplay(
 
         Text(
             text = file.attributes.name,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
         )
 
         Row(
