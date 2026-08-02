@@ -23,105 +23,12 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalLayoutDirection
 import com.stefdp.pterodactylpanel.ui.theme.SurfaceDark
 import com.stefdp.pterodactylpanel.ui.theme.SurfaceVariantDark
 import kotlin.math.max
-
-fun Modifier.scrollbar(
-    scrollState: ScrollState,
-    direction: Orientation,
-    config: ScrollbarConfig = ScrollbarConfig(),
-): Modifier = composed {
-    var (
-        indicatorThickness,
-        indicatorColor,
-        indicatorCornerRadius,
-        alpha,
-        alphaAnimationSpec,
-        padding
-    ) = config
-
-    val isScrollingOrPanning = scrollState.isScrollInProgress
-    val isVertical = direction == Orientation.Vertical
-
-    alpha = when {
-        config.alwaysKeepScrollbar -> 0.8f
-        alpha != null -> alpha
-        isScrollingOrPanning -> 0.8f
-        else -> 0f
-    }
-
-    alphaAnimationSpec = alphaAnimationSpec ?: tween(
-        delayMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 0 else 1500,
-        durationMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 150 else 500
-    )
-
-    val scrollbarAlpha by animateFloatAsState(alpha, alphaAnimationSpec)
-
-    drawWithContent {
-        drawContent()
-
-        val showScrollbar = config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f
-
-        if (showScrollbar) {
-            val (topPadding, bottomPadding, startPadding, endPadding) = arrayOf(
-                padding.calculateTopPadding().toPx(),
-                padding.calculateBottomPadding().toPx(),
-                padding.calculateStartPadding(layoutDirection).toPx(),
-                padding.calculateEndPadding(layoutDirection).toPx()
-            )
-
-            val isLtr = layoutDirection == LayoutDirection.Ltr
-            val contentOffset = scrollState.value
-
-            val viewPortLength = if (isVertical) size.height else size.width
-            val viewPortCrossAxisLength = if (isVertical) size.width else size.height
-
-            val contentLength = max(viewPortLength + scrollState.maxValue, 0.001f)
-            val scrollbarLength = viewPortLength -
-                    (if (isVertical) topPadding + bottomPadding else startPadding + endPadding)
-
-            val indicatorThicknessPx = indicatorThickness.toPx()
-            val indicatorLength = max((scrollbarLength / contentLength) * viewPortLength, 20f.dp.toPx())
-            val indicatorOffset = (scrollbarLength / contentLength) * contentOffset
-
-            val scrollIndicatorSize = if (isVertical) Size(indicatorThicknessPx, indicatorLength)
-            else Size(indicatorLength, indicatorThicknessPx)
-
-            val scrollIndicatorPosition = if (isVertical)
-                Offset(
-                    x = if (isLtr)
-                        viewPortCrossAxisLength - indicatorThicknessPx - endPadding
-                    else startPadding,
-
-                    y = indicatorOffset + topPadding
-                )
-            else
-                Offset(
-                    x = if (isLtr)
-                        indicatorOffset + startPadding
-                    else
-                        viewPortLength - indicatorOffset - indicatorLength - endPadding,
-
-                    y = viewPortCrossAxisLength - indicatorThicknessPx - bottomPadding
-                )
-
-            drawRoundRect(
-                color = indicatorColor,
-                cornerRadius = indicatorCornerRadius.let {
-                    CornerRadius(
-                        x = it.toPx(),
-                        y = it.toPx()
-                    )
-                },
-                topLeft = scrollIndicatorPosition,
-                size = scrollIndicatorSize,
-                alpha = scrollbarAlpha
-            )
-        }
-    }
-}
-
 
 data class ScrollbarConfig(
     val indicatorThickness: Dp = 4.dp,
@@ -136,6 +43,205 @@ data class ScrollbarConfig(
     ),
     val alwaysKeepScrollbar: Boolean = false
 )
+
+fun Modifier.scrollbar(
+    scrollState: ScrollState,
+    direction: Orientation,
+    config: ScrollbarConfig = ScrollbarConfig(),
+): Modifier = composed {
+    val isVertical = direction == Orientation.Vertical
+    val layoutDirection = LocalLayoutDirection.current
+
+    val isScrollingOrPanning by remember {
+        derivedStateOf { scrollState.isScrollInProgress }
+    }
+
+    val alpha = when {
+        config.alwaysKeepScrollbar -> 0.8f
+        config.alpha != null -> config.alpha
+        isScrollingOrPanning -> 0.8f
+        else -> 0f
+    }
+
+    val alphaAnimationSpec = remember(isScrollingOrPanning, config.alwaysKeepScrollbar) {
+        config.alphaAnimationSpec ?: tween(
+            delayMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 0 else 1500,
+            durationMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 150 else 500
+        )
+    }
+
+    val scrollbarAlpha by animateFloatAsState(
+        targetValue = alpha,
+        animationSpec = alphaAnimationSpec,
+        label = "ScrollbarAlpha"
+    )
+
+    val topPaddingDp = config.padding.calculateTopPadding()
+    val bottomPaddingDp = config.padding.calculateBottomPadding()
+    val startPaddingDp = config.padding.calculateStartPadding(layoutDirection)
+    val endPaddingDp = config.padding.calculateEndPadding(layoutDirection)
+
+    drawWithContent {
+        drawContent()
+
+        val showScrollbar = config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f
+
+        if (showScrollbar) {
+            val topPadding = topPaddingDp.toPx()
+            val bottomPadding = bottomPaddingDp.toPx()
+            val startPadding = startPaddingDp.toPx()
+            val endPadding = endPaddingDp.toPx()
+
+            val isLtr = layoutDirection == LayoutDirection.Ltr
+            val contentOffset = scrollState.value.toFloat()
+
+            val viewPortLength = if (isVertical) size.height else size.width
+            val viewPortCrossAxisLength = if (isVertical) size.width else size.height
+
+            val contentLength = max(viewPortLength + scrollState.maxValue, 0.001f)
+            val scrollbarLength = viewPortLength - (if (isVertical) topPadding + bottomPadding else startPadding + endPadding)
+
+            val indicatorThicknessPx = config.indicatorThickness.toPx()
+            val indicatorLength = max((scrollbarLength / contentLength) * viewPortLength, 20f.dp.toPx())
+            val indicatorOffset = (scrollbarLength / contentLength) * contentOffset
+
+            val scrollIndicatorSize = if (isVertical) {
+                Size(indicatorThicknessPx, indicatorLength)
+            } else {
+                Size(indicatorLength, indicatorThicknessPx)
+            }
+
+            val scrollIndicatorPosition = if (isVertical) {
+                Offset(
+                    x = if (isLtr) viewPortCrossAxisLength - indicatorThicknessPx - endPadding else startPadding,
+                    y = (indicatorOffset + topPadding).coerceIn(topPadding, max(topPadding, viewPortLength - bottomPadding - indicatorLength))
+                )
+            } else {
+                Offset(
+                    x = if (isLtr) {
+                        (indicatorOffset + startPadding).coerceIn(startPadding, max(startPadding, viewPortLength - endPadding - indicatorLength))
+                    } else {
+                        (viewPortLength - indicatorOffset - indicatorLength - endPadding).coerceIn(startPadding, max(startPadding, viewPortLength - endPadding - indicatorLength))
+                    },
+                    y = viewPortCrossAxisLength - indicatorThicknessPx - bottomPadding
+                )
+            }
+
+            val cornerRadiusPx = config.indicatorCornerRadius.toPx()
+
+            drawRoundRect(
+                color = config.indicatorColor,
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                topLeft = scrollIndicatorPosition,
+                size = scrollIndicatorSize,
+                alpha = scrollbarAlpha
+            )
+        }
+    }
+}
+
+fun Modifier.lazyScrollbar(
+    listState: LazyListState,
+    direction: Orientation,
+    config: ScrollbarConfig = ScrollbarConfig(),
+): Modifier = composed {
+    val isVertical = direction == Orientation.Vertical
+    val layoutDirection = LocalLayoutDirection.current
+
+    val isScrollingOrPanning by remember {
+        derivedStateOf { listState.isScrollInProgress }
+    }
+
+    val alpha = when {
+        config.alwaysKeepScrollbar -> 0.8f
+        config.alpha != null -> config.alpha
+        isScrollingOrPanning -> 0.8f
+        else -> 0f
+    }
+
+    val alphaAnimationSpec = remember(isScrollingOrPanning, config.alwaysKeepScrollbar) {
+        config.alphaAnimationSpec ?: tween(
+            delayMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 0 else 1500,
+            durationMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 150 else 500
+        )
+    }
+
+    val scrollbarAlpha by animateFloatAsState(
+        targetValue = alpha,
+        animationSpec = alphaAnimationSpec,
+        label = "LazyScrollbarAlpha"
+    )
+
+    val topPaddingDp = config.padding.calculateTopPadding()
+    val bottomPaddingDp = config.padding.calculateBottomPadding()
+    val startPaddingDp = config.padding.calculateStartPadding(layoutDirection)
+    val endPaddingDp = config.padding.calculateEndPadding(layoutDirection)
+
+    drawWithContent {
+        drawContent()
+
+        val showScrollbar = config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f
+        val layoutInfo = listState.layoutInfo
+        val visibleItems = layoutInfo.visibleItemsInfo
+
+        if (showScrollbar && layoutInfo.totalItemsCount > 0 && visibleItems.isNotEmpty()) {
+            val topPadding = topPaddingDp.toPx()
+            val bottomPadding = bottomPaddingDp.toPx()
+            val startPadding = startPaddingDp.toPx()
+            val endPadding = endPaddingDp.toPx()
+
+            val isLtr = layoutDirection == LayoutDirection.Ltr
+            val totalItems = layoutInfo.totalItemsCount
+
+            val viewPortLength = if (isVertical) size.height else size.width
+            val viewPortCrossAxisLength = if (isVertical) size.width else size.height
+            val scrollbarLength = viewPortLength - (if (isVertical) topPadding + bottomPadding else startPadding + endPadding)
+
+            val averageVisibleItemSize = visibleItems.sumOf { it.size }.toFloat() / visibleItems.size
+            val estimatedTotalLength = max(totalItems * averageVisibleItemSize, 1f)
+
+            val firstVisibleIndex = listState.firstVisibleItemIndex
+            val firstVisibleOffset = listState.firstVisibleItemScrollOffset
+            val scrollOffset = (firstVisibleIndex * averageVisibleItemSize) + firstVisibleOffset
+
+            val indicatorThicknessPx = config.indicatorThickness.toPx()
+            val indicatorLength = max((viewPortLength / estimatedTotalLength) * scrollbarLength, 20f.dp.toPx())
+            val indicatorOffset = (scrollOffset / estimatedTotalLength) * scrollbarLength
+
+            val scrollIndicatorSize = if (isVertical) {
+                Size(indicatorThicknessPx, indicatorLength)
+            } else {
+                Size(indicatorLength, indicatorThicknessPx)
+            }
+
+            val scrollIndicatorPosition = if (isVertical) {
+                Offset(
+                    x = if (isLtr) viewPortCrossAxisLength - indicatorThicknessPx - endPadding else startPadding,
+                    y = (indicatorOffset + topPadding).coerceIn(topPadding, max(topPadding, viewPortLength - bottomPadding - indicatorLength))
+                )
+            } else {
+                Offset(
+                    x = if (isLtr) {
+                        (indicatorOffset + startPadding).coerceIn(startPadding, max(startPadding, viewPortLength - endPadding - indicatorLength))
+                    } else {
+                        (viewPortLength - indicatorOffset - indicatorLength - endPadding).coerceIn(startPadding, max(startPadding, viewPortLength - endPadding - indicatorLength))
+                    },
+                    y = viewPortCrossAxisLength - indicatorThicknessPx - bottomPadding
+                )
+            }
+
+            val cornerRadiusPx = config.indicatorCornerRadius.toPx()
+
+            drawRoundRect(
+                color = config.indicatorColor,
+                cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx),
+                topLeft = scrollIndicatorPosition,
+                size = scrollIndicatorSize,
+                alpha = scrollbarAlpha
+            )
+        }
+    }
+}
 
 fun Modifier.verticalScrollWithScrollbar(
     scrollState: ScrollState,
@@ -174,97 +280,6 @@ fun Modifier.horizontalScrollWithScrollbar(
         flingBehavior = flingBehavior,
         reverseScrolling = reverseScrolling
     )
-
-fun Modifier.lazyScrollbar(
-    listState: LazyListState,
-    direction: Orientation,
-    config: ScrollbarConfig = ScrollbarConfig(),
-): Modifier = composed {
-    var (
-        indicatorThickness,
-        indicatorColor,
-        indicatorCornerRadius,
-        alpha,
-        alphaAnimationSpec,
-        padding
-    ) = config
-
-    val isScrollingOrPanning = listState.isScrollInProgress
-    val isVertical = direction == Orientation.Vertical
-
-    alpha = when {
-        config.alwaysKeepScrollbar -> 0.8f
-        alpha != null -> alpha
-        isScrollingOrPanning -> 0.8f
-        else -> 0f
-    }
-
-    alphaAnimationSpec = alphaAnimationSpec ?: tween(
-        delayMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 0 else 1500,
-        durationMillis = if (isScrollingOrPanning || config.alwaysKeepScrollbar) 150 else 500
-    )
-
-    val scrollbarAlpha by animateFloatAsState(alpha, alphaAnimationSpec)
-
-    drawWithContent {
-        drawContent()
-
-        val showScrollbar = config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f
-
-        if (showScrollbar && listState.layoutInfo.totalItemsCount > 0) {
-            val topPadding = padding.calculateTopPadding().toPx()
-            val bottomPadding = padding.calculateBottomPadding().toPx()
-            val startPadding = padding.calculateStartPadding(layoutDirection).toPx()
-            val endPadding = padding.calculateEndPadding(layoutDirection).toPx()
-
-            val isLtr = layoutDirection == LayoutDirection.Ltr
-
-            val firstVisibleIndex = listState.firstVisibleItemIndex
-            val firstVisibleOffset = listState.firstVisibleItemScrollOffset
-            val totalItems = listState.layoutInfo.totalItemsCount
-
-            val viewPortLength = if (isVertical) size.height else size.width
-            val viewPortCrossAxisLength = if (isVertical) size.width else size.height
-
-            val scrollbarLength = viewPortLength - (if (isVertical) topPadding + bottomPadding else startPadding + endPadding)
-
-            val estimatedItemHeight = if (listState.layoutInfo.visibleItemsInfo.isNotEmpty()) {
-                listState.layoutInfo.visibleItemsInfo.first().size.toFloat()
-            } else 0f
-
-            val estimatedTotalLength = totalItems * estimatedItemHeight
-            val scrollOffset = firstVisibleIndex * estimatedItemHeight + firstVisibleOffset
-
-            val indicatorThicknessPx = indicatorThickness.toPx()
-            val indicatorLength = max((viewPortLength / estimatedTotalLength) * scrollbarLength, 20f.dp.toPx())
-            val indicatorOffset = (scrollOffset / estimatedTotalLength) * scrollbarLength
-
-            val scrollIndicatorSize = if (isVertical) Size(indicatorThicknessPx, indicatorLength)
-            else Size(indicatorLength, indicatorThicknessPx)
-
-            val scrollIndicatorPosition = if (isVertical)
-                Offset(
-                    x = if (isLtr) viewPortCrossAxisLength - indicatorThicknessPx - endPadding
-                    else startPadding,
-                    y = indicatorOffset + topPadding
-                )
-            else
-                Offset(
-                    x = if (isLtr) indicatorOffset + startPadding
-                    else viewPortLength - indicatorOffset - indicatorLength - endPadding,
-                    y = viewPortCrossAxisLength - indicatorThicknessPx - bottomPadding
-                )
-
-            drawRoundRect(
-                color = indicatorColor,
-                cornerRadius = indicatorCornerRadius.let { CornerRadius(it.toPx(), it.toPx()) },
-                topLeft = scrollIndicatorPosition,
-                size = scrollIndicatorSize,
-                alpha = scrollbarAlpha
-            )
-        }
-    }
-}
 
 fun Modifier.verticalLazyScrollbar(
     listState: LazyListState,
