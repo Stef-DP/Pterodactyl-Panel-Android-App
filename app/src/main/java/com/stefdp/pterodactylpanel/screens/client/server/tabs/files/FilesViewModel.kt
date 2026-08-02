@@ -1212,8 +1212,8 @@ class ClientServerFilesTabViewModel : ViewModel() {
 
                     onSuccess()
                 }
-                .onFailure {
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to save file: ${it.message}")
+                .onFailure { error ->
+                    Logger.error("ClientServerFilesTabViewModel", "Failed to save file: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -1221,7 +1221,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                         )
                     }
 
-                    onError("Failed to save file: ${it.message}")
+                    onError("Failed to save file: ${error.message}")
                 }
         }
     }
