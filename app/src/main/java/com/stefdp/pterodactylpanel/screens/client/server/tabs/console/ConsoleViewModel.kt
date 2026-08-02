@@ -31,6 +31,7 @@ import java.util.Locale
 
 data class ClientServerConsoleTabUiState(
     val server: GetServerResponse? = null,
+    val isLoading: Boolean = true,
     val isServerOwner: Boolean = false,
     val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val connectionState: WebSocketConnectionStatus = WebSocketConnectionStatus.DISCONNECTED,
@@ -103,7 +104,8 @@ class ClientServerConsoleTabViewModel(
             it.copy(
                 server = server,
                 isServerOwner = server?.meta?.isServerOwner ?: false,
-                userPermissions = server?.meta?.userPermissions ?: emptyList()
+                userPermissions = server?.meta?.userPermissions ?: emptyList(),
+                isLoading = server == null
             )
         }
     }
@@ -158,6 +160,8 @@ class ClientServerConsoleTabViewModel(
         locale: Locale,
         onError: (String) -> Unit
     ) {
+        if (_state.value.isLoading) return
+
         if (serverId == null) {
             onError("Missing server ID")
 
