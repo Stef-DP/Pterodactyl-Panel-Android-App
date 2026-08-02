@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.client.models.responses
 import com.google.gson.annotations.SerializedName
 import com.stefdp.pterodactylpanel.network.client.models.ActivityLog
 
-data class GetAccountActivityResponse(
+data class GetServerActivityResponse(
     val `object`: String = "list",
     val data: List<ActivityLog>,
     val meta: Meta

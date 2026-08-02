@@ -28,6 +28,7 @@ import com.stefdp.pterodactylpanel.network.client.models.requests.DeleteServerFi
 import com.stefdp.pterodactylpanel.network.client.models.requests.DisableAccount2FABody
 import com.stefdp.pterodactylpanel.network.client.models.requests.EnableAccount2FABody
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetAccountActivityQuerySort
+import com.stefdp.pterodactylpanel.network.client.models.requests.GetServerActivityQuerySort
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
 import com.stefdp.pterodactylpanel.network.client.models.requests.RemoveAccountSshKeyBody
 import com.stefdp.pterodactylpanel.network.client.models.requests.RenameServerBody
@@ -49,6 +50,7 @@ import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccount2FA
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountActivityResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountSshKeysResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetAvailablePermissionsResponse
+import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerActivityResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerStartupVariablesResponse
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerWebsocketResponse
@@ -238,6 +240,19 @@ interface PterodactylClientApiService {
         @Header("Content-Type") contentType: String = "application/json",
         @Path("serverId") serverId: String,
     ): Response<ServerStats>
+
+    @GET("servers/{serverId}/activity")
+    suspend fun getServerActivity(
+        @Header("Authorization") authorization: String,
+        @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
+        @Header("Content-Type") contentType: String = "application/json",
+        @Path("serverId") serverId: String,
+        @Query("page") page: Long? = null,
+        @Query("per_page") perPage: Int? = null,
+        @Query("filter[event]") filterEvent: String? = null,
+        @Query("sort") sort: GetServerActivityQuerySort? = null,
+        @Query("include") include: String? = null, // list of GetServerActivityQueryInclude separated by ","
+    ): Response<GetServerActivityResponse>
 
     @POST("servers/{serverId}/command")
     suspend fun sendCommandToServer(
