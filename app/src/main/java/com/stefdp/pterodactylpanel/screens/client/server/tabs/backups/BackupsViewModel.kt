@@ -587,8 +587,8 @@ class ClientServerBackupsTabViewModel : ViewModel() {
             val createBackupRes = createServerBackup(
                 context = context,
                 serverId = serverId!!,
-                name = _state.value.newBackupName.text.ifEmpty { null },
-                ignoredFiles = _state.value.newBackupIgnoredFiles.text.ifEmpty { null },
+                name = _state.value.newBackupName.text.trim().ifEmpty { null },
+                ignoredFiles = _state.value.newBackupIgnoredFiles.text.trim().ifEmpty { null },
                 isLocked = _state.value.newBackupLocked
             )
 

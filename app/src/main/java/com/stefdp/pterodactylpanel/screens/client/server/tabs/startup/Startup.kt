@@ -216,7 +216,7 @@ fun StartupTab(
                     viewModel.updateVariable(
                         context = context,
                         variable = variable.attributes.envVariable,
-                        value = newValue,
+                        value = newValue.trim(),
                         onSuccess = {
                             Notification.show(
                                 activity = activity,

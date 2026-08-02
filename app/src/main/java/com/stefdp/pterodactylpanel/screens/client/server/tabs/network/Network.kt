@@ -214,7 +214,7 @@ fun NetworkTab(
                         viewModel.updateAllocationNotes(
                             context = context,
                             allocationId = allocation.attributes.id,
-                            notes = notes,
+                            notes = notes.trim(),
                             onSuccess = {
                                 Notification.show(
                                     activity = activity,

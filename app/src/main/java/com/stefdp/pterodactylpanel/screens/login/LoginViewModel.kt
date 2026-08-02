@@ -34,7 +34,7 @@ class LoginViewModel : ViewModel() {
             it.copy(
                 serverUrl = url,
                 hasAcknowledgedInsecureUrlWarning = false,
-                isInsecureUrl = url.text.startsWith("http://")
+                isInsecureUrl = url.text.trim().startsWith("http://")
             )
         }
     }
@@ -73,7 +73,7 @@ class LoginViewModel : ViewModel() {
         Logger.debug(tag, "Starting login process")
 
         viewModelScope.launch {
-            val serverUrl = _state.value.serverUrl.text
+            val serverUrl = _state.value.serverUrl.text.trim()
 
             val isValidUrl = DomainRegex.matches(serverUrl.lowercase()) || IPRegex.matches(serverUrl.lowercase())
 
@@ -94,7 +94,7 @@ class LoginViewModel : ViewModel() {
                 if (serverUrl.endsWith("/")) serverUrl.lowercase().dropLast(1) else serverUrl.lowercase()
             )
 
-            val clientApiKey = _state.value.clientApiKey.text
+            val clientApiKey = _state.value.clientApiKey.text.trim()
             var isClientApiKeyValid = false
 
             if (clientApiKey.isNotBlank()) {
@@ -130,7 +130,7 @@ class LoginViewModel : ViewModel() {
                 isClientApiKeyValid = true
             }
 
-            val applicationApiKey = _state.value.applicationApiKey.text
+            val applicationApiKey = _state.value.applicationApiKey.text.trim()
             var isApplicationApiKeyValid = false
 
             if (applicationApiKey.isNotBlank()) {

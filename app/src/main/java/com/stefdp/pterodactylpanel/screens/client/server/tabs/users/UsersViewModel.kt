@@ -136,7 +136,7 @@ class ClientServerUsersTabViewModel : ViewModel() {
             val createUserRes = createServerSubuser(
                 context = context,
                 serverId = serverId!!,
-                email = _state.value.newUserEmail.text,
+                email = _state.value.newUserEmail.text.trim(),
                 permissions = _state.value.newSubuserPermissions.filter { it.value }.keys.toList()
             )
 

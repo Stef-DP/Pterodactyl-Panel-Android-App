@@ -132,7 +132,7 @@ fun ConfirmDatabaseDeletionPopup(
                         )
                     },
                     buttonType = ButtonType.ERROR,
-                    enabled = state.confirmDatabaseNameValue.text in validNames && !state.isLoading
+                    enabled = state.confirmDatabaseNameValue.text.trim() in validNames && !state.isLoading
                 ) {
                     Text("Delete Database")
                 }
