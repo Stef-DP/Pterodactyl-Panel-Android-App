@@ -10,8 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,7 +35,7 @@ import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.components.ServerDisplay
 import com.stefdp.pterodactylpanel.utils.shimmerable
-import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -78,11 +77,11 @@ fun ClientServersScreen(
         )
     }
 
-    val lazyColumnListState = rememberLazyListState()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(state.page) {
         updateData(page = state.page)
-        lazyColumnListState.animateScrollToItem(0)
+        scrollState.animateScrollTo(0)
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -100,11 +99,10 @@ fun ClientServersScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            LazyColumn(
-                state = lazyColumnListState,
+            Column(
                 modifier = Modifier
-                    .verticalLazyScrollbar(
-                        listState = lazyColumnListState,
+                    .verticalScrollWithScrollbar(
+                        scrollState = scrollState,
                     )
                     .weight(1f)
                     .padding(
@@ -115,7 +113,7 @@ fun ClientServersScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 if (state.servers == null) {
-                    items(10) {
+                    repeat(10) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -126,23 +124,19 @@ fun ClientServersScreen(
                         ) {}
                     }
 
-                    return@LazyColumn
+                    return@Column
                 }
 
                 state.servers?.let { servers ->
                     if (servers.isEmpty()) {
-                        item {
-                            Text(
-                                text = "There are no servers to display"
-                            )
-                        }
+                        Text(
+                            text = "There are no servers to display"
+                        )
 
-                        return@LazyColumn
+                        return@Column
                     }
 
-                    items(servers.size) { index ->
-                        val server = servers[index]
-
+                    for (server in servers) {
                         var serverStats by rememberSaveable {
                             mutableStateOf<ServerStats?>(null)
                         }
@@ -177,7 +171,7 @@ fun ClientServersScreen(
                                         isServerRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP,
                                         isServerOwner = server.attributes.serverOwner,
 
-                                    )
+                                        )
                                 )
                             }
                         )
