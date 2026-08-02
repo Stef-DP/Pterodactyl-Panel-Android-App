@@ -956,16 +956,20 @@ val shellHighlightColors = listOf(
 
 val jsonHighlightColors = listOf(
     TextColorScheme(
+        regex = Regex("""[{}\[\]()]"""),
+        matcher = Matcher.fully(colorHtmlTagBrackets)
+    ),
+    TextColorScheme(
         regex = Regex("""\b(-?\d+(\.\d+)?|true|false|null)\b"""),
         matcher = Matcher.fully(colorNumberLiteral)
     ),
     TextColorScheme(
-        regex = Regex(""""\w+"\s*(?=:)"""),
-        matcher = Matcher.fully(colorAttributes)
+        regex = Regex(""""([^"\\]|\\.)*""""),
+        matcher = Matcher.fully(colorStringLiteral)
     ),
     TextColorScheme(
-        regex = Regex(""":\s*("([^"\\]|\\.)*")"""),
-        matcher = Matcher.fully(colorStringLiteral)
+        regex = Regex(""""([^"\\]|\\.)*"\s*(?=:)"""),
+        matcher = Matcher.fully(colorAttributes)
     )
 )
 
