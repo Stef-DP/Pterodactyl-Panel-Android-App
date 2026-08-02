@@ -43,6 +43,7 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.settings.popups.ReinstallConfirmationPopup
 import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 import kotlinx.coroutines.launch
@@ -63,6 +64,14 @@ fun SettingsTab(
     val state by viewModel.state.collectAsState()
 
     val scrollState = rememberScrollState()
+
+    ReinstallConfirmationPopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel,
+        updateServer = updateServer
+    )
 
     Column(
         modifier = Modifier
@@ -320,31 +329,7 @@ fun SettingsTab(
 
                 Button(
                     onClick = {
-                        viewModel.reinstall(
-                            context = context,
-                            updateServer = updateServer,
-                            onError = { error ->
-                                Notification.show(
-                                    activity = activity,
-                                    duration = 3000L
-                                ) {
-                                    Text(
-                                        text = error,
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                }
-                            },
-                            onSuccess = {
-                                Notification.show(
-                                    activity = activity,
-                                    duration = 3000L
-                                ) {
-                                    Text(
-                                        text = "Started reinstalling server",
-                                    )
-                                }
-                            }
-                        )
+                        viewModel.showReinstallConfirmation()
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !state.isLoading,

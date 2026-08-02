@@ -21,6 +21,7 @@ data class ClientServerSettingsTabUiState(
     val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val newServerName: TextFieldValue = TextFieldValue(""),
     val newServerDescription: TextFieldValue = TextFieldValue(""),
+    val showReinstallConfirmation: Boolean = false
 )
 
 class ClientServerSettingsTabViewModel : ViewModel() {
@@ -54,6 +55,24 @@ class ClientServerSettingsTabViewModel : ViewModel() {
         }
     }
 
+    fun showReinstallConfirmation() {
+        _state.update {
+            it.copy(
+                showReinstallConfirmation = true
+            )
+        }
+    }
+
+    fun hideReinstallConfirmation(skipLoading: Boolean = false) {
+        if (_state.value.isLoading && !skipLoading) return
+
+        _state.update {
+            it.copy(
+                showReinstallConfirmation = false
+            )
+        }
+    }
+
     fun renameServer(
         context: Context,
         onError: (String) -> Unit,
@@ -76,8 +95,8 @@ class ClientServerSettingsTabViewModel : ViewModel() {
             val renameServerRes = renameServer(
                 context = context,
                 serverId = serverId!!,
-                name = state.value.newServerName.text,
-                description = state.value.newServerDescription.text
+                name = state.value.newServerName.text.trim(),
+                description = state.value.newServerDescription.text.trim()
             )
 
             renameServerRes
@@ -133,6 +152,8 @@ class ClientServerSettingsTabViewModel : ViewModel() {
             reinstallServerRes
                 .onSuccess {
                     updateServer()
+
+                    hideReinstallConfirmation(true)
 
                     _state.update {
                         it.copy(
