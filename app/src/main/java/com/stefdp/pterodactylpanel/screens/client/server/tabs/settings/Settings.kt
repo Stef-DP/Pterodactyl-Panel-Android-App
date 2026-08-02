@@ -53,9 +53,10 @@ fun SettingsTab(
     activity: FragmentActivity,
     viewModel: ClientServerSettingsTabViewModel = viewModel(),
     server: GetServerResponse?,
-    refreshIndex: Int
+    refreshIndex: Int,
+    updateServer: () -> Unit
 ) {
-    LaunchedEffect(server, refreshIndex) {
+    LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
         viewModel.init(server)
     }
 
@@ -263,6 +264,7 @@ fun SettingsTab(
                     onClick = {
                         viewModel.renameServer(
                             context = context,
+                            updateServer = updateServer,
                             onError = { error ->
                                 Notification.show(
                                     activity = activity,
@@ -320,6 +322,7 @@ fun SettingsTab(
                     onClick = {
                         viewModel.reinstall(
                             context = context,
+                            updateServer = updateServer,
                             onError = { error ->
                                 Notification.show(
                                     activity = activity,

@@ -52,7 +52,7 @@ fun BackupsTab(
     server: GetServerResponse?,
     refreshIndex: Int
 ) {
-    LaunchedEffect(server, refreshIndex) {
+    LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
         viewModel.init(
             context = context,
             server = server,

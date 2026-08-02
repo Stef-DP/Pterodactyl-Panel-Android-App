@@ -46,7 +46,7 @@ fun SchedulesTab(
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(server, refreshIndex) {
+    LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
         viewModel.init(server)
 
         viewModel.updateSchedules(

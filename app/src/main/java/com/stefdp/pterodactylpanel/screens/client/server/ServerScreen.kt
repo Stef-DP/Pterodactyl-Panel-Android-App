@@ -264,8 +264,8 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off),
-                                contentDescription = "Suspended",
+                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                contentDescription = "Node under maintenance",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
                                     .requiredSize(60.dp)
@@ -309,8 +309,8 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off),
-                                contentDescription = "Suspended",
+                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                contentDescription = "Running Installer",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
                                     .requiredSize(60.dp)
@@ -354,8 +354,8 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off),
-                                contentDescription = "Suspended",
+                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                contentDescription = "Restoring from Backup",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
                                     .requiredSize(60.dp)
@@ -399,8 +399,8 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off),
-                                contentDescription = "Suspended",
+                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                contentDescription = "Transferring",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
                                     .requiredSize(60.dp)
@@ -507,12 +507,15 @@ fun ClientServerScreen(
                             context = context,
                             activity = activity,
                             server = state.server,
-                            refreshIndex = refreshIndex
+                            refreshIndex = refreshIndex,
+                            updateServer = {
+                                reload()
+                            }
                         )
                     }
 
-                    else -> {
-                        Text("WIP")
+                    ServerTab.ACTIVITY -> {
+
                     }
                 }
             }

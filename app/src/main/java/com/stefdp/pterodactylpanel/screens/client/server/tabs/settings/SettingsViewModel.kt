@@ -58,6 +58,7 @@ class ClientServerSettingsTabViewModel : ViewModel() {
         context: Context,
         onError: (String) -> Unit,
         onSuccess: () -> Unit,
+        updateServer: () -> Unit
     ) {
         viewModelScope.launch {
             if (serverId == null) {
@@ -81,6 +82,8 @@ class ClientServerSettingsTabViewModel : ViewModel() {
 
             renameServerRes
                 .onSuccess {
+                    updateServer()
+
                     _state.update {
                         it.copy(
                             isLoading = false
@@ -107,6 +110,7 @@ class ClientServerSettingsTabViewModel : ViewModel() {
         context: Context,
         onError: (String) -> Unit,
         onSuccess: () -> Unit,
+        updateServer: () -> Unit
     ) {
         viewModelScope.launch {
             if (serverId == null) {
@@ -128,6 +132,8 @@ class ClientServerSettingsTabViewModel : ViewModel() {
 
             reinstallServerRes
                 .onSuccess {
+                    updateServer()
+
                     _state.update {
                         it.copy(
                             isLoading = false

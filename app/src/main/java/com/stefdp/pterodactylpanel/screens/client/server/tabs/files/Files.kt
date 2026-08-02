@@ -61,7 +61,7 @@ fun FilesTab(
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(server, refreshIndex) {
+    LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
         viewModel.init(
             context = context,
             server = server,

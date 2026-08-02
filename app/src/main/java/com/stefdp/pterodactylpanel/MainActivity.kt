@@ -96,7 +96,7 @@ val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: 
 }
 
 // TODO: trim() all user input fields
-// TODO: add "show others' servers" switch in main servers list
+// TODO: add "show others' servers" switch in main servers list when application api key is provided
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)

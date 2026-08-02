@@ -6,10 +6,10 @@ import com.stefdp.pterodactylpanel.screens.AppScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 
-const val IS_DEBUG = false
+const val IS_DEBUG = true
 const val DEBUG_NETWORK = false
 
-val DEBUG_SCREEN: AppScreen = ClientServerScreen(serverId = "cb71da0a")//LoadingScreen
+val DEBUG_SCREEN: AppScreen = ClientServerScreen(serverId = "7055dbed")//LoadingScreen
 
 @Composable
 fun DebugWrapper(content: @Composable () -> Unit) {

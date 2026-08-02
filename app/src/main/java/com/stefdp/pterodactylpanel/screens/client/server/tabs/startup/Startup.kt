@@ -48,7 +48,7 @@ fun StartupTab(
     server: GetServerResponse?,
     refreshIndex: Int
 ) {
-    LaunchedEffect(server, refreshIndex) {
+    LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
         viewModel.init(server)
 
         viewModel.updateStartup(

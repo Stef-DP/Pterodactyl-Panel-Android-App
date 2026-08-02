@@ -94,7 +94,7 @@ fun ConsoleTab(
 
     val locale = LocalLocale.current.platformLocale
 
-    DisposableEffect(server, refreshIndex) {
+    DisposableEffect(server?.attributes?.identifier, refreshIndex) {
         viewModel.init(server)
 
         viewModel.connectToWebSocket(
