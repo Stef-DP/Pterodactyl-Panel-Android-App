@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.waterfallPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
@@ -46,6 +48,7 @@ fun ScrollableTabRow(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.outline)
+            .waterfallPadding()
             .horizontalLazyScrollbar(listState),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
