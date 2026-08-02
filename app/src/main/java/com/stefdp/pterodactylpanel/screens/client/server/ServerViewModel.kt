@@ -21,7 +21,7 @@ data class ClientServerUiState(
     val isServerOwner: Boolean = false,
     val userPermissions: List<ServerSubuser.Permissions> = emptyList(),
     val server: GetServerResponse? = null,
-    val currentTab: ServerTab = ServerTab.SETTINGS, // TODO: set this back to CONSOLE
+    val currentTab: ServerTab = ServerTab.CONSOLE,
     val isSuspended: Boolean = false,
     val isInstalling: Boolean = false,
     val isTransferring: Boolean = false,

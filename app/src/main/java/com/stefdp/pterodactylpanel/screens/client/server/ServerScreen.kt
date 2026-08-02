@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.waterfallPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,12 +38,15 @@ import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.ApplicationApiKeyValidity
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.LocalApplicationApiKeyValidity
+import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.PullToRefreshBox
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
+import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.screens.client.server.tabs.activity.ActivityTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.BackupsTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.console.ConsoleTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.databases.DatabasesTab
@@ -70,14 +74,13 @@ fun ClientServerScreen(
     isServerOwner: Boolean = false,
     viewModel: ClientServerViewModel = viewModel()
 ) {
-    // TODO: uncomment this, it's just for debug
-//    val localLoggedUser = LocalLoggedUser.current
-//
-//    if (localLoggedUser == null) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    val localLoggedUser = LocalLoggedUser.current
+
+    if (localLoggedUser == null) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -197,11 +200,7 @@ fun ClientServerScreen(
             }
         ) {
             Column(
-                modifier = Modifier
-                    .padding(
-                        start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                        end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                    )
+                modifier = Modifier.waterfallPadding()
             ) {
                 if (state.isSuspended) {
                     Box(
@@ -515,7 +514,12 @@ fun ClientServerScreen(
                     }
 
                     ServerTab.ACTIVITY -> {
-
+                        ActivityTab(
+                            context = context,
+                            activity = activity,
+                            server = state.server,
+                            refreshIndex = refreshIndex
+                        )
                     }
                 }
             }
