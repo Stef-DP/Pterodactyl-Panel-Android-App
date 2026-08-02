@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -28,6 +30,8 @@ import com.stefdp.pterodactylpanel.screens.client.server.components.ActivityDisp
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.activity.popups.MetadataPopup
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
+import kotlinx.coroutines.launch
 
 @Composable
 fun ActivityTab(
@@ -39,23 +43,31 @@ fun ActivityTab(
 ) {
     val state by viewModel.state.collectAsState()
 
+    val scrollState = rememberScrollState()
+
+    val coroutineScope = rememberCoroutineScope()
+
     fun reload() {
-        viewModel.updateActivity(
-            context = context,
-            page = state.page,
-            onSuccess = {},
-            onError = { error ->
-                Notification.show(
-                    activity = activity,
-                    duration = 3000L
-                ) {
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error
-                    )
+        coroutineScope.launch {
+            scrollState.animateScrollTo(0)
+
+            viewModel.updateActivity(
+                context = context,
+                page = state.page,
+                onSuccess = {},
+                onError = { error ->
+                    Notification.show(
+                        activity = activity,
+                        duration = 3000L
+                    ) {
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     LaunchedEffect(server?.attributes?.identifier, refreshIndex, state.page) {
@@ -75,13 +87,10 @@ fun ActivityTab(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val lazyColumnListState = rememberLazyListState()
-
-        LazyColumn(
-            state = lazyColumnListState,
+        Column(
             modifier = Modifier
-                .verticalLazyScrollbar(
-                    listState = lazyColumnListState,
+                .verticalScrollWithScrollbar(
+                    scrollState = scrollState,
                 )
                 .weight(1f)
                 .padding(
@@ -92,7 +101,7 @@ fun ActivityTab(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (state.activity.isEmpty()) {
-                items(10) {
+                repeat(10) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -103,12 +112,10 @@ fun ActivityTab(
                     )
                 }
 
-                return@LazyColumn
+                return@Column
             }
 
-            items(state.activity.size) { index ->
-                val activity = state.activity[index]
-
+            for (activity in state.activity) {
                 ActivityDisplay(
                     activity = activity,
                     onOpenMetadata = {
