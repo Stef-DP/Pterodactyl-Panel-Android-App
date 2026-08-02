@@ -121,4 +121,7 @@ dependencies {
     // Gravatar
     implementation(libs.gravatar)
     implementation(libs.gravatar.ui)
+
+    // AvatarKt
+    implementation(libs.avatar.kt)
 }

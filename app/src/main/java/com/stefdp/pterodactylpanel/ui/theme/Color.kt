@@ -39,6 +39,14 @@ val OnErrorLight = Color(0xFFFAF8FB)
 val LinkLight = Color(0xFF2B88F8)
 val SurfaceDimLight = Color(0xFF282E39)
 
+val AvatarColors = listOf(
+    Color(0xFFFFAD08),
+    Color(0xFFEDD75A),
+    Color(0xFF73B06F),
+    Color(0xFF0C8F8F),
+    Color(0xFF587291)
+)
+
 
 val Yellow = Color(0xFFC38622)
 val Red = ErrorDark

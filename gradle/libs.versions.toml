@@ -44,6 +44,9 @@ highlight = "2.3.0"
 # Gravatar
 gravatar = "2.5.1"
 
+# AvatarKt
+avatar-kt = "0.3.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -98,6 +101,9 @@ highlight-compose = { group = "com.neoutils.highlight", name = "highlight-compos
 # Gravatar
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }
 gravatar-ui = { group = "com.gravatar", name = "gravatar-ui", version.ref = "gravatar" }
+
+# AvatarKt
+avatar-kt = { group = "io.github.feliperce", name = "avatarkt", version.ref = "avatar-kt" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
