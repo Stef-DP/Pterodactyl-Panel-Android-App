@@ -52,6 +52,7 @@ data class ClientServerFilesTabUiState(
         "home",
         "container",
     ),
+    val fileToDownload: ServerFile? = null,
     val showNewDirectoryPopup: Boolean = false,
     val newDirectoryName: TextFieldValue = TextFieldValue(""),
     val showMoveFilesPopup: Boolean = false,
@@ -747,6 +748,14 @@ class ClientServerFilesTabViewModel : ViewModel() {
             }
 
             selectedPath = getDisplayPath(uri)
+        }
+    }
+
+    fun setFileToDownload(file: ServerFile?) {
+        _state.update {
+            it.copy(
+                fileToDownload = file
+            )
         }
     }
 

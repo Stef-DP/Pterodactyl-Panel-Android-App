@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
@@ -57,7 +58,7 @@ fun FilesTab(
     viewModel: ClientServerFilesTabViewModel = viewModel(),
     server: GetServerResponse?,
     directory: String?,
-    refreshIndex: Int
+    refreshIndex: Int,
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -305,6 +306,34 @@ fun FilesTab(
             }
         }
 
+        val directoryPicker = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenDocumentTree()
+        ) { uri: Uri? ->
+            uri?.let {
+                if (state.fileToDownload == null) return@let
+
+                context.contentResolver.takePersistableUriPermission(
+                    it,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                )
+
+                viewModel.setSelectedUri(context, it)
+
+                viewModel.performDownload(
+                    context = context,
+                    file = state.fileToDownload!!,
+                    uri = uri,
+                    sendNotification = { content ->
+                        Notification.show(
+                            activity = activity,
+                            content = content
+                        )
+                    }
+                )
+            }
+        }
+
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -339,60 +368,79 @@ fun FilesTab(
                 items(state.files.size) { index ->
                     val file = state.files[index]
 
-                    val directoryPicker = rememberLauncherForActivityResult(
-                        contract = ActivityResultContracts.OpenDocumentTree()
-                    ) { uri: Uri? ->
-                        uri?.let {
-                            context.contentResolver.takePersistableUriPermission(
-                                it,
-                                Intent.FLAG_GRANT_READ_URI_PERMISSION or
-                                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    val hasDeletePermission by rememberSaveable(
+                        state.isServerOwner,
+                        state.userPermissions
+                    ) {
+                        mutableStateOf(
+                            hasPermission(
+                                isServerOwner = state.isServerOwner,
+                                userPermissions = state.userPermissions,
+                                requiredPermission = ServerSubuser.Permissions.FILE_DELETE
                             )
+                        )
+                    }
 
-                            viewModel.setSelectedUri(context, it)
-
-                            viewModel.performDownload(
-                                context = context,
-                                file = file,
-                                uri = uri,
-                                sendNotification = { content ->
-                                    Notification.show(
-                                        activity = activity,
-                                        content = content
-                                    )
-                                }
+                    val hasUpdatePermission by rememberSaveable(
+                        state.isServerOwner,
+                        state.userPermissions
+                    ) {
+                        mutableStateOf(
+                            hasPermission(
+                                isServerOwner = state.isServerOwner,
+                                userPermissions = state.userPermissions,
+                                requiredPermission = ServerSubuser.Permissions.FILE_UPDATE
                             )
-                        }
+                        )
+                    }
+
+                    val hasCreatePermission by rememberSaveable(
+                        state.isServerOwner,
+                        state.userPermissions
+                    ) {
+                        mutableStateOf(
+                            hasPermission(
+                                isServerOwner = state.isServerOwner,
+                                userPermissions = state.userPermissions,
+                                requiredPermission = ServerSubuser.Permissions.FILE_CREATE
+                            )
+                        )
+                    }
+
+                    val hasArchivePermission by rememberSaveable(
+                        state.isServerOwner,
+                        state.userPermissions
+                    ) {
+                        mutableStateOf(
+                            hasPermission(
+                                isServerOwner = state.isServerOwner,
+                                userPermissions = state.userPermissions,
+                                requiredPermission = ServerSubuser.Permissions.FILE_ARCHIVE
+                            )
+                        )
+                    }
+
+                    val hasReadContentPermission by rememberSaveable(
+                        state.isServerOwner,
+                        state.userPermissions
+                    ) {
+                        mutableStateOf(
+                            hasPermission(
+                                isServerOwner = state.isServerOwner,
+                                userPermissions = state.userPermissions,
+                                requiredPermission = ServerSubuser.Permissions.FILE_READ_CONTENT
+                            )
+                        )
                     }
 
                     FileDisplay(
                         file = file,
                         isSelected = file.attributes.name in state.selectedFiles,
-                        hasDeletePermission = hasPermission(
-                            isServerOwner = state.isServerOwner,
-                            userPermissions = state.userPermissions,
-                            requiredPermission = ServerSubuser.Permissions.FILE_DELETE
-                        ),
-                        hasUpdatePermission = hasPermission(
-                            isServerOwner = state.isServerOwner,
-                            userPermissions = state.userPermissions,
-                            requiredPermission = ServerSubuser.Permissions.FILE_UPDATE
-                        ),
-                        hasCreatePermission = hasPermission(
-                            isServerOwner = state.isServerOwner,
-                            userPermissions = state.userPermissions,
-                            requiredPermission = ServerSubuser.Permissions.FILE_CREATE
-                        ),
-                        hasArchivePermission = hasPermission(
-                            isServerOwner = state.isServerOwner,
-                            userPermissions = state.userPermissions,
-                            requiredPermission = ServerSubuser.Permissions.FILE_ARCHIVE
-                        ),
-                        hasReadContentPermission = hasPermission(
-                            isServerOwner = state.isServerOwner,
-                            userPermissions = state.userPermissions,
-                            requiredPermission = ServerSubuser.Permissions.FILE_READ_CONTENT
-                        ),
+                        hasDeletePermission = hasDeletePermission,
+                        hasUpdatePermission = hasUpdatePermission,
+                        hasCreatePermission = hasCreatePermission,
+                        hasArchivePermission = hasArchivePermission,
+                        hasReadContentPermission = hasReadContentPermission,
                         onSelectionToggle = {
                             viewModel.toggleFileSelection(file.attributes.name)
                         },
@@ -526,6 +574,8 @@ fun FilesTab(
                             )
                         },
                         onDownload = {
+                            viewModel.setFileToDownload(file)
+
                             if (state.selectedUri == null) {
                                 directoryPicker.launch(null)
 
