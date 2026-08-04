@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -39,14 +42,35 @@ fun AccountTab(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-    LaunchedEffect(localLoggedUser, refreshIndex) {
-        viewModel.init(
-            context = context,
-            user = localLoggedUser
-        )
+    val state by viewModel.state.collectAsState()
+
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
     }
 
-    val state by viewModel.state.collectAsState()
+    LaunchedEffect(localLoggedUser?.attributes?.id, refreshIndex) {
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad && state.currentEmail.text.isNotBlank()) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+        viewModel.init(
+            context = context,
+            user = localLoggedUser,
+            onError = { error ->
+                Notification.show(
+                    activity = activity,
+                    duration = 3000L
+                ) {
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        )
+    }
 
     Enable2FaPopup(
         activity = activity,
@@ -175,7 +199,7 @@ fun AccountTab(
         ) {
             TextInput(
                 label = "Email",
-                value = state.currentEmail,
+                value = state.newEmail,
                 onValueChange = {
                     viewModel.setNewEmail(it)
                 },
@@ -224,8 +248,8 @@ fun AccountTab(
                 modifier = Modifier.fillMaxWidth(),
                 enabled =
                     !state.isLoading &&
-                    state.currentEmail != state.newEmail &&
-                    EmailRegex.matches(state.currentEmail.text.trim()) &&
+                    state.currentEmail.text.trim() != state.newEmail.text.trim() &&
+                    EmailRegex.matches(state.newEmail.text.trim()) &&
                     state.emailPasswordConfirmation.text.trim().isNotBlank()
             ) {
                 Text(
@@ -276,7 +300,7 @@ fun AccountTab(
                 buttonType = if (state.is2FAEnabled) ButtonType.ERROR else ButtonType.PRIMARY
             ) {
                 Text(
-                    text = if (state.is2FAEnabled) "Disable" else "Enable" + " Two-Step"
+                    text = (if (state.is2FAEnabled) "Disable" else "Enable") + " Two-Step"
                 )
             }
         }

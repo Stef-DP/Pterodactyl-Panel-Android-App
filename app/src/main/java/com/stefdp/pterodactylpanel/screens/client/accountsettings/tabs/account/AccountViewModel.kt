@@ -44,6 +44,7 @@ class ClientAccountSettingsAccountTabViewModel : ViewModel() {
     fun init(
         context: Context,
         user: User?,
+        onError: (String) -> Unit
     ) {
         viewModelScope.launch {
             _state.update {
@@ -76,6 +77,8 @@ class ClientAccountSettingsAccountTabViewModel : ViewModel() {
                             isLoading = false
                         )
                     }
+
+                    onError("Failed to check 2FA status: ${error.message}")
                 }
         }
     }

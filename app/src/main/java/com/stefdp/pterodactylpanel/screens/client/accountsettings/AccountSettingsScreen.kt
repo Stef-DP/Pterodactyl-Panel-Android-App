@@ -12,9 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
@@ -29,6 +29,7 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.account.AccountTab
+import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.apicredentials.ApiCredentialsTab
 
 @Composable
 fun ClientAccountSettingsScreen(
@@ -71,6 +72,8 @@ fun ClientAccountSettingsScreen(
         )
     }
 
+    val saveableStateHolder = rememberSaveableStateHolder()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,18 +82,14 @@ fun ClientAccountSettingsScreen(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        val tabs by remember(
-            state.currentTab
-        ) {
-            mutableStateOf(
-                AccountTab.entries.map { accountTab ->
-                    Tab(
-                        label = accountTab.label,
-                        id = accountTab.id,
-                        active = accountTab == state.currentTab
-                    )
-                }
-            )
+        val tabs = remember(state.currentTab) {
+            AccountTab.entries.map { accountTab ->
+                Tab(
+                    label = accountTab.label,
+                    id = accountTab.id,
+                    active = accountTab == state.currentTab
+                )
+            }
         }
 
         ScrollableTabRow(
@@ -116,17 +115,27 @@ fun ClientAccountSettingsScreen(
             Column(
                 modifier = Modifier.waterfallPadding()
             ) {
-                when (state.currentTab) {
-                    AccountTab.ACCOUNT -> {
-                        AccountTab(
-                            context = context,
-                            activity = activity,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                saveableStateHolder.SaveableStateProvider(key = state.currentTab) {
+                    when (state.currentTab) {
+                        AccountTab.ACCOUNT -> {
+                            AccountTab(
+                                context = context,
+                                activity = activity,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    else -> {
-                        Text("WIP")
+                        AccountTab.API_CREDENTIALS -> {
+                            ApiCredentialsTab(
+                                context = context,
+                                activity = activity,
+                                refreshIndex = refreshIndex
+                            )
+                        }
+
+                        else -> {
+                            Text("WIP")
+                        }
                     }
                 }
             }
