@@ -196,7 +196,7 @@ fun ClientServerScreen(
             onRefresh = {
                 reload()
 
-                refreshIndex += 1
+                refreshIndex++
             }
         ) {
             Column(
@@ -263,7 +263,7 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                painter = painterResource(R.drawable.construction),
                                 contentDescription = "Node under maintenance",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
@@ -308,7 +308,7 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                painter = painterResource(R.drawable.download),
                                 contentDescription = "Running Installer",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
@@ -353,7 +353,7 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                painter = painterResource(R.drawable.history),
                                 contentDescription = "Restoring from Backup",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
@@ -398,7 +398,7 @@ fun ClientServerScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.cloud_off), // TODO: change icon
+                                painter = painterResource(R.drawable.sync_alt),
                                 contentDescription = "Transferring",
                                 tint = MaterialTheme.colorScheme.surfaceDim,
                                 modifier = Modifier
