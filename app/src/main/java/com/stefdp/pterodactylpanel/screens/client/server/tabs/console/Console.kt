@@ -35,9 +35,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -92,28 +96,50 @@ fun ConsoleTab(
 ) {
     val state by viewModel.state.collectAsState()
 
+    var lastRefreshIndex by rememberSaveable() {
+        mutableIntStateOf(-1)
+    }
+
     val locale = LocalLocale.current.platformLocale
 
     DisposableEffect(server?.attributes?.identifier, refreshIndex) {
-        viewModel.init(server)
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
 
-        viewModel.connectToWebSocket(
-            context = context,
-            locale = locale,
-            onError = { error ->
-                Notification.show(
-                    activity = activity
-                ) {
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            }
+        val activeStates = listOf(
+            WebSocketConnectionStatus.CONNECTING,
+            WebSocketConnectionStatus.CONNECTED
         )
 
+        val shouldSkip = !isExplicitRefresh && !isFirstLoad && server != null && state.connectionState in activeStates
+
+        if (!shouldSkip) {
+            lastRefreshIndex = refreshIndex
+
+            viewModel.init(server)
+
+            viewModel.connectToWebSocket(
+                context = context,
+                locale = locale,
+                onError = { error ->
+                    Notification.show(
+                        activity = activity,
+                        duration = 3000L
+                    ) {
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            )
+        }
+
         onDispose {
-            viewModel.disconnectFromWebSocket()
+            if (!shouldSkip) {
+                viewModel.disconnectFromWebSocket()
+                viewModel.clearLogs()
+            }
         }
     }
 
@@ -146,8 +172,10 @@ fun ConsoleTab(
             WebSocketConnectionStatus.DISCONNECTED
         )
 
-        val isWebSocketLoading by remember(state.connectionState, state.logs) {
-            mutableStateOf(state.connectionState in loadingWebSocketStates || state.logs.isEmpty())
+        val isWebSocketLoading by remember {
+            derivedStateOf {
+                state.connectionState in loadingWebSocketStates || state.logs.isEmpty()
+            }
         }
 
         Column(

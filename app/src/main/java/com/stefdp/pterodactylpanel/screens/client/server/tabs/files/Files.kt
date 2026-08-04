@@ -22,9 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
@@ -60,9 +62,20 @@ fun FilesTab(
     directory: String?,
     refreshIndex: Int,
 ) {
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
+
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad && server != null && state.files.isNotEmpty()) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+
         viewModel.init(
             context = context,
             server = server,
@@ -83,7 +96,18 @@ fun FilesTab(
 
     val listState = rememberLazyListState()
 
+    var lastFilesRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
+
     LaunchedEffect(state.filesPath, refreshIndex) {
+        val isFirstLoad = lastFilesRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastFilesRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad && server != null && state.files.isNotEmpty()) return@LaunchedEffect
+
+        lastFilesRefreshIndex = refreshIndex
+
         listState.animateScrollToItem(0)
 
         viewModel.updateFiles(

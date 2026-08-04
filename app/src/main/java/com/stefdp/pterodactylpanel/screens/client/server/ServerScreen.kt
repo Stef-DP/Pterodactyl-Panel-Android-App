@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -109,6 +110,8 @@ fun ClientServerScreen(
         )
     }
 
+    val saveableStateHolder = rememberSaveableStateHolder()
+
     LaunchedEffect(serverId) {
         reload()
     }
@@ -124,55 +127,53 @@ fun ClientServerScreen(
         val applicationApiKeyValidity = LocalApplicationApiKeyValidity.current
         val openInNewIcon = painterResource(R.drawable.open_in_new)
 
-        val tabs by remember(
+        val tabs = remember(
             applicationApiKeyValidity,
             state.currentTab,
             state.server,
         ) {
-            mutableStateOf(
-                value = (
-                    ServerTab.entries.map { serverTab ->
-                        val permissions = ServerSubuser.Permissions.fromTab(serverTab)
+            val tabsData = ServerTab.entries.map { serverTab ->
+                val permissions = ServerSubuser.Permissions.fromTab(serverTab)
 
-                        val tab = Tab(
-                            label = serverTab.label,
-                            id = serverTab.id,
-                            active = serverTab == state.currentTab,
-                        )
+                val tab = Tab(
+                    label = serverTab.label,
+                    id = serverTab.id,
+                    active = serverTab == state.currentTab,
+                )
 
-                        if (
-                            state.server == null ||
-                            (
-                                state.isLoading && state.userPermissions.isEmpty()
+                if (
+                    state.server == null ||
+                    (
+                            state.isLoading && state.userPermissions.isEmpty()
                             )
-                        ) {
-                            return@map tab
+                ) {
+                    return@map tab
 //                            if (tab.id == ServerTab.CONSOLE.id) return@map tab
 //                            return@map null
-                        }
+                }
 
-                        if (
-                            !hasPermission(
-                                isServerOwner = state.isServerOwner,
-                                userPermissions = state.userPermissions,
-                                requiredPermissions = permissions
-                            )
-                        ) {
-                            return@map null
-                        }
+                if (
+                    !hasPermission(
+                        isServerOwner = state.isServerOwner,
+                        userPermissions = state.userPermissions,
+                        requiredPermissions = permissions
+                    )
+                ) {
+                    return@map null
+                }
 
-                        return@map tab
-                    } + if (applicationApiKeyValidity == ApplicationApiKeyValidity.VALID) {
-                        Tab(
-                            icon = openInNewIcon,
-                            iconContentDescription = "Open in admin view",
-                            id = "admin",
-                            active = false,
-                            enabled = false // TODO: enabled when the admin side is done
-                        )
-                    } else null
-                ).filterNotNull()
-            )
+                return@map tab
+            } + if (applicationApiKeyValidity == ApplicationApiKeyValidity.VALID) {
+                Tab(
+                    icon = openInNewIcon,
+                    iconContentDescription = "Open in admin view",
+                    id = "admin",
+                    active = false,
+                    enabled = false // TODO: enabled when the admin side is done
+                )
+            } else null
+
+            return@remember tabsData.filterNotNull()
         }
 
         ScrollableTabRow(
@@ -427,99 +428,101 @@ fun ClientServerScreen(
                     return@Column
                 }
 
-                when (state.currentTab) {
-                    ServerTab.CONSOLE -> {
-                        ConsoleTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                saveableStateHolder.SaveableStateProvider(key = state.currentTab) {
+                    when (state.currentTab) {
+                        ServerTab.CONSOLE -> {
+                            ConsoleTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.FILES -> {
-                        FilesTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            directory = directory,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.FILES -> {
+                            FilesTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                directory = directory,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.DATABASES -> {
-                        DatabasesTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.DATABASES -> {
+                            DatabasesTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.SCHEDULES -> {
-                        SchedulesTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.SCHEDULES -> {
+                            SchedulesTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.USERS -> {
-                        UsersTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.USERS -> {
+                            UsersTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.BACKUPS -> {
-                        BackupsTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.BACKUPS -> {
+                            BackupsTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.NETWORK -> {
-                        NetworkTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.NETWORK -> {
+                            NetworkTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.STARTUP -> {
-                        StartupTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
-                    }
+                        ServerTab.STARTUP -> {
+                            StartupTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
 
-                    ServerTab.SETTINGS -> {
-                        SettingsTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex,
-                            updateServer = {
-                                reload()
-                            }
-                        )
-                    }
+                        ServerTab.SETTINGS -> {
+                            SettingsTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex,
+                                updateServer = {
+                                    reload()
+                                }
+                            )
+                        }
 
-                    ServerTab.ACTIVITY -> {
-                        ActivityTab(
-                            context = context,
-                            activity = activity,
-                            server = state.server,
-                            refreshIndex = refreshIndex
-                        )
+                        ServerTab.ACTIVITY -> {
+                            ActivityTab(
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
                     }
                 }
             }

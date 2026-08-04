@@ -19,7 +19,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +60,18 @@ fun SettingsTab(
     refreshIndex: Int,
     updateServer: () -> Unit
 ) {
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
+
     LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad && server != null) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+
         viewModel.init(server)
     }
 

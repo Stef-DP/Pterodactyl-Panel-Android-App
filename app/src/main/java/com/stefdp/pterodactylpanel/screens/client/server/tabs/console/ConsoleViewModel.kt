@@ -155,6 +155,14 @@ class ClientServerConsoleTabViewModel(
         }
     }
 
+    fun clearLogs() {
+        _state.update {
+            it.copy(
+                logs = emptyList()
+            )
+        }
+    }
+
     fun connectToWebSocket(
         context: Context,
         locale: Locale,
@@ -450,5 +458,6 @@ class ClientServerConsoleTabViewModel(
 
     override fun onCleared() {
         disconnectFromWebSocket()
+        clearLogs()
     }
 }

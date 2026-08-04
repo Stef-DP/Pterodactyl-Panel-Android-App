@@ -18,7 +18,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
@@ -70,10 +74,32 @@ fun ActivityTab(
         }
     }
 
-    LaunchedEffect(server?.attributes?.identifier, refreshIndex, state.page) {
-        viewModel.init(server)
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
 
+    var lastPage by rememberSaveable {
+        mutableLongStateOf(1)
+    }
+
+    LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad && server != null && state.activity.isNotEmpty()) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+
+        viewModel.init(server)
         reload()
+    }
+
+    LaunchedEffect(state.page) {
+        if (state.page != lastPage) {
+            lastPage = state.page
+
+            reload()
+        }
     }
 
     MetadataPopup(

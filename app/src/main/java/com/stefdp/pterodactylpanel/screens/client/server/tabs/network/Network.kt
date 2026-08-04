@@ -20,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -44,7 +47,20 @@ fun NetworkTab(
     server: GetServerResponse?,
     refreshIndex: Int
 ) {
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
+
+    val state by viewModel.state.collectAsState()
+
     LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad && server != null && state.allocations.isNotEmpty()) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+
         viewModel.init(server)
 
         viewModel.updateAllocations(
@@ -63,8 +79,6 @@ fun NetworkTab(
             }
         )
     }
-
-    val state by viewModel.state.collectAsState()
 
     DeleteAllocationPopup(
         activity = activity,

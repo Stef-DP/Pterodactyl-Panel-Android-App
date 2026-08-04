@@ -18,6 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
@@ -48,7 +51,22 @@ fun StartupTab(
     server: GetServerResponse?,
     refreshIndex: Int
 ) {
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
+
+    val state by viewModel.state.collectAsState()
+
     LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        val isDefaultStartup = state.startupCommand == "Loading..."
+
+        if (!isExplicitRefresh && !isFirstLoad && server != null && !isDefaultStartup) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+
         viewModel.init(server)
 
         viewModel.updateStartup(
@@ -67,8 +85,6 @@ fun StartupTab(
             }
         )
     }
-
-    val state by viewModel.state.collectAsState()
 
     val lazyColumnListState = rememberLazyListState()
 
