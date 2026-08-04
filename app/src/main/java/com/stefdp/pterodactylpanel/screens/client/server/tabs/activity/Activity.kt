@@ -131,7 +131,7 @@ fun ActivityTab(
 
         Pager(
             currentPage = state.page,
-            totalPages = state.pagination?.total ?: 1,
+            totalPages = state.pagination?.totalPages ?: 1,
             enabled = state.activity.isNotEmpty(),
             onFirstPageClick = {
                 viewModel.setPage(1)
@@ -146,7 +146,7 @@ fun ActivityTab(
                 viewModel.setPage(state.page + 1)
             },
             onLastPageClick = {
-                viewModel.setPage(state.pagination?.total ?: 1)
+                viewModel.setPage(state.pagination?.totalPages ?: 1)
             }
         )
     }
