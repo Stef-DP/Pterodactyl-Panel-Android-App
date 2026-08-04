@@ -63,12 +63,13 @@ fun formatDate(
     short: Boolean = false,
     dateOnly: Boolean = false,
     timeOnly: Boolean = false,
+    includeYear: Boolean = true
 ): String {
     if (short) {
         val pattern = when {
-            dateOnly -> "yyyy-MM-dd"
+            dateOnly -> if (includeYear) "yyyy-MM-dd" else "MM-dd"
             timeOnly -> "hh:mm a"
-            else -> "yyyy-MM-dd, hh:mm a"
+            else -> if (includeYear) "yyyy-MM-dd, hh:mm a" else "MM-dd, hh:mm a"
         }
 
         return Instant
@@ -86,9 +87,9 @@ fun formatDate(
     val suffix = getOrdinalSuffix(day)
 
     val pattern = when {
-        dateOnly -> "MMM d'$suffix'"
+        dateOnly -> if (includeYear) "MMM d'$suffix', yyyy" else "MMM d'$suffix'"
         timeOnly -> "hh:mm a"
-        else -> "MMM d'$suffix', hh:mm a"
+        else -> if (includeYear) "MMM d'$suffix', yyyy hh:mm a" else "MMM d'$suffix', hh:mm a"
     }
 
     return dateTime.format(
