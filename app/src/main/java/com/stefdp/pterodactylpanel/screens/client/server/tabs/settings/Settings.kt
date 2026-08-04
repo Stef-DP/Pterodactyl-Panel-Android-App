@@ -63,8 +63,6 @@ fun SettingsTab(
 
     val state by viewModel.state.collectAsState()
 
-    val scrollState = rememberScrollState()
-
     ReinstallConfirmationPopup(
         activity = activity,
         context = context,
@@ -72,6 +70,8 @@ fun SettingsTab(
         viewModel = viewModel,
         updateServer = updateServer
     )
+
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
