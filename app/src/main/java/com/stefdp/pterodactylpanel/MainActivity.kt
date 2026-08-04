@@ -96,6 +96,8 @@ val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: 
     }
 }
 
+// TODO: move padding modifier before any "*scrollbar" modifier
+// TODO: check if all *Display components have a enabled param to disable their buttons when loading
 // TODO: add "show others' servers" switch in main servers list when application api key is provided
 
 class MainActivity : FragmentActivity() {
