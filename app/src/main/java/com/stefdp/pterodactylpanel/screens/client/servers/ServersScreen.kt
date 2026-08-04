@@ -20,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -62,7 +64,7 @@ fun ClientServersScreen(
         filterExternalId: String? = null,
         filterDescription: String? = null,
         filterAny: String? = null,
-        type: GetServersQueryType = GetServersQueryType.OWNER,
+        type: GetServersQueryType? = null,
         page: Long? = null,
     ) {
         viewModel.updateData(
@@ -129,9 +131,18 @@ fun ClientServersScreen(
 
                 state.servers?.let { servers ->
                     if (servers.isEmpty()) {
-                        Text(
-                            text = "There are no servers to display"
-                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "There are no servers to display",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
                         return@Column
                     }
@@ -146,6 +157,12 @@ fun ClientServersScreen(
                         }
 
                         LaunchedEffect(Unit) {
+                            if (server.attributes.isSuspended) {
+                                serverStatsLoading = false
+
+                                return@LaunchedEffect
+                            }
+
                             val serverStatsRes = viewModel.getServerStats(
                                 context = context,
                                 serverId = server.attributes.identifier
@@ -185,7 +202,7 @@ fun ClientServersScreen(
 
             Pager(
                 currentPage = state.page,
-                totalPages = state.pagination?.total ?: 1,
+                totalPages = state.pagination?.totalPages ?: 1,
                 enabled = state.servers != null && !state.servers.isNullOrEmpty(),
                 onFirstPageClick = {
                     viewModel.setPage(1)
@@ -200,7 +217,7 @@ fun ClientServersScreen(
                     viewModel.setPage(state.page + 1)
                 },
                 onLastPageClick = {
-                    viewModel.setPage(state.pagination?.total ?: 1)
+                    viewModel.setPage(state.pagination?.totalPages ?: 1)
                 }
             )
         }

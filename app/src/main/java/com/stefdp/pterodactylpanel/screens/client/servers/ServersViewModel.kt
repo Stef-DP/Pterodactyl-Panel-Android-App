@@ -34,7 +34,7 @@ class ClientServersViewModel : ViewModel() {
         filterExternalId: String? = null,
         filterDescription: String? = null,
         filterAny: String? = null,
-        type: GetServersQueryType = GetServersQueryType.OWNER,
+        type: GetServersQueryType? = null,
         page: Long? = null,
         isRefresh: Boolean = false
     )  {
