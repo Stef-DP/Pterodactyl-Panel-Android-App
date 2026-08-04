@@ -66,6 +66,7 @@ import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.screens.client.accountsettings.ClientAccountSettingsScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.loading.LoadingScreen
@@ -302,7 +303,12 @@ fun AppNavigation(
         }
 
         composable<ClientAccountSettingsScreen> {
-            // TODO: add client account settings screen
+            ClientAccountSettingsScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding
+            )
         }
 
         composable<ClientServerScreen> { backStackEntry ->

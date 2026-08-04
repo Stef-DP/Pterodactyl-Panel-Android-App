@@ -25,6 +25,8 @@ import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.stefdp.pterodactylpanel.R
+import com.stefdp.pterodactylpanel.screens.ClientAccountSettingsScreen
+import com.stefdp.pterodactylpanel.screens.client.accountsettings.ClientAccountSettingsScreen
 
 //import com.stefdp.pterodactylpanel.screens.SettingsScreen
 
@@ -78,14 +80,12 @@ fun Header(
             Box(
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-//                val isInSettings = currentDestination?.route?.startsWith(SettingsScreen::class.qualifiedName ?: "") == true
+                val isInAccountSettings = currentDestination?.route?.startsWith(ClientAccountSettingsScreen::class.qualifiedName ?: "") == true
 
                 UserAvatar(
-//                    enabled = !isInSettings,
+                    enabled = !isInAccountSettings,
                     onClick = {
-//                        navController.navigate(SettingsScreen(
-//                            update = isUpdateAvailable
-//                        ))
+                        navController.navigate(ClientAccountSettingsScreen)
                     },
                 )
             }

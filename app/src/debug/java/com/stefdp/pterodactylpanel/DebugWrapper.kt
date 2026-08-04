@@ -3,13 +3,14 @@ package com.stefdp.pterodactylpanel
 import android.util.Log
 import androidx.compose.runtime.Composable
 import com.stefdp.pterodactylpanel.screens.AppScreen
+import com.stefdp.pterodactylpanel.screens.ClientAccountSettingsScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 
 const val IS_DEBUG = true
 const val DEBUG_NETWORK = false
 
-val DEBUG_SCREEN: AppScreen = ClientServerScreen(serverId = "7055dbed")//LoadingScreen
+val DEBUG_SCREEN: AppScreen = ClientAccountSettingsScreen//LoadingScreen
 
 @Composable
 fun DebugWrapper(content: @Composable () -> Unit) {
