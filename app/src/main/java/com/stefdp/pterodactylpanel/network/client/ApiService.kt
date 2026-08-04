@@ -134,7 +134,7 @@ interface PterodactylClientApiService {
         @Body data: EnableAccount2FABody
     ): Response<RecoveryCodes>
 
-    @POST("account/two-factor")
+    @POST("account/two-factor/disable")
     suspend fun disableAccount2FA(
         @Header("Authorization") authorization: String,
         @Header("Accept") accept: String = "Application/vnd.pterodactyl.v1+json",
