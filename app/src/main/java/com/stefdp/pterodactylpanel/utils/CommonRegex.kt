@@ -8,3 +8,5 @@ val IPRegex = Regex("""^https?://(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){
 val PermissionModeRegex = Regex("""^[0-7]*$""")
 
 val VariableRegex = Regex("\\{\\{(.*?)\\}\\}")
+
+val EmailRegex = Regex("""^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$""")
