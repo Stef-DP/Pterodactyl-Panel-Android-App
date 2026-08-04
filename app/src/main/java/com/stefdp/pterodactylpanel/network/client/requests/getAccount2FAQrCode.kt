@@ -12,7 +12,7 @@ private const val TAG = "ClientApi[getAccount2FAQrCode]"
 
 suspend fun getAccount2FAQrCode(
     context: Context,
-): Result<GetAccount2FAQrCodeResponse> {
+): Result<GetAccount2FAQrCodeResult> {
     try {
         val secureStore = SecureStorage.getInstance(context)
 
@@ -53,6 +53,16 @@ suspend fun getAccount2FAQrCode(
             val json = Gson().fromJson(errorBody, ApiErrorResponse::class.java)
 
             if (json.errors.isNotEmpty()) {
+                val alreadyEnabledError = json.errors.find {
+                    it.detail == "Two-factor authentication is already enabled on this account."
+                }
+
+                if (alreadyEnabledError != null) {
+                    return Result.success(
+                        GetAccount2FAQrCodeResult.AlreadyEnabled
+                    )
+                }
+
                 val errorMessages = json.errors.joinToString(separator = "; ") { it.detail }
                 val errorCount = json.errors.size
 
@@ -75,7 +85,9 @@ suspend fun getAccount2FAQrCode(
         }
 
         if (body is GetAccount2FAQrCodeResponse) {
-            return Result.success(body)
+            return Result.success(
+                GetAccount2FAQrCodeResult.Success(body)
+            )
         }
 
         return Result.failure(
@@ -88,4 +100,9 @@ suspend fun getAccount2FAQrCode(
             Exception("Something went wrong...")
         )
     }
+}
+
+sealed interface GetAccount2FAQrCodeResult {
+    data class Success(val response: GetAccount2FAQrCodeResponse) : GetAccount2FAQrCodeResult
+    data object AlreadyEnabled : GetAccount2FAQrCodeResult
 }
