@@ -1,4 +1,4 @@
-package com.stefdp.zipline
+package com.stefdp.pterodactylpanel
 
 import androidx.compose.runtime.Composable
 import com.stefdp.pterodactylpanel.screens.AppScreen
