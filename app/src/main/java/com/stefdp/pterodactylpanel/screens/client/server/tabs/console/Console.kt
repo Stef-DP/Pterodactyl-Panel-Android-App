@@ -9,7 +9,6 @@ import android.os.Build
 import android.text.Layout
 import android.widget.TextView
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -76,9 +74,9 @@ import com.stefdp.pterodactylpanel.screens.client.server.components.ChartContain
 import com.stefdp.pterodactylpanel.screens.client.server.components.StatsDisplay
 import com.stefdp.pterodactylpanel.ui.theme.Yellow
 import com.stefdp.pterodactylpanel.utils.hasPermission
-import com.stefdp.pterodactylpanel.utils.scrollbar
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.DotProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
@@ -147,10 +145,8 @@ fun ConsoleTab(
 
     Column(
         modifier =  Modifier
-            .verticalScroll(scrollState)
-            .scrollbar(
-                scrollState = scrollState,
-                direction = Orientation.Vertical
+            .verticalScrollWithScrollbar(
+                scrollState = scrollState
             )
     ) {
         Text(

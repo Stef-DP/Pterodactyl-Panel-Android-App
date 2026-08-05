@@ -111,10 +111,10 @@ fun ActivityTab(
     ) {
         Column(
             modifier = Modifier
+                .weight(1f)
                 .verticalScrollWithScrollbar(
                     scrollState = scrollState,
                 )
-                .weight(1f)
                 .padding(
                     start = 12.dp,
                     end = 12.dp,

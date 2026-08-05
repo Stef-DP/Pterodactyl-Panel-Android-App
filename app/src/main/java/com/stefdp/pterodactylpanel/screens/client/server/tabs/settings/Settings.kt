@@ -89,10 +89,10 @@ fun SettingsTab(
 
     Column(
         modifier = Modifier
-            .padding(12.dp)
             .verticalScrollWithScrollbar(
                 scrollState = scrollState,
-            ),
+            )
+            .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         val clipboardManager = LocalClipboard.current

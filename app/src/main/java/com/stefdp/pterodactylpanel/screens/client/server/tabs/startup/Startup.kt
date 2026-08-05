@@ -98,10 +98,10 @@ fun StartupTab(
         state = lazyColumnListState,
         modifier = Modifier
             .fillMaxSize()
-            .padding(12.dp)
             .verticalLazyScrollbar(
                 listState = lazyColumnListState
-            ),
+            )
+            .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {

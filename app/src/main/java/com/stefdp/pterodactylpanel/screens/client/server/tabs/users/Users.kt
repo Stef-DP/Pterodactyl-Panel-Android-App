@@ -128,10 +128,10 @@ fun UsersTab(
         state = listState,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp)
             .verticalLazyScrollbar(
                 listState = listState,
-            ),
+            )
+            .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         if (state.isLoading) {

@@ -361,12 +361,12 @@ fun FilesTab(
         LazyColumn(
             state = listState,
             modifier = Modifier
+                .verticalLazyScrollbar(listState)
                 .padding(
                     start = 12.dp,
                     end = 12.dp
                 )
-                .weight(1f)
-                .verticalLazyScrollbar(listState),
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             if (state.isLoading) {
