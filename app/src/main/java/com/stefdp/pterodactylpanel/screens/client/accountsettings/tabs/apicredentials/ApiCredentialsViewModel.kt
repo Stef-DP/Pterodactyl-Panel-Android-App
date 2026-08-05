@@ -88,7 +88,7 @@ class ClientAccountSettingsApiCredentialsTabViewModel : ViewModel() {
         }
     }
 
-    fun createApikey(
+    fun createApiKey(
         context: Context,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -100,7 +100,7 @@ class ClientAccountSettingsApiCredentialsTabViewModel : ViewModel() {
                 )
             }
 
-            val createApikeyRes = createAccountApiKey(
+            val createApiKeyRes = createAccountApiKey(
                 context = context,
                 description = _state.value.newApiKeyDescription.text.trim(),
                 allowedIps = _state.value.newApikeyAllowedIps.text
@@ -109,11 +109,16 @@ class ClientAccountSettingsApiCredentialsTabViewModel : ViewModel() {
                     ?.split("\n")
             )
 
-            createApikeyRes
+            createApiKeyRes
                 .onSuccess {
                     updateApiKeys(
                         context = context,
-                        onSuccess = onSuccess,
+                        onSuccess = {
+                            setNewApiKeyDescription(TextFieldValue(""))
+                            setNewApiKeyAllowedIps(TextFieldValue(""))
+
+                            onSuccess()
+                        },
                         onError = onError
                     )
                 }

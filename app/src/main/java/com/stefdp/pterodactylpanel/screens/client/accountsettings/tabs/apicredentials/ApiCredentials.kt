@@ -142,7 +142,7 @@ fun ApiCredentialsTab(
 
             Button(
                 onClick = {
-                    viewModel.createApikey(
+                    viewModel.createApiKey(
                         context = context,
                         onSuccess = {
                             Notification.show(

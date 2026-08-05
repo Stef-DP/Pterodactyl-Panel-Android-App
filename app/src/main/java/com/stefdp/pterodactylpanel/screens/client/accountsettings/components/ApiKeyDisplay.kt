@@ -110,7 +110,7 @@ val previewApiKey = ApiKey(
 
 @Preview
 @Composable
-fun ActivityDisplayPreview() {
+fun ApiKeyDisplayPreview() {
     PterodactylPanelTheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
