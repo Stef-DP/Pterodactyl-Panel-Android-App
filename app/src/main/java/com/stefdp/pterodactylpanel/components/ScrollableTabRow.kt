@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.waterfallPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.utils.horizontalLazyScrollbar
+import com.stefdp.pterodactylpanel.utils.horizontalScrollWithScrollbar
 
 @Composable
 fun ScrollableTabRow(
@@ -40,21 +42,20 @@ fun ScrollableTabRow(
     onTabClick: (tab: Tab) -> Unit,
     enabled: Boolean = true
 ) {
-    val listState = rememberLazyListState()
+    val scrollState = rememberScrollState()
 
-    LazyRow(
-        state = listState,
-        userScrollEnabled = enabled,
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.outline)
             .waterfallPadding()
-            .horizontalLazyScrollbar(listState),
+            .horizontalScrollWithScrollbar(
+                scrollState = scrollState,
+                enabled = enabled
+            ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        items(tabs.size) { index ->
-            val tab = tabs[index]
-
+        for (tab in tabs) {
             Column(
                 modifier = Modifier
                     .width(IntrinsicSize.Max)
