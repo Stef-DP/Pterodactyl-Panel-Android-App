@@ -29,6 +29,7 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.account.AccountTab
+import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.activity.ActivityTab
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.apicredentials.ApiCredentialsTab
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.sshkeys.SshKeysTab
 
@@ -40,14 +41,11 @@ fun ClientAccountSettingsScreen(
     innerPadding: PaddingValues,
     viewModel: ClientAccountSettingsViewModel = viewModel()
 ) {
-    // TODO: remove the is debug check later
-    if (!IS_DEBUG) {
-        val localLoggedUser = LocalLoggedUser.current
+    val localLoggedUser = LocalLoggedUser.current
 
-        if (localLoggedUser == null) {
-            navController.navigate(LoginScreen) {
-                popUpTo(navController.graph.id) { inclusive = true }
-            }
+    if (localLoggedUser == null) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
         }
     }
 
@@ -142,8 +140,12 @@ fun ClientAccountSettingsScreen(
                             )
                         }
 
-                        else -> {
-                            Text("WIP")
+                        AccountTab.ACTIVITY -> {
+                            ActivityTab(
+                                context = context,
+                                activity = activity,
+                                refreshIndex = refreshIndex
+                            )
                         }
                     }
                 }
