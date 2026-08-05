@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,10 +28,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Pager
 import com.stefdp.pterodactylpanel.network.client.models.responses.GetServerResponse
-import com.stefdp.pterodactylpanel.screens.client.server.components.ActivityDisplay
+import com.stefdp.pterodactylpanel.components.ActivityDisplay
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.activity.popups.MetadataPopup
 import com.stefdp.pterodactylpanel.utils.shimmerable
-import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 import kotlinx.coroutines.launch
 
@@ -79,7 +76,7 @@ fun ActivityTab(
     }
 
     var lastPage by rememberSaveable {
-        mutableLongStateOf(1)
+        mutableLongStateOf(1L)
     }
 
     LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
@@ -110,8 +107,7 @@ fun ActivityTab(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier
