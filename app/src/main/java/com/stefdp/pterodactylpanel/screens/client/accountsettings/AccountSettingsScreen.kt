@@ -30,6 +30,7 @@ import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.account.AccountTab
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.apicredentials.ApiCredentialsTab
+import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.sshkeys.SshKeysTab
 
 @Composable
 fun ClientAccountSettingsScreen(
@@ -127,6 +128,14 @@ fun ClientAccountSettingsScreen(
 
                         AccountTab.API_CREDENTIALS -> {
                             ApiCredentialsTab(
+                                context = context,
+                                activity = activity,
+                                refreshIndex = refreshIndex
+                            )
+                        }
+
+                        AccountTab.SSH_KEYS -> {
+                            SshKeysTab(
                                 context = context,
                                 activity = activity,
                                 refreshIndex = refreshIndex

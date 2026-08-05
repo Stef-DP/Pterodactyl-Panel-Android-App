@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 data class ClientAccountSettingsUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
-    val currentTab: AccountTab = AccountTab.API_CREDENTIALS // TODO: set this back to ACCOUNT
+    val currentTab: AccountTab = AccountTab.SSH_KEYS // TODO: set this back to ACCOUNT
 )
 
 class ClientAccountSettingsViewModel : ViewModel() {
