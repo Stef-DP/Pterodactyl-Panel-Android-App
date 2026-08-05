@@ -20,7 +20,9 @@ data class ActivityLog(
     ) {
         enum class Event(
             val value: String,
-            val description: String
+            val description: String,
+            val hasPluralVariation: Boolean = false,
+            val descriptionPlural: String = ""
         ) {
             @SerializedName("auth:fail")
             AUTH_FAIL(
@@ -244,16 +246,12 @@ data class ActivityLog(
                 description = "Deleted database {{name}}"
             ),
 
-            @SerializedName("server:file.compress_one")
-            SERVER_FILE_COMPRESS_ONE(
-                value = "server:file.compress_one",
-                description = "Compressed {{directory.files.0}}"
-            ),
-
-            @SerializedName("server:file.compress_other")
-            SERVER_FILE_COMPRESS_OTHER(
-                value = "server:file.compress_other",
-                description = "Compressed {{count}} files in {{directory}}"
+            @SerializedName("server:file.compress")
+            SERVER_FILE_COMPRESS(
+                value = "server:file.compress",
+                description = "Compressed {{directory}}{{files.0}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Compressed {{count}} files in {{directory}}"
             ),
 
             @SerializedName("server:file.read")
@@ -271,7 +269,7 @@ data class ActivityLog(
             @SerializedName("server:file.create-directory")
             SERVER_FILE_CREATE_DIRECTORY(
                 value = "server:file.create-directory",
-                description = "Created directory {{directory.name}}"
+                description = "Created directory {{directory}}{{name}}"
             ),
 
             @SerializedName("server:file.decompress")
@@ -280,16 +278,12 @@ data class ActivityLog(
                 description = "Decompressed {{files}} in {{directory}}"
             ),
 
-            @SerializedName("server:file.delete_one")
-            SERVER_FILE_DELETE_ONE(
-                value = "server:file.delete_one",
-                description = "Deleted {{directory.files.0}}"
-            ),
-
-            @SerializedName("server:file.delete_other")
-            SERVER_FILE_DELETE_OTHER(
-                value = "server:file.delete_other",
-                description = "Deleted {{count}} files in {{directory}}"
+            @SerializedName("server:file.delete")
+            SERVER_FILE_DELETE(
+                value = "server:file.delete",
+                description = "Deleted {{directory}}{{files.0}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Deleted {{count}} files in {{directory}}"
             ),
 
             @SerializedName("server:file.download")
@@ -304,16 +298,12 @@ data class ActivityLog(
                 description = "Downloaded a remote file from {{url}} to {{directory}}"
             ),
 
-            @SerializedName("server:file.rename_one")
-            SERVER_FILE_RENAME_ONE(
-                value = "server:file.rename_one",
-                description = "Renamed {{directory.files.0.from}} to {{directory.files.0.to}}"
-            ),
-
-            @SerializedName("server:file.rename_other")
-            SERVER_FILE_RENAME_OTHER(
-                value = "server:file.rename_other",
-                description = "Renamed {{count}} files in {{directory}}"
+            @SerializedName("server:file.rename")
+            SERVER_FILE_RENAME(
+                value = "server:file.rename",
+                description = "Renamed {{directory}}{{files.0.from}} to {{directory}}{{files.0.to}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Renamed {{count}} files in {{directory}}"
             ),
 
             @SerializedName("server:file.write")
@@ -331,7 +321,7 @@ data class ActivityLog(
             @SerializedName("server:file.uploaded")
             SERVER_FILE_UPLOADED(
                 value = "server:file.uploaded",
-                description = "Uploaded {{directory.file}}"
+                description = "Uploaded {{directory}}{{file}}"
             ),
 
             @SerializedName("server:sftp.denied")
@@ -340,64 +330,44 @@ data class ActivityLog(
                 description = "Blocked SFTP access due to permissions"
             ),
 
-            @SerializedName("server:sftp.create_one")
-            SERVER_SFTP_CREATE_ONE(
-                value = "server:sftp.create_one",
-                description = "Created {{files.0}}"
+            @SerializedName("server:sftp.create")
+            SERVER_SFTP_CREATE(
+                value = "server:sftp.create",
+                description = "Created {{files.0}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Created {{count}} new files"
             ),
 
-            @SerializedName("server:sftp.create_other")
-            SERVER_SFTP_CREATE_OTHER(
-                value = "server:sftp.create_other",
-                description = "Created {{count}} new files"
+            @SerializedName("server:sftp.write")
+            SERVER_SFTP_WRITE(
+                value = "server:sftp.write",
+                description = "Modified the contents of {{files.0}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Modified the contents of {{count}} files"
             ),
 
-            @SerializedName("server:sftp.write_one")
-            SERVER_SFTP_WRITE_ONE(
-                value = "server:sftp.write_one",
-                description = "Modified the contents of {{files.0}}"
+            @SerializedName("server:sftp.delete")
+            SERVER_SFTP_DELETE(
+                value = "server:sftp.delete",
+                description = "Deleted {{files.0}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Deleted {{count}} files"
             ),
 
-            @SerializedName("server:sftp.write_other")
-            SERVER_SFTP_WRITE_OTHER(
-                value = "server:sftp.write_other",
-                description = "Modified the contents of {{count}} files"
+            @SerializedName("server:sftp.create-directory")
+            SERVER_SFTP_CREATE_DIRECTORY(
+                value = "server:sftp.create-directory",
+                description = "Created the {{files.0}} directory",
+                hasPluralVariation = true,
+                descriptionPlural = "Created {{count}} directories"
             ),
 
-            @SerializedName("server:sftp.delete_one")
-            SERVER_SFTP_DELETE_ONE(
-                value = "server:sftp.delete_one",
-                description = "Deleted {{files.0}}"
-            ),
-
-            @SerializedName("server:sftp.delete_other")
-            SERVER_SFTP_DELETE_OTHER(
-                value = "server:sftp.delete_other",
-                description = "Deleted {{count}} files"
-            ),
-
-            @SerializedName("server:sftp.create-directory_one")
-            SERVER_SFTP_CREATE_DIRECTORY_ONE(
-                value = "server:sftp.create-directory_one",
-                description = "Created the {{files.0}} directory"
-            ),
-
-            @SerializedName("server:sftp.create-directory_other")
-            SERVER_SFTP_CREATE_DIRECTORY_OTHER(
-                value = "server:sftp.create-directory_other",
-                description = "Created {{count}} directories"
-            ),
-
-            @SerializedName("server:sftp.rename_one")
-            SERVER_SFTP_RENAME_ONE(
-                value = "server:sftp.rename_one",
-                description = "Renamed {{files.0.from}} to {{files.0.to}}"
-            ),
-
-            @SerializedName("server:sftp.rename_other")
-            SERVER_SFTP_RENAME_OTHER(
-                value = "server:sftp.rename_other",
-                description = "Renamed or moved {{count}} files"
+            @SerializedName("server:sftp.rename")
+            SERVER_SFTP_RENAME(
+                value = "server:sftp.rename",
+                description = "Renamed {{files.0.from}} to {{files.0.to}}",
+                hasPluralVariation = true,
+                descriptionPlural = "Renamed {{count}} files in {{directory}}"
             ),
 
             @SerializedName("server:allocation.create")

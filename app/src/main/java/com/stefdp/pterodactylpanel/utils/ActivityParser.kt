@@ -11,7 +11,15 @@ fun parseActivityVariables(
         val path = matchResult.groupValues[1].trim()
         val resolvedValue = resolvePath(path, properties)
 
-        resolvedValue?.toString() ?: matchResult.value
+        resolvedValue?.formatToString() ?: matchResult.value
+    }
+}
+
+private fun Any.formatToString(): String {
+    return when (this) {
+        is Double -> if (this % 1.0 == 0.0) this.toLong().toString() else this.toString()
+        is Float -> if (this % 1.0f == 0.0f) this.toLong().toString() else this.toString()
+        else -> this.toString()
     }
 }
 

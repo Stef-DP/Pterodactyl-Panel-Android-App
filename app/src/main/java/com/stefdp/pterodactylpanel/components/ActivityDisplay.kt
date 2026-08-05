@@ -124,7 +124,24 @@ fun ActivityDisplay(
                         }
                     }
 
-                    val eventDescription = event.description
+                    val hasPluralVariant = event.hasPluralVariation
+
+                    val eventDescription = if (hasPluralVariant) {
+                        val count = when (activity.attributes.properties["count"]) {
+                            is Double -> (activity.attributes.properties["count"] as Double).toInt()
+                            is Float -> (activity.attributes.properties["count"] as Float).toInt()
+                            is Int -> activity.attributes.properties["count"] as Int
+                            else -> 1
+                        }
+
+                        if (count > 1) {
+                            event.descriptionPlural
+                        } else {
+                            event.description
+                        }
+                    } else {
+                        event.description
+                    }
 
                     val boldEventDescription = eventDescription.replace(VariableRegex, "<b>{{$1}}</b>")
 
@@ -223,18 +240,18 @@ val previewActivity = ActivityLog(
     attributes = ActivityLog.Attributes(
         id = "1",
         batch = null,
-        event = ActivityLog.Attributes.Event.SERVER_FILE_RENAME_ONE,
+        event = ActivityLog.Attributes.Event.SERVER_FILE_RENAME,
         isApi = true,
         ip = "127.0.0.1",
         description = "idk",
         properties = mapOf(
+            "count" to 2.0,
             "useragent" to "hello",
-            "directory" to mapOf(
-                "files" to listOf(
-                    mapOf(
-                        "from" to "old_file",
-                        "to" to "new_file"
-                    )
+            "directory" to "/",
+            "files" to listOf(
+                mapOf(
+                    "from" to "old_file",
+                    "to" to "new_file"
                 )
             )
         ),
