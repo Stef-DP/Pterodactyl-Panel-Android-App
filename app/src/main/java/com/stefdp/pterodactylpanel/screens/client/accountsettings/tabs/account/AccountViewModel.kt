@@ -373,8 +373,6 @@ class ClientAccountSettingsAccountTabViewModel : ViewModel() {
         }
     }
 
-    // TODO: fix disable 2FA succeeding as HTTP request but not actually disabling 2FA
-
     fun disable2FA(
         context: Context,
         onSuccess: () -> Unit,
