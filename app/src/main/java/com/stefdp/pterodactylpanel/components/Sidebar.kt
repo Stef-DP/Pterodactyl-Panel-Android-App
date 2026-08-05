@@ -7,8 +7,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -62,32 +66,32 @@ fun Sidebar(
                 .fillMaxHeight()
                 .verticalScroll(scrollState)
         ) {
-//            NavigationDrawerItem(
-//                label = {
-//                    Row {
-//                        Icon(
-//                            painter = painterResource(R.drawable.home),
-//                            contentDescription = "Home Screen"
-//                        )
-//
-//                        Spacer(
-//                            modifier = Modifier.width(6.dp)
-//                        )
-//
-//                        Text("Home")
-//                    }
-//                },
-//                selected = false,
-//                onClick = {
-//                    if (currentDestination?.route != HomeScreen::class.qualifiedName) {
-//                        onItemClick(HomeScreen)
-//                    } else {
-//                        closeSidebar()
-//                    }
-//                },
-//                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-//                shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-//            )
+            NavigationDrawerItem(
+                label = {
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.host),
+                            contentDescription = "Servers Screen"
+                        )
+
+                        Spacer(
+                            modifier = Modifier.width(6.dp)
+                        )
+
+                        Text("Servers")
+                    }
+                },
+                selected = false,
+                onClick = {
+                    if (currentDestination?.route != ClientServersScreen::class.qualifiedName) {
+                        onItemClick(ClientServersScreen)
+                    } else {
+                        closeSidebar()
+                    }
+                },
+                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+            )
 //
 //            NavigationDrawerItem(
 //                label = {
