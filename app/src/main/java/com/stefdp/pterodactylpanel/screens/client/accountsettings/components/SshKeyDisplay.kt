@@ -1,6 +1,5 @@
 package com.stefdp.pterodactylpanel.screens.client.accountsettings.components
 
-import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,12 +26,8 @@ import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.IconButton
-import com.stefdp.pterodactylpanel.network.client.models.ApiKey
 import com.stefdp.pterodactylpanel.network.client.models.SshKey
-import com.stefdp.pterodactylpanel.screens.client.server.components.ActivityDisplay
-import com.stefdp.pterodactylpanel.screens.client.server.components.previewActivity
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
-import com.stefdp.pterodactylpanel.ui.theme.attributes
 import com.stefdp.pterodactylpanel.utils.formatDate
 
 @Composable
