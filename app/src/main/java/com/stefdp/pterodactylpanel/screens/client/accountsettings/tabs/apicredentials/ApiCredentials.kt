@@ -63,7 +63,7 @@ fun ApiCredentialsTab(
         val isFirstLoad = lastRefreshIndex == -1
         val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
 
-        if (!isExplicitRefresh && !isFirstLoad && state.apiKeys.isNotEmpty()) return@LaunchedEffect
+        if (!isExplicitRefresh && !isFirstLoad && state.apiKeys.isNotEmpty() && state.currentApikey != null) return@LaunchedEffect
 
         lastRefreshIndex = refreshIndex
 
@@ -226,12 +226,14 @@ fun ApiCredentialsTab(
                 items(state.apiKeys.size) { index ->
                     val apiKey = state.apiKeys[index]
 
+                    val isCurrentApiKey = state.currentApikey?.startsWith(apiKey.attributes.identifier)
+
                     ApiKeyDisplay(
                         apiKey = apiKey,
                         onDelete = {
                             viewModel.setApiKeyToDelete(apiKey.attributes.identifier)
                         },
-                        enabled = !state.isLoading
+                        enabled = !state.isLoading && isCurrentApiKey == false
                     )
                 }
             }

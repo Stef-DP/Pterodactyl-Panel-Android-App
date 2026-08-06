@@ -9,6 +9,7 @@ import com.stefdp.pterodactylpanel.network.client.models.ApiKey
 import com.stefdp.pterodactylpanel.network.client.requests.createAccountApiKey
 import com.stefdp.pterodactylpanel.network.client.requests.deleteAccountApiKey
 import com.stefdp.pterodactylpanel.network.client.requests.listAccountApiKeys
+import com.stefdp.pterodactylpanel.utils.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,8 @@ data class ClientAccountSettingsApiCredentialsTabUiState(
     val apiKeys: List<ApiKey> = emptyList(),
     val newApiKeyDescription: TextFieldValue = TextFieldValue(""),
     val newApikeyAllowedIps: TextFieldValue = TextFieldValue(""),
-    val apiKeyToDelete: String? = null
+    val apiKeyToDelete: String? = null,
+    val currentApikey: String? = null
 )
 
 class ClientAccountSettingsApiCredentialsTabViewModel : ViewModel() {
@@ -38,8 +40,20 @@ class ClientAccountSettingsApiCredentialsTabViewModel : ViewModel() {
             _state.update {
                 it.copy(
                     isLoading = true,
-                    apiKeys = emptyList()
+                    apiKeys = emptyList(),
                 )
+            }
+
+            if (_state.value.currentApikey == null) {
+                val secureStore = SecureStorage.getInstance(context)
+
+                val currentApikey = secureStore.get(SecureStorage.STORAGE_CLIENT_TOKEN_KEY)
+
+                _state.update {
+                    it.copy(
+                        currentApikey = currentApikey
+                    )
+                }
             }
 
             val listApiKeys = listAccountApiKeys(
