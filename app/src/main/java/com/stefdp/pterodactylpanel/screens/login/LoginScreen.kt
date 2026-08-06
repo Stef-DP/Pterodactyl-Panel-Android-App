@@ -163,7 +163,7 @@ fun LoginScreen(
                     isPassword = true,
                     placeholder = "ptla_xxxx",
                     label = "Application API Key",
-                    description = "Currently unavailable - WIP",
+                    description = "Currently unavailable - Planned for a future release",
                     enabled = false // TODO: enable when admin side is done
 //                    enabled = !state.isLoading
                 )
