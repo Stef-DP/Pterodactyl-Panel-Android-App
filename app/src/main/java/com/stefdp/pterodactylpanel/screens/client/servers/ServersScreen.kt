@@ -94,12 +94,12 @@ fun ClientServersScreen(
             coroutineScope.launch {
                 updateData(page = state.page)
             }
-        }
+        },
+        modifier = Modifier.padding(innerPadding)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier
