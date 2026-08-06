@@ -44,4 +44,18 @@ You can support me by sponsoring on [GitHub](https://github.com/sponsors/Stef-DP
 
 # Stardance
 
-Once the app is finished and shipped on stardance, here I will add credentials for a normal user on my panel so they can try the user side (if they want to try their amdin side, they must self-host it themselves, i think nest)
+If you're from [Stardance](https://stardance.hackclub.com) and don't want to host your own [Pterodactyl Panel](https://pterodactyl.io) instance, do the following:
+
+> [!NOTE]
+> Pterodactyl only allows admins to create users, people can't register on their own, so you have to use this account if you use my instance.
+> Also please read the server console for some limitations you will have on my instance that you won't if you self-host it yourself.
+> If you want to self-host it, you can either follow the [official docs](https://pterodactyl.io/project/introduction.html) (you will need both panel and wings) or use the unofficial [installation script](https://github.com/pterodactyl-installer/pterodactyl-installer).
+
+Here's my panel's credentials:
+
+Server URL: `https://panel.stefdp.com`<br />
+Client API Key: `ptlc_aldG7ZYnjjhOqxjUoIsAZLE2ywJRexqxThETHHx0yUm`<br />
+
+If you use a self-hosted instance, go in the `/account/api` page of your instance and create an API key, then use that as "Client API Key".
+
+If you have any issues, DM on [Slack](https://hackclub.enterprise.slack.com/team/U0823APHVK7) or [Discord](https://discord.com/users/694986201739952229) (`stef_dp`) and I will help you
