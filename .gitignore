@@ -9,3 +9,7 @@
 .cxx
 local.properties
 API_KEYS.txt
+/app/release
+*.jks
+*.keystore
+*.bak
