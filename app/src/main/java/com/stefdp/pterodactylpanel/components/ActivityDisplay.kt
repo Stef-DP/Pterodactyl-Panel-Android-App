@@ -127,10 +127,11 @@ fun ActivityDisplay(
                     val hasPluralVariant = event.hasPluralVariation
 
                     val eventDescription = if (hasPluralVariant) {
-                        val count = when (activity.attributes.properties["count"]) {
-                            is Double -> (activity.attributes.properties["count"] as Double).toInt()
-                            is Float -> (activity.attributes.properties["count"] as Float).toInt()
-                            is Int -> activity.attributes.properties["count"] as Int
+                        val count = when (
+                            val count = activity.attributes.properties["count"]
+                        ) {
+                            is Double, is Float -> count.toInt()
+                            is Int -> count
                             else -> 1
                         }
 
