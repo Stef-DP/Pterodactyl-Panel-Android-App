@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 
 data class LoginUiState(
     val isLoading: Boolean = false,
+    val showNotificationsPopup: Boolean = false,
     val serverUrl: TextFieldValue = TextFieldValue(""),
     val clientApiKey: TextFieldValue = TextFieldValue(""),
     val applicationApiKey: TextFieldValue = TextFieldValue(""),
@@ -28,6 +29,22 @@ data class LoginUiState(
 class LoginViewModel : ViewModel() {
     private val _state = MutableStateFlow(LoginUiState())
     val state: StateFlow<LoginUiState> = _state.asStateFlow()
+
+    fun setShowNotificationsPopup(show: Boolean) {
+        _state.update {
+            it.copy(
+                showNotificationsPopup = show
+            )
+        }
+    }
+
+    fun closeNotificationsPopup() {
+        _state.update {
+            it.copy(
+                showNotificationsPopup = false
+            )
+        }
+    }
 
     fun setServerUrl(url: TextFieldValue) {
         _state.update {

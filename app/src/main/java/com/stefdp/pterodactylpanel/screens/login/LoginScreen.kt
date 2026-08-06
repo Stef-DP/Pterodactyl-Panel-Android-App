@@ -1,6 +1,10 @@
 package com.stefdp.pterodactylpanel.screens.login
 
+import android.Manifest
 import android.content.Context
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +26,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,6 +35,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,12 +47,15 @@ import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.LocalUpdateLoggedUser
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.components.Button
+import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.components.PromptPopup
 import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.utils.hasNotificationsPermission
 
 @Composable
 fun LoginScreen(
@@ -66,6 +77,71 @@ fun LoginScreen(
     }
 
     val state by viewModel.state.collectAsState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val hasPermission = hasNotificationsPermission(context)
+
+                viewModel.setShowNotificationsPopup(!hasPermission)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            viewModel.closeNotificationsPopup()
+        }
+
+        val notificationText = if (isGranted)
+            "Notifications Permission Granted"
+        else
+            "Notifications Permission Denied, please go to the app settings and allow it from there"
+
+        Notification.show(
+            activity = activity,
+        ) {
+            Text(notificationText)
+        }
+    }
+
+    PromptPopup(
+        showPopup = state.showNotificationsPopup,
+        onDismissRequest = {
+            viewModel.closeNotificationsPopup()
+        },
+        title = "Notifications Permission",
+        description = "The notifications permission is required to properly use background uploads and downloads.\n" +
+                "Without this permission, the app will still upload files but it has a higher chance of being killed by the Android system while in the background.",
+        successText = "Grant Permission",
+        successButtonType = ButtonType.PRIMARY,
+        onSuccess = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                Notification.show(
+                    activity = activity,
+                ) {
+                    Text("Notifications Permission is automatically granted on this version of Android")
+                }
+            }
+        },
+        cancelText = "Not Now",
+        cancelButtonType = ButtonType.SECONDARY,
+        onCancel = {
+            viewModel.closeNotificationsPopup()
+        }
+    )
 
     Box(
         modifier = Modifier

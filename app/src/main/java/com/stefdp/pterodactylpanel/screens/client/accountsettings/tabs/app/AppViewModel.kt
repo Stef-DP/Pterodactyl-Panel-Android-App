@@ -21,6 +21,7 @@ enum class UpdateDownloadFolderType {
 
 data class ClientAccountSettingsAppTabUiState(
     val updateDownloadFolderType: UpdateDownloadFolderType = UpdateDownloadFolderType.FILE,
+    val hasNotificationPermission: Boolean = false,
 )
 
 class ClientAccountSettingsAppTabViewModel : ViewModel() {
@@ -32,6 +33,12 @@ class ClientAccountSettingsAppTabViewModel : ViewModel() {
             it.copy(
                 updateDownloadFolderType = type
             )
+        }
+    }
+
+    fun setHasNotificationPermission(hasPermission: Boolean) {
+        _state.update {
+            it.copy(hasNotificationPermission = hasPermission)
         }
     }
 

@@ -1,8 +1,10 @@
 package com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.app
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -14,12 +16,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.BuildConfig
@@ -27,6 +35,8 @@ import com.stefdp.pterodactylpanel.LocalUpdateLoggedUser
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Container
+import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.utils.hasNotificationsPermission
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
@@ -39,7 +49,44 @@ fun AppTab(
 ) {
     val localUpdateLoggedUser = LocalUpdateLoggedUser.current
 
+    val state by viewModel.state.collectAsState()
+
     val scrollState = rememberScrollState()
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.setHasNotificationPermission(
+                    hasNotificationsPermission(context)
+                )
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        viewModel.setHasNotificationPermission(isGranted)
+
+        val notificationText = if (isGranted)
+            "Notifications Permission Granted"
+        else
+            "Notifications Permission Denied, please go to the app settings and allow it from there"
+
+        Notification.show(
+            activity = activity,
+        ) {
+            Text(notificationText)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -70,6 +117,29 @@ fun AppTab(
                 text = AnnotatedString.fromHtml("<b>App Build:</b> $appBuild"),
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
             )
+
+            if (!state.hasNotificationPermission) {
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            Notification.show(
+                                activity = activity,
+                            ) {
+                                Text(
+                                    text = "Notifications Permission is automatically granted on this version of Android"
+                                )
+                            }
+                        }
+                    }
+                ) {
+                    Text(
+                        text = "Grant Notifications Permission"
+                    )
+                }
+            }
 
             val directoryPicker = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.OpenDocumentTree()
