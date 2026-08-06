@@ -34,6 +34,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.IS_DEBUG
 import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.LocalUpdateLoggedUser
 import com.stefdp.pterodactylpanel.Logger
@@ -154,19 +155,21 @@ fun LoginScreen(
                     enabled = !state.isLoading
                 )
 
-                TextInput(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = state.applicationApiKey,
-                    onValueChange = {
-                        viewModel.setApplicationApiKey(it)
-                    },
-                    isPassword = true,
-                    placeholder = "ptla_xxxx",
-                    label = "Application API Key",
-                    description = "Currently unavailable - Planned for a future release",
-                    enabled = false // TODO: enable when admin side is done
+                if (IS_DEBUG) {
+                    TextInput(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = state.applicationApiKey,
+                        onValueChange = {
+                            viewModel.setApplicationApiKey(it)
+                        },
+                        isPassword = true,
+                        placeholder = "ptla_xxxx",
+                        label = "Application API Key",
+                        description = "Currently unavailable - Planned for a future release",
+                        enabled = false // TODO: enable when admin side is done
 //                    enabled = !state.isLoading
-                )
+                    )
+                }
 
                 val updateLoggedUser = LocalUpdateLoggedUser.current
 
