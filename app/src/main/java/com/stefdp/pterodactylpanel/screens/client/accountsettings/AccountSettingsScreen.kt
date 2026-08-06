@@ -31,6 +31,7 @@ import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.account.AccountTab
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.activity.ActivityTab
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.apicredentials.ApiCredentialsTab
+import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.app.AppTab
 import com.stefdp.pterodactylpanel.screens.client.accountsettings.tabs.sshkeys.SshKeysTab
 
 @Composable
@@ -147,6 +148,15 @@ fun ClientAccountSettingsScreen(
                                 refreshIndex = refreshIndex
                             )
                         }
+
+                        AccountTab.APP -> {
+                            AppTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                refreshIndex = refreshIndex
+                            )
+                        }
                     }
                 }
             }
@@ -176,5 +186,10 @@ enum class AccountTab(
     ACTIVITY(
         id = "activity",
         label = "Activity"
+    ),
+
+    APP(
+        id = "app",
+        label = "App"
     )
 }
