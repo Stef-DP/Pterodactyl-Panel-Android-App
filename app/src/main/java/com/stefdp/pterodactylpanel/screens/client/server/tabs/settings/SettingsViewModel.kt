@@ -24,6 +24,8 @@ data class ClientServerSettingsTabUiState(
     val showReinstallConfirmation: Boolean = false
 )
 
+private const val TAG = "ClientServerSettingsTabViewModel"
+
 class ClientServerSettingsTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerSettingsTabUiState> = MutableStateFlow(ClientServerSettingsTabUiState())
     val state: StateFlow<ClientServerSettingsTabUiState> = _state.asStateFlow()
@@ -112,7 +114,7 @@ class ClientServerSettingsTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSettingsTabViewModel", "Failed to rename server: ${error.message}")
+                    Logger.debug(TAG, "Failed to rename server: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -164,7 +166,7 @@ class ClientServerSettingsTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSettingsTabViewModel", "Failed to reinstall server: ${error.message}")
+                    Logger.debug(TAG, "Failed to reinstall server: ${error.message}")
 
                     _state.update {
                         it.copy(

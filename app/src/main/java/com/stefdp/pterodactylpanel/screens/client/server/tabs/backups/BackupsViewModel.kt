@@ -47,6 +47,8 @@ data class ClientServerBackupsTabUiState(
     val backupToDelete: String? = null,
 )
 
+private const val TAG = "ClientServerBackupsTabViewModel"
+
 class ClientServerBackupsTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerBackupsTabUiState> = MutableStateFlow(ClientServerBackupsTabUiState())
     val state: StateFlow<ClientServerBackupsTabUiState> = _state.asStateFlow()
@@ -113,7 +115,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerBackupsTabViewModel", "Failed to fetch server backups: ${error.message}")
+                    Logger.debug(TAG, "Failed to fetch server backups: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -249,7 +251,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                             }
                         } catch (e: Exception) {
                             Logger.error(
-                                "ClientServerBackupsTabViewModel",
+                                TAG,
                                 "Failed to copy file to selected directory",
                                 e
                             )
@@ -265,7 +267,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                         }
                     }
                     .onFailure {
-                        Logger.error("ClientServerBackupsTabViewModel", "Failed to download backup", it)
+                        Logger.error(TAG, "Failed to download backup", it)
 
                         sendNotification {
                             Text(
@@ -432,7 +434,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerBackupsTabViewModel", "Failed to restore server backup: ${error.message}")
+                    Logger.debug(TAG, "Failed to restore server backup: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -495,7 +497,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                 .onFailure { error ->
                     val action = if (backupToToggle.attributes.isLocked) "unlock" else "lock"
 
-                    Logger.debug("ClientServerBackupsTabViewModel", "Failed to $action server backup: ${error.message}")
+                    Logger.debug(TAG, "Failed to $action server backup: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -553,7 +555,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerBackupsTabViewModel", "Failed to restore server backup: ${error.message}")
+                    Logger.debug(TAG, "Failed to restore server backup: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -605,7 +607,7 @@ class ClientServerBackupsTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerBackupsTabViewModel", "Failed to create server backup: ${error.message}")
+                    Logger.debug(TAG, "Failed to create server backup: ${error.message}")
 
                     _state.update {
                         it.copy(

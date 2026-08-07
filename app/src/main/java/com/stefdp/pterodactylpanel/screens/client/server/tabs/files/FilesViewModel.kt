@@ -75,6 +75,8 @@ data class ClientServerFilesTabUiState(
     val showNewFileNamePopup: Boolean = false,
 )
 
+private const val TAG = "ClientServerFilesTabViewModel"
+
 class ClientServerFilesTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerFilesTabUiState> = MutableStateFlow(ClientServerFilesTabUiState())
     val state: StateFlow<ClientServerFilesTabUiState> = _state.asStateFlow()
@@ -158,7 +160,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to fetch server files: ${error.message}")
+                    Logger.error(TAG, "Failed to fetch server files: ${error.message}")
 
                     onError("Failed to fetch server files: ${error.message}")
 
@@ -280,7 +282,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to create new directory: ${error.message}")
+                    Logger.error(TAG, "Failed to create new directory: ${error.message}")
 
                     onError("Failed to create new directory: ${error.message}")
 
@@ -379,7 +381,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to move files: ${error.message}")
+                    Logger.error(TAG, "Failed to move files: ${error.message}")
 
                     onError("Failed to move files: ${error.message}")
 
@@ -458,7 +460,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to delete files: ${error.message}")
+                    Logger.error(TAG, "Failed to delete files: ${error.message}")
 
                     onError("Failed to delete files: ${error.message}")
 
@@ -515,7 +517,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to archive files: ${error.message}")
+                    Logger.error(TAG, "Failed to archive files: ${error.message}")
 
                     onError("Failed to archive files: ${error.message}")
 
@@ -570,7 +572,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to unarchive file: ${error.message}")
+                    Logger.error(TAG, "Failed to unarchive file: ${error.message}")
 
                     onError("Failed to unarchive file: ${error.message}")
 
@@ -628,7 +630,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to copy file: ${error.message}")
+                    Logger.error(TAG, "Failed to copy file: ${error.message}")
 
                     onError("Failed to copy file: ${error.message}")
 
@@ -717,7 +719,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to copy file: ${error.message}")
+                    Logger.error(TAG, "Failed to copy file: ${error.message}")
 
                     onError("Failed to copy file: ${error.message}")
 
@@ -904,7 +906,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                         }
                     }
                     .onFailure {
-                        Logger.error("ClientServerFilesTabViewModel", "Failed to download file", it)
+                        Logger.error(TAG, "Failed to download file", it)
 
                         sendNotification {
                             Text(
@@ -987,7 +989,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to upload files: ${error.message}")
+                    Logger.error(TAG, "Failed to upload files: ${error.message}")
 
                     onError("Failed to upload files: ${error.message}")
 
@@ -1136,7 +1138,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     }
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to fetch file content: ${error.message}")
+                    Logger.error(TAG, "Failed to fetch file content: ${error.message}")
 
                     onError("Failed to fetch file content: ${error.message}")
 
@@ -1222,7 +1224,7 @@ class ClientServerFilesTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerFilesTabViewModel", "Failed to save file: ${error.message}")
+                    Logger.error(TAG, "Failed to save file: ${error.message}")
 
                     _state.update {
                         it.copy(

@@ -77,6 +77,7 @@ data class ClientServerConsoleTabUiState(
 )
 
 private const val MAX_LOGS = 250
+private const val TAG = "ClientServerConsoleTabViewModel"
 
 class ClientServerConsoleTabViewModel(
     private val wsManager: WebSocketManager = WebSocket.wsManager
@@ -246,7 +247,7 @@ class ClientServerConsoleTabViewModel(
             wsManager.events.collect { message ->
                 val firstArg = message.args?.firstOrNull()
 
-                Logger.debug("WebSocketEvent", "Received event: ${message.event}, args: ${message.args}")
+                Logger.debug(TAG, "Received event: ${message.event}, args: ${message.args}")
 
                 when (message.event) {
                     WSEvents.AUTH_SUCCESS -> {

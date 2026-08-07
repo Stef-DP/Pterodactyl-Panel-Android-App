@@ -64,6 +64,8 @@ data class ClientServerSchedulesTabUiState(
     val editScheduleTaskContinueOnFailure: Boolean = false,
 )
 
+private const val TAG = "ClientServerSchedulesTabViewModel"
+
 class ClientServerSchedulesTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerSchedulesTabUiState> = MutableStateFlow(ClientServerSchedulesTabUiState())
     val state: StateFlow<ClientServerSchedulesTabUiState> = _state.asStateFlow()
@@ -116,7 +118,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to fetch server schedules: ${error.message}")
+                    Logger.debug(TAG, "Failed to fetch server schedules: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -196,7 +198,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to delete server schedule: ${error.message}")
+                    Logger.debug(TAG, "Failed to delete server schedule: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -299,7 +301,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to update server schedule: ${error.message}")
+                    Logger.debug(TAG, "Failed to update server schedule: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -460,7 +462,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to create server schedule: ${error.message}")
+                    Logger.debug(TAG, "Failed to create server schedule: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -616,7 +618,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to create server schedule task: ${error.message}")
+                    Logger.debug(TAG, "Failed to create server schedule task: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -696,7 +698,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to delete server schedule task: ${error.message}")
+                    Logger.debug(TAG, "Failed to delete server schedule task: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -832,7 +834,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to update server schedule task: ${error.message}")
+                    Logger.debug(TAG, "Failed to update server schedule task: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -925,7 +927,7 @@ class ClientServerSchedulesTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerSchedulesTabViewModel", "Failed to execute server schedule: ${error.message}")
+                    Logger.debug(TAG, "Failed to execute server schedule: ${error.message}")
 
                     _state.update {
                         it.copy(

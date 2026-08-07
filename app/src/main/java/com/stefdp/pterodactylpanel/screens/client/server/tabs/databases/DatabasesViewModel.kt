@@ -32,6 +32,8 @@ data class ClientServerDatabasesTabUiState(
     val newDatabaseAllowedIp: TextFieldValue = TextFieldValue(""),
 )
 
+private const val TAG = "ClientServerDatabasesTabViewModel"
+
 class ClientServerDatabasesTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerDatabasesTabUiState> = MutableStateFlow(ClientServerDatabasesTabUiState())
     val state: StateFlow<ClientServerDatabasesTabUiState> = _state.asStateFlow()
@@ -85,7 +87,7 @@ class ClientServerDatabasesTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerDatabasesTabViewModel", "Failed to fetch server databases: ${error.message}")
+                    Logger.error(TAG, "Failed to fetch server databases: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -148,7 +150,7 @@ class ClientServerDatabasesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerDatabasesTabViewModel", "Failed to delete database: ${error.message}")
+                    Logger.error(TAG, "Failed to delete database: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -219,7 +221,7 @@ class ClientServerDatabasesTabViewModel : ViewModel() {
                     }
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerDatabasesTabViewModel", "Failed to rotate database password: ${error.message}")
+                    Logger.error(TAG, "Failed to rotate database password: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -302,7 +304,7 @@ class ClientServerDatabasesTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerDatabasesTabViewModel", "Failed to create database: ${error.message}")
+                    Logger.error(TAG, "Failed to create database: ${error.message}")
 
                     _state.update {
                         it.copy(

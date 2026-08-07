@@ -36,9 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.stefdp.pterodactylpanel.ApplicationApiKeyValidity
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
-import com.stefdp.pterodactylpanel.LocalApplicationApiKeyValidity
 import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Notification
@@ -124,11 +122,10 @@ fun ClientServerScreen(
                 bottom = innerPadding.calculateBottomPadding()
             )
     ) {
-        val applicationApiKeyValidity = LocalApplicationApiKeyValidity.current
         val openInNewIcon = painterResource(R.drawable.open_in_new)
 
         val tabs = remember(
-            applicationApiKeyValidity,
+            localLoggedUser,
             state.currentTab,
             state.server,
         ) {
@@ -163,7 +160,7 @@ fun ClientServerScreen(
                 }
 
                 return@map tab
-            } + if (applicationApiKeyValidity == ApplicationApiKeyValidity.VALID) {
+            } + if (localLoggedUser?.attributes?.admin == true) {
                 Tab(
                     icon = openInNewIcon,
                     iconContentDescription = "Open in admin view",

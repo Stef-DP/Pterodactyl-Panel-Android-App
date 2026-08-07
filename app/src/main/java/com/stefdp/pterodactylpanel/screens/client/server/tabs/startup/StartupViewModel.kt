@@ -26,6 +26,8 @@ data class ClientServerStartupTabUiState(
     val selectedDockerImage: Set<String> = emptySet(),
 )
 
+private const val TAG = "ClientServerStartupTabViewModel"
+
 class ClientServerStartupTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerStartupTabUiState> = MutableStateFlow(ClientServerStartupTabUiState())
     val state: StateFlow<ClientServerStartupTabUiState> = _state.asStateFlow()
@@ -35,7 +37,7 @@ class ClientServerStartupTabViewModel : ViewModel() {
     fun init(server: GetServerResponse?) {
         serverId = server?.attributes?.identifier
 
-        Logger.debug("ClientServerStartupTabViewModel",
+        Logger.debug(TAG,
             "Variables: " + (server?.attributes?.relationships?.variables?.data?.joinToString(", ") { it.attributes.name } ?: "No variables found"))
 
         _state.update {
@@ -86,7 +88,7 @@ class ClientServerStartupTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerStartupTabViewModel", "Failed to fetch server startup: ${error.message}")
+                    Logger.debug(TAG, "Failed to fetch server startup: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -141,7 +143,7 @@ class ClientServerStartupTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerStartupTabViewModel", "Failed to update server docker image: ${error.message}")
+                    Logger.debug(TAG, "Failed to update server docker image: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -190,7 +192,7 @@ class ClientServerStartupTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerStartupTabViewModel", "Failed to update server variable: ${error.message}")
+                    Logger.debug(TAG, "Failed to update server variable: ${error.message}")
 
                     _state.update {
                         it.copy(

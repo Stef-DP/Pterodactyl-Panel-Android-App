@@ -29,6 +29,8 @@ data class ClientServerUsersTabUiState(
     val newSubuserPermissions: Map<ServerSubuser.Permissions, Boolean> = emptyMap()
 )
 
+private const val TAG = "ClientServerUsersTabViewModel"
+
 class ClientServerUsersTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerUsersTabUiState> = MutableStateFlow(ClientServerUsersTabUiState())
     val state: StateFlow<ClientServerUsersTabUiState> = _state.asStateFlow()
@@ -81,7 +83,7 @@ class ClientServerUsersTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerUsersTabViewModel", "Failed to fetch server users: ${error.message}")
+                    Logger.debug(TAG, "Failed to fetch server users: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -153,7 +155,7 @@ class ClientServerUsersTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerUsersTabViewModel", "Failed to create server subuser: ${error.message}")
+                    Logger.debug(TAG, "Failed to create server subuser: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -237,7 +239,7 @@ class ClientServerUsersTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerUsersTabViewModel", "Failed to update server subuser: ${error.message}")
+                    Logger.debug(TAG, "Failed to update server subuser: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -308,7 +310,7 @@ class ClientServerUsersTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerUsersTabViewModel", "Failed to delete server subuser: ${error.message}")
+                    Logger.debug(TAG, "Failed to delete server subuser: ${error.message}")
 
                     _state.update {
                         it.copy(

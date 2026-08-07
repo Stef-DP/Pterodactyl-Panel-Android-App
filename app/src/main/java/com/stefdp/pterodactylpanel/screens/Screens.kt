@@ -15,7 +15,7 @@ object LoginScreen : AppScreen
 object ClientServersScreen : AppScreen
 
 @Serializable
-object ClientAccountSettingsScreen : AppScreen
+object AccountSettingsScreen : AppScreen
 
 @Serializable
 data class ClientServerScreen(

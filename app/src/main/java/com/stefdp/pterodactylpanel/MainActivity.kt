@@ -61,16 +61,16 @@ import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
-import com.stefdp.pterodactylpanel.screens.ClientAccountSettingsScreen
+import com.stefdp.pterodactylpanel.screens.AccountSettingsScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
-import com.stefdp.pterodactylpanel.screens.client.accountsettings.ClientAccountSettingsScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
-import com.stefdp.pterodactylpanel.screens.loading.LoadingScreen
-import com.stefdp.pterodactylpanel.screens.login.LoginScreen
+import com.stefdp.pterodactylpanel.screens.shared.accountsettings.AccountSettingsScreen
+import com.stefdp.pterodactylpanel.screens.shared.loading.LoadingScreen
+import com.stefdp.pterodactylpanel.screens.shared.login.LoginScreen
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.utils.NetworkMonitor
 import kotlinx.coroutines.delay
@@ -85,14 +85,6 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
         Result.failure(
             Exception("Placeholder")
         )
-    }
-}
-
-val LocalApplicationApiKeyValidity = compositionLocalOf { ApplicationApiKeyValidity.UNCHECKED }
-
-val LocalUpdateApplicationApiKeyValidity = compositionLocalOf<suspend (context: Context) -> ApplicationApiKeyValidity> {
-    {
-        ApplicationApiKeyValidity.UNCHECKED
     }
 }
 
@@ -138,7 +130,6 @@ class MainActivity : FragmentActivity() {
                 LaunchedEffect(isConnected) {
                     if (isConnected) {
                         viewModel.updateLoggedUser(context)
-                        viewModel.updateApplicationApiKeyValidity(context)
                     }
                 }
 
@@ -147,8 +138,6 @@ class MainActivity : FragmentActivity() {
                 CompositionLocalProvider(
                     LocalLoggedUser provides state.loggedUser,
                     LocalUpdateLoggedUser provides viewModel::updateLoggedUser,
-                    LocalApplicationApiKeyValidity provides state.applicationApiKeyValidity,
-                    LocalUpdateApplicationApiKeyValidity provides viewModel::updateApplicationApiKeyValidity
                 ) {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentDestination = navBackStackEntry?.destination
@@ -293,8 +282,8 @@ fun AppNavigation(
             )
         }
 
-        composable<ClientServersScreen> {
-            ClientServersScreen(
+        composable<AccountSettingsScreen> {
+            AccountSettingsScreen(
                 navController = navController,
                 activity = activity,
                 context = context,
@@ -302,8 +291,8 @@ fun AppNavigation(
             )
         }
 
-        composable<ClientAccountSettingsScreen> {
-            ClientAccountSettingsScreen(
+        composable<ClientServersScreen> {
+            ClientServersScreen(
                 navController = navController,
                 activity = activity,
                 context = context,
@@ -399,11 +388,4 @@ fun AppNavigation(
             // TODO: add application nest egg screen
         }
     }
-}
-
-enum class ApplicationApiKeyValidity {
-    VALID,
-    INVALID,
-    UNCHECKED,
-    MISSING
 }

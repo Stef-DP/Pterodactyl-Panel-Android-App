@@ -14,8 +14,8 @@ class SecureStorage private constructor(context: Context) {
 
     companion object {
         const val STORAGE_SERVER_URL_KEY = "serverUrl"
-        const val STORAGE_APPLICATION_TOKEN_KEY = "applicationToken"
         const val STORAGE_CLIENT_TOKEN_KEY = "clientToken"
+        const val STORAGE_APPLICATION_TOKEN_KEY = STORAGE_CLIENT_TOKEN_KEY
         const val STORAGE_FILE_DOWNLOAD_FOLDER_KEY = "fileDownloadFolder"
         const val STORAGE_BACKUP_DOWNLOAD_FOLDER_KEY = "backupDownloadFolder"
 

@@ -29,6 +29,8 @@ data class ClientServerUiState(
     val isRestoringBackup: Boolean = false
 )
 
+private const val TAG = "ClientServerViewModel"
+
 class ClientServerViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerUiState> = MutableStateFlow(ClientServerUiState())
     val state: StateFlow<ClientServerUiState> = _state.asStateFlow()
@@ -91,7 +93,7 @@ class ClientServerViewModel : ViewModel() {
                     }
                 }
                 .onFailure { error ->
-                    Logger.error("ClientServerViewModel", "Failed to fetch server data: ${error.message}")
+                    Logger.error(TAG, "Failed to fetch server data: ${error.message}")
 
                     onError("Failed to fetch server data: ${error.message}")
                 }

@@ -26,6 +26,8 @@ data class ClientServerNetworkTabUiState(
     val allocationToDelete: Long? = null
 )
 
+private const val TAG = "ClientServerNetworkTabViewModel"
+
 class ClientServerNetworkTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<ClientServerNetworkTabUiState> = MutableStateFlow(ClientServerNetworkTabUiState())
     val state: StateFlow<ClientServerNetworkTabUiState> = _state.asStateFlow()
@@ -78,7 +80,7 @@ class ClientServerNetworkTabViewModel : ViewModel() {
                     onSuccess()
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerAllocationsTabViewModel", "Failed to fetch server allocations: ${error.message}")
+                    Logger.debug(TAG, "Failed to fetch server allocations: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -149,7 +151,7 @@ class ClientServerNetworkTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerAllocationsTabViewModel", "Failed to delete server allocation: ${error.message}")
+                    Logger.debug(TAG, "Failed to delete server allocation: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -196,7 +198,7 @@ class ClientServerNetworkTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerAllocationsTabViewModel", "Failed to make server allocation primary: ${error.message}")
+                    Logger.debug(TAG, "Failed to make server allocation primary: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -245,7 +247,7 @@ class ClientServerNetworkTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerAllocationsTabViewModel", "Failed to update server allocation notes: ${error.message}")
+                    Logger.debug(TAG, "Failed to update server allocation notes: ${error.message}")
 
                     _state.update {
                         it.copy(
@@ -290,7 +292,7 @@ class ClientServerNetworkTabViewModel : ViewModel() {
                     )
                 }
                 .onFailure { error ->
-                    Logger.debug("ClientServerAllocationsTabViewModel", "Failed to create server allocation: ${error.message}")
+                    Logger.debug(TAG, "Failed to create server allocation: ${error.message}")
 
                     _state.update {
                         it.copy(
