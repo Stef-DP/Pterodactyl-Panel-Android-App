@@ -57,11 +57,11 @@ fun ApplicationLocationsScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -80,11 +80,8 @@ fun ApplicationLocationsScreen(
         )
     }
 
-    val scrollState = rememberScrollState()
-
     LaunchedEffect(state.page) {
         updateData()
-        scrollState.animateScrollTo(0)
     }
 
     CreateLocationPopup(
@@ -94,22 +91,17 @@ fun ApplicationLocationsScreen(
         viewModel = viewModel
     )
 
-    val coroutineScope = rememberCoroutineScope()
-
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = {
-            coroutineScope.launch {
-                updateData(
-                    isRefresh = true
-                )
-            }
+            updateData(
+                isRefresh = true
+            )
         },
         modifier = Modifier.padding(innerPadding)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
                 modifier = Modifier
@@ -215,7 +207,7 @@ fun ApplicationLocationsScreen(
                     },
                 )
 
-                val rows: List<TableRowData>? = state.locations?.map { (type, location) ->
+                val rows: List<TableRowData>? = state.locations?.map { (_, location) ->
                     TableRowData(
                         cells = listOf(
                             TableCellData(
@@ -287,7 +279,7 @@ fun ApplicationLocationsScreen(
             Pager(
                 currentPage = state.page,
                 totalPages = state.pagination?.totalPages ?: 1,
-                enabled = state.locations != null && !state.locations.isNullOrEmpty(),
+                enabled = !state.locations.isNullOrEmpty(),
                 onFirstPageClick = {
                     viewModel.setPage(1)
                 },
