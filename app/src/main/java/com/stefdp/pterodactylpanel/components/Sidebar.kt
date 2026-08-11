@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -49,7 +50,7 @@ fun Sidebar(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val currentUser = LocalLoggedUser.current
+    val localLoggedUser = LocalLoggedUser.current
 
     ModalDrawerSheet(
         modifier = modifier,
@@ -92,164 +93,184 @@ fun Sidebar(
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
                 shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
             )
-//
-//            NavigationDrawerItem(
-//                label = {
-//                    Row {
-//                        Icon(
-//                            painter = painterResource(R.drawable.draft),
-//                            contentDescription = "Files Screen"
-//                        )
-//
-//                        Spacer(
-//                            modifier = Modifier.width(6.dp)
-//                        )
-//
-//                        Text("Files")
-//                    }
-//                },
-//                selected = false,
-//                onClick = {
-//                    val userId = runCatching { navBackStackEntry?.toRoute<FilesScreen>()?.userId }.getOrNull()
-//                    val destination = currentDestination?.route?.split("?")?.first()
-//
-//                    if (
-//                        destination == FilesScreen::class.qualifiedName &&
-//                        userId == null
-//                    ) {
-//                        closeSidebar()
-//                    } else {
-//                        onItemClick(FilesScreen())
-//                    }
-//                },
-//                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-//                shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-//            )
-//
-//            NavigationDrawerItem(
-//                label = {
-//                    Row {
-//                        Icon(
-//                            painter = painterResource(R.drawable.folder),
-//                            contentDescription = "Folders Screen"
-//                        )
-//
-//                        Spacer(
-//                            modifier = Modifier.width(6.dp)
-//                        )
-//
-//                        Text("Folders")
-//                    }
-//                },
-//                selected = false,
-//                onClick = {
-//                    if (currentDestination?.route != FoldersScreen::class.qualifiedName) {
-//                        onItemClick(FoldersScreen)
-//                    } else {
-//                        closeSidebar()
-//                    }
-//                },
-//                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-//                shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-//            )
-//
-//            ExpandableDrawerSection(
-//                label = {
-//                    Row {
-//                        Icon(
-//                            painter = painterResource(R.drawable.upload),
-//                            contentDescription = "Upload Menu"
-//                        )
-//
-//                        Spacer(
-//                            modifier = Modifier.width(6.dp)
-//                        )
-//
-//                        Text("Upload")
-//                    }
-//                },
-//            ) {
-//                NavigationDrawerItem(
-//                    label = {
-//                        Row {
-//                            Icon(
-//                                painter = painterResource(R.drawable.upload_file),
-//                                contentDescription = "Upload File Screen"
-//                            )
-//
-//                            Spacer(
-//                                modifier = Modifier.width(6.dp)
-//                            )
-//
-//                            Text("File")
-//                        }
-//                    },
-//                    selected = false,
-//                    onClick = {
-//                        if (currentDestination?.route != UploadFileScreen::class.qualifiedName) {
-//                            onItemClick(UploadFileScreen())
-//                        } else {
-//                            closeSidebar()
-//                        }
-//                    },
-//                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-//                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-//                )
-//
-//                NavigationDrawerItem(
-//                    label = {
-//                        Row {
-//                            Icon(
-//                                painter = painterResource(R.drawable.text_fields),
-//                                contentDescription = "Upload Text Screen"
-//                            )
-//
-//                            Spacer(
-//                                modifier = Modifier.width(6.dp)
-//                            )
-//
-//                            Text("Text")
-//                        }
-//                    },
-//                    selected = false,
-//                    onClick = {
-//                        if (currentDestination?.route != UploadTextScreen::class.qualifiedName) {
-//                            onItemClick(UploadTextScreen())
-//                        } else {
-//                            closeSidebar()
-//                        }
-//                    },
-//                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-//                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-//                )
-//            }
-//
-//            NavigationDrawerItem(
-//                label = {
-//                    Row {
-//                        Icon(
-//                            painter = painterResource(R.drawable.link_2),
-//                            contentDescription = "URLs Screen"
-//                        )
-//
-//                        Spacer(
-//                            modifier = Modifier.width(6.dp)
-//                        )
-//
-//                        Text("URLs")
-//                    }
-//                },
-//                selected = false,
-//                onClick = {
-//                    if (currentDestination?.route != UrlsScreen::class.qualifiedName) {
-//                        onItemClick(UrlsScreen())
-//                    } else {
-//                        closeSidebar()
-//                    }
-//                },
-//                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-//                shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-//            )
+
+            if (localLoggedUser?.attributes?.admin == false) return@Column
+
+            HorizontalDivider(
+                modifier = Modifier.padding(12.dp),
+                color = MaterialTheme.colorScheme.outline
+            )
+
+            ExpandableDrawerSection(
+                defaultState = true,
+                label = {
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.dns),
+                            contentDescription = "Management Menu"
+                        )
+
+                        Spacer(
+                            modifier = Modifier.width(6.dp)
+                        )
+
+                        Text("Management")
+                    }
+                },
+            ) {
+                NavigationDrawerItem(
+                    label = {
+                        Row {
+                            Icon(
+                                painter = painterResource(R.drawable.globe),
+                                contentDescription = "Locations Screen"
+                            )
+
+                            Spacer(
+                                modifier = Modifier.width(6.dp)
+                            )
+
+                            Text("Locations")
+                        }
+                    },
+                    selected = false,
+                    onClick = {
+                        if (currentDestination?.route != ApplicationLocationsScreen::class.qualifiedName) {
+                            onItemClick(ApplicationLocationsScreen)
+                        } else {
+                            closeSidebar()
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Row {
+                            Icon(
+                                painter = painterResource(R.drawable.lan),
+                                contentDescription = "Nodes Screen"
+                            )
+
+                            Spacer(
+                                modifier = Modifier.width(6.dp)
+                            )
+
+                            Text("Nodes")
+                        }
+                    },
+                    selected = false,
+                    onClick = {
+                        if (currentDestination?.route != ApplicationNodesScreen::class.qualifiedName) {
+                            onItemClick(ApplicationNodesScreen)
+                        } else {
+                            closeSidebar()
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Row {
+                            Icon(
+                                painter = painterResource(R.drawable.host),
+                                contentDescription = "Servers Screen"
+                            )
+
+                            Spacer(
+                                modifier = Modifier.width(6.dp)
+                            )
+
+                            Text("Servers")
+                        }
+                    },
+                    selected = false,
+                    onClick = {
+                        if (currentDestination?.route != ApplicationServersScreen::class.qualifiedName) {
+                            onItemClick(ApplicationServersScreen)
+                        } else {
+                            closeSidebar()
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                )
+
+                NavigationDrawerItem(
+                    label = {
+                        Row {
+                            Icon(
+                                painter = painterResource(R.drawable.group_fill),
+                                contentDescription = "Users Screen"
+                            )
+
+                            Spacer(
+                                modifier = Modifier.width(6.dp)
+                            )
+
+                            Text("Users")
+                        }
+                    },
+                    selected = false,
+                    onClick = {
+                        if (currentDestination?.route != ApplicationUsersScreen::class.qualifiedName) {
+                            onItemClick(ApplicationUsersScreen)
+                        } else {
+                            closeSidebar()
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                )
+            }
+
+            ExpandableDrawerSection(
+                defaultState = true,
+                label = {
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.schema),
+                            contentDescription = "Service Menu"
+                        )
+
+                        Spacer(
+                            modifier = Modifier.width(6.dp)
+                        )
+
+                        Text("Service Management")
+                    }
+                },
+            ) {
+                NavigationDrawerItem(
+                    label = {
+                        Row {
+                            Icon(
+                                painter = painterResource(R.drawable.group_fill),
+                                contentDescription = "Nests Screen"
+                            )
+
+                            Spacer(
+                                modifier = Modifier.width(6.dp)
+                            )
+
+                            Text("Nests")
+                        }
+                    },
+                    selected = false,
+                    onClick = {
+                        if (currentDestination?.route != ApplicationNestsScreen::class.qualifiedName) {
+                            onItemClick(ApplicationNestsScreen)
+                        } else {
+                            closeSidebar()
+                        }
+                    },
+                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                )
+            }
 //
 //            DebugWrapper {
 //                ExpandableDrawerSection(
@@ -304,10 +325,11 @@ fun Sidebar(
 
 @Composable
 fun ExpandableDrawerSection(
+    defaultState: Boolean = false,
     label: @Composable () -> Unit,
     content: @Composable () -> Unit
 ) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(defaultState) }
 
     val rotationState by animateFloatAsState(
         targetValue = if (expanded) 180f else 0f,
