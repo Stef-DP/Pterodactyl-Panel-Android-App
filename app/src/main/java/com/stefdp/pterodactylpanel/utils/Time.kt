@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.utils
 
 import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -65,6 +66,12 @@ fun formatDate(
     timeOnly: Boolean = false,
     includeYear: Boolean = true
 ): String {
+    val dateTime = try {
+        OffsetDateTime.parse(date).atZoneSameInstant(ZoneId.systemDefault())
+    } catch (e: Exception) {
+        return date
+    }
+
     if (short) {
         val pattern = when {
             dateOnly -> if (includeYear) "yyyy-MM-dd" else "MM-dd"
@@ -72,18 +79,10 @@ fun formatDate(
             else -> if (includeYear) "yyyy-MM-dd, hh:mm a" else "MM-dd, hh:mm a"
         }
 
-        return Instant
-            .parse(date)
-            .atZone(ZoneId.systemDefault())
-            .format(DateTimeFormatter.ofPattern(pattern))
+        return dateTime.format(DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH))
     }
 
-    val dateTime = Instant
-        .parse(date)
-        .atZone(ZoneId.systemDefault())
-
     val day = dateTime.dayOfMonth
-
     val suffix = getOrdinalSuffix(day)
 
     val pattern = when {
