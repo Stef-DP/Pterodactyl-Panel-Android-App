@@ -55,19 +55,20 @@ import com.stefdp.pterodactylpanel.screens.ApplicationNestEggScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNestScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNestsScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
-import com.stefdp.pterodactylpanel.screens.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
 import com.stefdp.pterodactylpanel.screens.AccountSettingsScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationLocationScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.location.ApplicationLocationScreen
 import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsScreen
+import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.AccountSettingsScreen
@@ -343,7 +344,12 @@ fun AppNavigation(
         }
 
         composable<ApplicationNodesScreen> {
-            // TODO: add application nodes screen
+            ApplicationNodesScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding
+            )
         }
 
         composable<ApplicationNodeScreen> { backStackEntry ->
