@@ -141,6 +141,8 @@ class ApplicationLocationsViewModel : ViewModel() {
                         context = context,
                     )
 
+                    hideCreateLocationPopup(true)
+
                     onSuccess()
                 }
                 .onFailure { error ->
