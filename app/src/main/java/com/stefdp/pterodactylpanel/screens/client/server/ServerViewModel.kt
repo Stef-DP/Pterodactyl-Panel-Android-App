@@ -47,7 +47,8 @@ class ClientServerViewModel : ViewModel() {
         isNodeUnderMaintenance: Boolean = false,
         isRestoringBackup: Boolean = false,
         isServerOwner: Boolean = false,
-        onError: (String) -> Unit
+        onError: (String) -> Unit,
+        isRefresh: Boolean = false
     ) {
         viewModelScope.launch {
             this@ClientServerViewModel.serverId = serverId
@@ -55,6 +56,7 @@ class ClientServerViewModel : ViewModel() {
             _state.update {
                 it.copy(
                     isLoading = true,
+                    isRefreshing = isRefresh,
                     isSuspended = isSuspended,
                     isInstalling = isInstalling,
                     isTransferring = isTransferring,
@@ -88,21 +90,24 @@ class ClientServerViewModel : ViewModel() {
                             isNodeUnderMaintenance = server.attributes.isNodeUnderMaintenance,
                             isRestoringBackup = server.attributes.status == Server.Attributes.Status.RESTORING_BACKUP,
                             isServerOwner = server.meta.isServerOwner,
-                            userPermissions = server.meta.userPermissions
+                            userPermissions = server.meta.userPermissions,
+                            isRefreshing = false,
+                            isLoading = false
                         )
                     }
                 }
                 .onFailure { error ->
                     Logger.error(TAG, "Failed to fetch server data: ${error.message}")
 
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isRefreshing = false
+                        )
+                    }
+
                     onError("Failed to fetch server data: ${error.message}")
                 }
-
-            _state.update {
-                it.copy(
-                    isLoading = false
-                )
-            }
         }
     }
 

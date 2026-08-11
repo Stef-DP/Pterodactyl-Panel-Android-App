@@ -83,7 +83,7 @@ fun ClientServerScreen(
 
     val state by viewModel.state.collectAsState()
 
-    fun reload() {
+    fun reload(isRefresh: Boolean = false) {
         viewModel.init(
             context = context,
             serverId = serverId,
@@ -104,7 +104,8 @@ fun ClientServerScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
-            }
+            },
+            isRefresh = isRefresh
         )
     }
 
@@ -192,7 +193,9 @@ fun ClientServerScreen(
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = {
-                reload()
+                reload(
+                    isRefresh = true
+                )
 
                 refreshIndex++
             }
