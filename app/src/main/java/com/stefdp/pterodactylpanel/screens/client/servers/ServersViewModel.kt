@@ -35,7 +35,6 @@ class ClientServersViewModel : ViewModel() {
         filterDescription: String? = null,
         filterAny: String? = null,
         type: GetServersQueryType? = null,
-        page: Long? = null,
         isRefresh: Boolean = false
     )  {
         viewModelScope.launch {
@@ -55,7 +54,7 @@ class ClientServersViewModel : ViewModel() {
                 filterAny = filterAny,
                 type = type,
                 perPage = 10,
-                page = page,
+                page = _state.value.page,
             )
 
             val servers = serversRes.getOrNull()
@@ -64,6 +63,7 @@ class ClientServersViewModel : ViewModel() {
                 it.copy(
                     servers = servers?.data ?: emptyList(),
                     pagination = servers?.meta?.pagination,
+                    isRefreshing = false
                 )
             }
         }

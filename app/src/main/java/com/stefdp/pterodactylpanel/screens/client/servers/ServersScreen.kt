@@ -65,7 +65,7 @@ fun ClientServersScreen(
         filterDescription: String? = null,
         filterAny: String? = null,
         type: GetServersQueryType? = null,
-        page: Long? = null,
+        isRefresh: Boolean = false
     ) {
         viewModel.updateData(
             context = context,
@@ -75,14 +75,14 @@ fun ClientServersScreen(
             filterDescription = filterDescription,
             filterAny = filterAny,
             type = type,
-            page = page
+            isRefresh = isRefresh
         )
     }
 
     val scrollState = rememberScrollState()
 
     LaunchedEffect(state.page) {
-        updateData(page = state.page)
+        updateData()
         scrollState.animateScrollTo(0)
     }
 
@@ -92,7 +92,9 @@ fun ClientServersScreen(
         isRefreshing = state.isRefreshing,
         onRefresh = {
             coroutineScope.launch {
-                updateData(page = state.page)
+                updateData(
+                    isRefresh = true
+                )
             }
         },
         modifier = Modifier.padding(innerPadding)
