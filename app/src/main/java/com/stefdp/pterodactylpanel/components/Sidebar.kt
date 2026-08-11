@@ -95,6 +95,8 @@ fun Sidebar(
                 shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
             )
 
+            // TODO: when admin side is done, remove IS_DEBUG check
+
             if (IS_DEBUG) {
                 if (localLoggedUser?.attributes?.admin == false) return@Column
 

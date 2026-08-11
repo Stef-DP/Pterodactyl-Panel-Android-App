@@ -162,6 +162,7 @@ fun ClientServerScreen(
                 }
 
                 return@map tab
+                // TODO: when admin side is done, remove IS_DEBUG check
             } + if (localLoggedUser?.attributes?.admin == true && IS_DEBUG) {
                 Tab(
                     icon = openInNewIcon,
