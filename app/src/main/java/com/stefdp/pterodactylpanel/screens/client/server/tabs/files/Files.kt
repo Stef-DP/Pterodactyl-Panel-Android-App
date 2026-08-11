@@ -100,13 +100,18 @@ fun FilesTab(
         mutableIntStateOf(-1)
     }
 
+    var lastFilesPath by rememberSaveable {
+        mutableStateOf(state.filesPath)
+    }
+
     LaunchedEffect(state.filesPath, refreshIndex) {
         val isFirstLoad = lastFilesRefreshIndex == -1
         val isExplicitRefresh = refreshIndex != lastFilesRefreshIndex && !isFirstLoad
 
-        if (!isExplicitRefresh && !isFirstLoad && server != null && state.files.isNotEmpty()) return@LaunchedEffect
+        if (!isExplicitRefresh && !isFirstLoad && server != null && state.files.isNotEmpty() && state.filesPath == lastFilesPath) return@LaunchedEffect
 
         lastFilesRefreshIndex = refreshIndex
+        lastFilesPath = state.filesPath
 
         listState.animateScrollToItem(0)
 
