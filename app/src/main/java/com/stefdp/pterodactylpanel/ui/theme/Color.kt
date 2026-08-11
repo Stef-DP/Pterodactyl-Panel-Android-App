@@ -19,6 +19,7 @@ val ErrorDark = Color(0xFFD44246)
 val OnErrorDark = Color(0xFFFAF8FB)
 val LinkDark = Color(0xFF2B88F8)
 val SurfaceDimDark = Color(0xFF282E39)
+val PrimaryContainerDark = Color(0xFF60A5FA)
 
 
 val PrimaryLight = Color(0xFF2561E6)
@@ -38,6 +39,7 @@ val ErrorLight = Color(0xFFD44246)
 val OnErrorLight = Color(0xFFFAF8FB)
 val LinkLight = Color(0xFF2B88F8)
 val SurfaceDimLight = Color(0xFF282E39)
+val PrimaryContainerLight = Color(0xFF60A5FA)
 
 val AvatarColors = listOf(
     Color(0xFFFFAD08),

@@ -27,7 +27,8 @@ private val DarkColorScheme = darkColorScheme(
     onError = OnErrorDark,
     tertiary = LinkDark,
     surfaceContainer = SurfaceContainerDark,
-    surfaceDim = SurfaceDimDark
+    surfaceDim = SurfaceDimDark,
+    primaryContainer = PrimaryContainerDark
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -47,7 +48,8 @@ private val LightColorScheme = lightColorScheme(
     onError = OnErrorLight,
     tertiary = LinkLight,
     surfaceContainer = SurfaceContainerLight,
-    surfaceDim = SurfaceDimLight
+    surfaceDim = SurfaceDimLight,
+    primaryContainer = PrimaryContainerLight,
 )
 
 @Composable
