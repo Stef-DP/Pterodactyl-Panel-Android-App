@@ -79,7 +79,8 @@ fun CreateBackupPopup(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp),
-                enabled = !state.isLoading
+                enabled = !state.isLoading,
+                singleLine = false
             )
 
             Switch(
