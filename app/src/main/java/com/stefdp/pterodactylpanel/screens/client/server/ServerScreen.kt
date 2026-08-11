@@ -37,6 +37,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.IS_DEBUG
 import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Notification
@@ -161,7 +162,7 @@ fun ClientServerScreen(
                 }
 
                 return@map tab
-            } + if (localLoggedUser?.attributes?.admin == true) {
+            } + if (localLoggedUser?.attributes?.admin == true && IS_DEBUG) {
                 Tab(
                     icon = openInNewIcon,
                     iconContentDescription = "Open in admin view",

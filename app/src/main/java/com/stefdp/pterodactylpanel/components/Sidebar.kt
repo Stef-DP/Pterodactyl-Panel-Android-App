@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.IS_DEBUG
 import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.screens.*
@@ -94,182 +95,184 @@ fun Sidebar(
                 shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
             )
 
-            if (localLoggedUser?.attributes?.admin == false) return@Column
+            if (IS_DEBUG) {
+                if (localLoggedUser?.attributes?.admin == false) return@Column
 
-            HorizontalDivider(
-                modifier = Modifier.padding(12.dp),
-                color = MaterialTheme.colorScheme.outline
-            )
+                HorizontalDivider(
+                    modifier = Modifier.padding(12.dp),
+                    color = MaterialTheme.colorScheme.outline
+                )
 
-            ExpandableDrawerSection(
-                defaultState = true,
-                label = {
-                    Row {
-                        Icon(
-                            painter = painterResource(R.drawable.dns),
-                            contentDescription = "Management Menu"
-                        )
-
-                        Spacer(
-                            modifier = Modifier.width(6.dp)
-                        )
-
-                        Text("Management")
-                    }
-                },
-            ) {
-                NavigationDrawerItem(
+                ExpandableDrawerSection(
+                    defaultState = true,
                     label = {
                         Row {
                             Icon(
-                                painter = painterResource(R.drawable.globe),
-                                contentDescription = "Locations Screen"
+                                painter = painterResource(R.drawable.dns),
+                                contentDescription = "Management Menu"
                             )
 
                             Spacer(
                                 modifier = Modifier.width(6.dp)
                             )
 
-                            Text("Locations")
+                            Text("Management")
                         }
                     },
-                    selected = false,
-                    onClick = {
-                        if (currentDestination?.route != ApplicationLocationsScreen::class.qualifiedName) {
-                            onItemClick(ApplicationLocationsScreen)
-                        } else {
-                            closeSidebar()
-                        }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                )
+                ) {
+                    NavigationDrawerItem(
+                        label = {
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.globe),
+                                    contentDescription = "Locations Screen"
+                                )
 
-                NavigationDrawerItem(
+                                Spacer(
+                                    modifier = Modifier.width(6.dp)
+                                )
+
+                                Text("Locations")
+                            }
+                        },
+                        selected = false,
+                        onClick = {
+                            if (currentDestination?.route != ApplicationLocationsScreen::class.qualifiedName) {
+                                onItemClick(ApplicationLocationsScreen)
+                            } else {
+                                closeSidebar()
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                    )
+
+                    NavigationDrawerItem(
+                        label = {
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.lan),
+                                    contentDescription = "Nodes Screen"
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.width(6.dp)
+                                )
+
+                                Text("Nodes")
+                            }
+                        },
+                        selected = false,
+                        onClick = {
+                            if (currentDestination?.route != ApplicationNodesScreen::class.qualifiedName) {
+                                onItemClick(ApplicationNodesScreen)
+                            } else {
+                                closeSidebar()
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                    )
+
+                    NavigationDrawerItem(
+                        label = {
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.host),
+                                    contentDescription = "Servers Screen"
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.width(6.dp)
+                                )
+
+                                Text("Servers")
+                            }
+                        },
+                        selected = false,
+                        onClick = {
+                            if (currentDestination?.route != ApplicationServersScreen::class.qualifiedName) {
+                                onItemClick(ApplicationServersScreen)
+                            } else {
+                                closeSidebar()
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                    )
+
+                    NavigationDrawerItem(
+                        label = {
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.group_fill),
+                                    contentDescription = "Users Screen"
+                                )
+
+                                Spacer(
+                                    modifier = Modifier.width(6.dp)
+                                )
+
+                                Text("Users")
+                            }
+                        },
+                        selected = false,
+                        onClick = {
+                            if (currentDestination?.route != ApplicationUsersScreen::class.qualifiedName) {
+                                onItemClick(ApplicationUsersScreen)
+                            } else {
+                                closeSidebar()
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                    )
+                }
+
+                ExpandableDrawerSection(
+                    defaultState = true,
                     label = {
                         Row {
                             Icon(
-                                painter = painterResource(R.drawable.lan),
-                                contentDescription = "Nodes Screen"
+                                painter = painterResource(R.drawable.schema),
+                                contentDescription = "Service Menu"
                             )
 
                             Spacer(
                                 modifier = Modifier.width(6.dp)
                             )
 
-                            Text("Nodes")
+                            Text("Service Management")
                         }
                     },
-                    selected = false,
-                    onClick = {
-                        if (currentDestination?.route != ApplicationNodesScreen::class.qualifiedName) {
-                            onItemClick(ApplicationNodesScreen)
-                        } else {
-                            closeSidebar()
-                        }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                )
+                ) {
+                    NavigationDrawerItem(
+                        label = {
+                            Row {
+                                Icon(
+                                    painter = painterResource(R.drawable.group_fill),
+                                    contentDescription = "Nests Screen"
+                                )
 
-                NavigationDrawerItem(
-                    label = {
-                        Row {
-                            Icon(
-                                painter = painterResource(R.drawable.host),
-                                contentDescription = "Servers Screen"
-                            )
+                                Spacer(
+                                    modifier = Modifier.width(6.dp)
+                                )
 
-                            Spacer(
-                                modifier = Modifier.width(6.dp)
-                            )
-
-                            Text("Servers")
-                        }
-                    },
-                    selected = false,
-                    onClick = {
-                        if (currentDestination?.route != ApplicationServersScreen::class.qualifiedName) {
-                            onItemClick(ApplicationServersScreen)
-                        } else {
-                            closeSidebar()
-                        }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                )
-
-                NavigationDrawerItem(
-                    label = {
-                        Row {
-                            Icon(
-                                painter = painterResource(R.drawable.group_fill),
-                                contentDescription = "Users Screen"
-                            )
-
-                            Spacer(
-                                modifier = Modifier.width(6.dp)
-                            )
-
-                            Text("Users")
-                        }
-                    },
-                    selected = false,
-                    onClick = {
-                        if (currentDestination?.route != ApplicationUsersScreen::class.qualifiedName) {
-                            onItemClick(ApplicationUsersScreen)
-                        } else {
-                            closeSidebar()
-                        }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                )
-            }
-
-            ExpandableDrawerSection(
-                defaultState = true,
-                label = {
-                    Row {
-                        Icon(
-                            painter = painterResource(R.drawable.schema),
-                            contentDescription = "Service Menu"
-                        )
-
-                        Spacer(
-                            modifier = Modifier.width(6.dp)
-                        )
-
-                        Text("Service Management")
-                    }
-                },
-            ) {
-                NavigationDrawerItem(
-                    label = {
-                        Row {
-                            Icon(
-                                painter = painterResource(R.drawable.group_fill),
-                                contentDescription = "Nests Screen"
-                            )
-
-                            Spacer(
-                                modifier = Modifier.width(6.dp)
-                            )
-
-                            Text("Nests")
-                        }
-                    },
-                    selected = false,
-                    onClick = {
-                        if (currentDestination?.route != ApplicationNestsScreen::class.qualifiedName) {
-                            onItemClick(ApplicationNestsScreen)
-                        } else {
-                            closeSidebar()
-                        }
-                    },
-                    modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-                    shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                )
+                                Text("Nests")
+                            }
+                        },
+                        selected = false,
+                        onClick = {
+                            if (currentDestination?.route != ApplicationNestsScreen::class.qualifiedName) {
+                                onItemClick(ApplicationNestsScreen)
+                            } else {
+                                closeSidebar()
+                            }
+                        },
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                        shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
+                    )
+                }
             }
 //
 //            DebugWrapper {
