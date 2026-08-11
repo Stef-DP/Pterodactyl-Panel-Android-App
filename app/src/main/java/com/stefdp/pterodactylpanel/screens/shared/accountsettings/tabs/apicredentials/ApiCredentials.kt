@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.apicredentials
 
+import android.content.ClipData
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -140,17 +143,28 @@ fun ApiCredentialsTab(
                 enabled = !state.isLoading
             )
 
+            val clipboardManager = LocalClipboard.current
+
             Button(
                 onClick = {
                     viewModel.createApiKey(
                         context = context,
-                        onSuccess = {
+                        onSuccess = { apiKey ->
+                            coroutineScope.launch {
+                                val clipData = ClipData.newPlainText(
+                                    "API Key",
+                                    apiKey
+                                ).toClipEntry()
+
+                                clipboardManager.setClipEntry(clipData)
+                            }
+
                             Notification.show(
                                 activity = activity,
                                 duration = 3000L
                             ) {
                                 Text(
-                                    text = "API key created successfully",
+                                    text = "API key created successfully and copied to clipboard",
                                 )
                             }
                         },

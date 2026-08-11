@@ -106,7 +106,7 @@ class AccountSettingsApiCredentialsTabViewModel : ViewModel() {
 
     fun createApiKey(
         context: Context,
-        onSuccess: () -> Unit,
+        onSuccess: (String) -> Unit,
         onError: (String) -> Unit
     ) {
         viewModelScope.launch {
@@ -126,14 +126,14 @@ class AccountSettingsApiCredentialsTabViewModel : ViewModel() {
             )
 
             createApiKeyRes
-                .onSuccess {
+                .onSuccess { res ->
                     updateApiKeys(
                         context = context,
                         onSuccess = {
                             setNewApiKeyDescription(TextFieldValue(""))
                             setNewApiKeyAllowedIps(TextFieldValue(""))
 
-                            onSuccess()
+                            onSuccess(res.attributes.identifier + res.meta.secretToken)
                         },
                         onError = onError
                     )
