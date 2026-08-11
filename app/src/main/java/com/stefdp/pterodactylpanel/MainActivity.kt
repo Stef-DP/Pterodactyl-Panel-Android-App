@@ -50,7 +50,6 @@ import androidx.navigation.toRoute
 import com.stefdp.pterodactylpanel.components.Header
 import com.stefdp.pterodactylpanel.components.Sidebar
 import com.stefdp.pterodactylpanel.network.client.models.User
-import com.stefdp.pterodactylpanel.screens.ApplicationLocationScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationLocationsScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNestEggScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNestScreen
@@ -62,10 +61,13 @@ import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
 import com.stefdp.pterodactylpanel.screens.AccountSettingsScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationLocationScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.screens.application.location.ApplicationLocationScreen
+import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.AccountSettingsScreen
@@ -320,15 +322,24 @@ fun AppNavigation(
         }
 
         composable<ApplicationLocationsScreen> {
-            // TODO: add application locations screen
+            ApplicationLocationsScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding
+            )
         }
 
         composable<ApplicationLocationScreen> { backStackEntry ->
             val applicationLocationScreen = backStackEntry.toRoute<ApplicationLocationScreen>()
 
-//            applicationLocationScreen.locationId
-
-            // TODO: add application location screen
+            ApplicationLocationScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding,
+                locationId = applicationLocationScreen.locationId
+            )
         }
 
         composable<ApplicationNodesScreen> {
