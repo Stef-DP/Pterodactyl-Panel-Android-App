@@ -32,15 +32,18 @@ import com.stefdp.pterodactylpanel.network.application.models.responses.ListNode
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListServerDatabasesResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListServersResponse
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListUsersResponse
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.OPTIONS
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface PterodactylApplicationApiService {
     @GET("users")
@@ -124,6 +127,11 @@ interface PterodactylApplicationApiService {
         @Path("nodeId") nodeId: Long,
         @Query("include") include: String? = null // list of ListNodesQueryInclude separated by ","
     ): Response<ApplicationNode>
+
+    @OPTIONS
+    suspend fun getNodeStatus(
+        @Url url: String,
+    ): Response<ResponseBody>
 
     @GET("nodes/{nodeId}/configuration")
     suspend fun getNodeConfiguration(
