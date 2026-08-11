@@ -93,6 +93,8 @@ fun ApplicationNodesScreen(
         updateData()
     }
 
+    // TODO: add create node popup
+
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
         onRefresh = {
