@@ -1,31 +1,25 @@
 package com.stefdp.pterodactylpanel.screens.client.server.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.components.Checkbox
 import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.LabeledCheckbox
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
+import com.stefdp.pterodactylpanel.utils.hasPermission
 import com.stefdp.pterodactylpanel.utils.toAnnotatedString
 
 @Composable
@@ -33,6 +27,7 @@ fun SubuserPermissions(
     permissions: Map<ServerSubuser.Permissions, Boolean>,
     updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit,
     allowedPermissions: List<ServerSubuser.Permissions>,
+    isServerOwner: Boolean,
     enabled: Boolean = true
 ) {
     Column(
@@ -51,6 +46,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -66,6 +62,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -84,6 +81,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -100,6 +98,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -115,6 +114,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -129,6 +129,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -145,6 +146,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -160,6 +162,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -173,6 +176,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
 
@@ -185,6 +189,7 @@ fun SubuserPermissions(
             permissions = permissions,
             updatePermissions = updatePermissions,
             allowedPermissions = allowedPermissions,
+            isServerOwner = isServerOwner,
             enabled = enabled
         )
     }
@@ -196,6 +201,7 @@ fun SubuserPermissionContainer(
     description: String,
     permissionGroup: List<ServerSubuser.Permissions>,
     permissions: Map<ServerSubuser.Permissions, Boolean>,
+    isServerOwner: Boolean,
     updatePermissions: (Map<ServerSubuser.Permissions, Boolean>) -> Unit,
     allowedPermissions: List<ServerSubuser.Permissions>,
     enabled: Boolean = true
@@ -216,14 +222,24 @@ fun SubuserPermissionContainer(
                     val currentState = permissionGroup.all { permissions[it] == true }
 
                     permissionGroup.forEach { permission ->
-                        if (permission in allowedPermissions) {
+                        if (
+                            hasPermission(
+                                isServerOwner = isServerOwner,
+                                userPermissions = allowedPermissions,
+                                requiredPermission = permission
+                            )
+                        ) {
                             newPermissions[permission] = !currentState
                         }
                     }
 
                     updatePermissions(newPermissions)
                 },
-                enabled = enabled && permissionGroup.any { it in allowedPermissions }
+                enabled = enabled && hasPermission(
+                    isServerOwner = isServerOwner,
+                    userPermissions = allowedPermissions,
+                    requiredPermissions = permissionGroup
+                )
             )
         }
     ) {
@@ -243,7 +259,11 @@ fun SubuserPermissionContainer(
 
                     updatePermissions(newPermissions)
                 },
-                enabled = enabled && permission in allowedPermissions
+                enabled = enabled && hasPermission(
+                    isServerOwner = isServerOwner,
+                    userPermissions = allowedPermissions,
+                    requiredPermission = permission
+                )
             )
         }
     }
@@ -284,7 +304,8 @@ fun Preview() {
                         ServerSubuser.Permissions.CONTROL_RESTART,
                     ),
                     updatePermissions = {
-                    }
+                    },
+                    isServerOwner = true
                 )
             }
         }
