@@ -33,6 +33,7 @@ import androidx.fragment.app.FragmentActivity
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.screens.client.server.components.ScheduleTaskDisplay
@@ -131,22 +132,9 @@ fun ScheduleDetailsPopup(
                         fontWeight = FontWeight.Bold
                     )
 
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(
-                                start = 8.dp,
-                                end = 8.dp,
-                                top = 4.dp,
-                                bottom = 4.dp
-                            )
-                    ) {
-                        Text(
-                            text = value,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
+                    CodeText(
+                        text = value
+                    )
                 }
             }
 

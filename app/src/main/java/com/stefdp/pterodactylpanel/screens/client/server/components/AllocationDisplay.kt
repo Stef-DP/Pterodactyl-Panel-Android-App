@@ -34,6 +34,7 @@ import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.client.models.ServerAllocation
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
@@ -149,16 +150,8 @@ fun AllocationDisplayItem(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = value,
-            modifier = Modifier
-                .clip(RoundedCornerShape(4.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(4.dp),
-            style = TextStyle(
-                lineBreak = LineBreak.Simple,
-                fontFamily = FontFamily.Monospace
-            )
+        CodeText(
+            text = value
         )
 
         Text(

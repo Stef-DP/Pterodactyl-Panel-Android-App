@@ -41,6 +41,7 @@ import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.TextInput
@@ -191,16 +192,8 @@ fun SettingsTab(
                     modifier = Modifier.width(8.dp)
                 )
 
-                Text(
-                    text = server?.attributes?.node ?: "Unknown",
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(4.dp),
-                    style = TextStyle(
-                        lineBreak = LineBreak.Simple,
-                        fontFamily = FontFamily.Monospace
-                    )
+                CodeText(
+                    text = server?.attributes?.node ?: "Unknown"
                 )
             }
 
@@ -220,28 +213,20 @@ fun SettingsTab(
 
                 val serverUuid = server?.attributes?.uuid ?: "00000000-0000-0000-0000-000000000000"
 
-                Text(
+                CodeText(
                     text = serverUuid,
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .clickable(
-                            enabled = true,
-                            onClick = {
-                                coroutineScope.launch {
-                                    val clipData = ClipData.newPlainText(
-                                        "Server UUID",
-                                        serverUuid
-                                    ).toClipEntry()
+                    trailingModifier = Modifier.clickable(
+                        enabled = true,
+                        onClick = {
+                            coroutineScope.launch {
+                                val clipData = ClipData.newPlainText(
+                                    "Server UUID",
+                                    serverUuid
+                                ).toClipEntry()
 
-                                    clipboardManager.setClipEntry(clipData)
-                                }
+                                clipboardManager.setClipEntry(clipData)
                             }
-                        )
-                        .padding(4.dp),
-                    style = TextStyle(
-                        lineBreak = LineBreak.Simple,
-                        fontFamily = FontFamily.Monospace
+                        }
                     )
                 )
             }

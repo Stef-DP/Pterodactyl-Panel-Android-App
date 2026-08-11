@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.screens.client.server.tabs.files.popups
 
+import android.R.attr.text
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.components.TextInput
@@ -89,16 +91,8 @@ fun CreateNewFilePopup(
                 }
             }
 
-            Text(
-                text = folderPathText,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(4.dp),
-                style = TextStyle(
-                    lineBreak = LineBreak.Simple,
-                    fontFamily = FontFamily.Monospace
-                )
+            CodeText(
+                text = folderPathText
             )
         }
 

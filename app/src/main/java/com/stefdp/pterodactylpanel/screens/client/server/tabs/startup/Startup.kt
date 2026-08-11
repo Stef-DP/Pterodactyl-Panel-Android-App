@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Select
@@ -114,21 +115,9 @@ fun StartupTab(
                     )
                 }
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .padding(8.dp)
-                ) {
-                    Text(
-                        text = state.startupCommand,
-                        style = TextStyle(
-                            lineBreak = LineBreak.Simple,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    )
-                }
+                CodeText(
+                    text = state.startupCommand
+                )
             }
         }
 

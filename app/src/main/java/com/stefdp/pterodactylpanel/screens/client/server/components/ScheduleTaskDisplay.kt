@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.IconButton
 import com.stefdp.pterodactylpanel.network.client.models.ServerScheduleTask
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
@@ -83,22 +84,9 @@ fun ScheduleTaskDisplay(
             )
         }
 
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(
-                    start = 8.dp,
-                    end = 8.dp,
-                    top = 4.dp,
-                    bottom = 4.dp
-                )
-        ) {
-            Text(
-                text = task.attributes.payload,
-                fontFamily = FontFamily.Monospace
-            )
-        }
+        CodeText(
+            text = task.attributes.payload
+        )
 
         if (task.attributes.continueOnFailure) {
             Row(

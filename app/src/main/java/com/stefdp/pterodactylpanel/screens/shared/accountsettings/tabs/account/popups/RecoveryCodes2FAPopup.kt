@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentActivity
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.account.AccountSettingsAccountTabUiState
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.account.AccountSettingsAccountTabViewModel
@@ -80,17 +81,9 @@ fun RecoveryCodes2FAPopup(
                 )
             }
 
-            Text(
+            CodeText(
                 text = formattedRecoveryCodes,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(4.dp),
-                style = TextStyle(
-                    lineBreak = LineBreak.Simple,
-                    fontFamily = FontFamily.Monospace
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
             WarningAlert()

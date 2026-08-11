@@ -24,6 +24,7 @@ import com.neoutils.highlight.compose.extension.toAnnotatedString
 import com.neoutils.highlight.core.Highlight
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.activity.AccountSettingsActivityTabUiState
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.activity.AccountSettingsActivityTabViewModel
@@ -63,17 +64,9 @@ fun MetadataPopup(
             highlight.toAnnotatedString(prettyJsonString)
         }
 
-        Text(
+        CodeText(
             text = annotatedString,
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(4.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(4.dp),
-            style = TextStyle(
-                lineBreak = LineBreak.Simple,
-                fontFamily = FontFamily.Monospace
-            )
+            modifier = Modifier.fillMaxWidth()
         )
 
         Row(

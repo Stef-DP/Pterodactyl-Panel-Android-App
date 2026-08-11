@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.screens.client.server.components
 
+import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
+import com.stefdp.pterodactylpanel.components.CodeText
 
 @Composable
 fun ScheduleCronCheatsheet() {
@@ -35,22 +37,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "*/5 * * * *",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "*/5 * * * *"
+            )
 
             Text(
                 text = "Every 5 minutes"
@@ -69,22 +58,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "0 */1 * * *",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "0 */1 * * *"
+            )
 
             Text(
                 text = "Every hour"
@@ -103,22 +79,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "0 8-12 * * *",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "0 8-12 * * *"
+            )
 
             Text(
                 text = "Hour range"
@@ -137,22 +100,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "0 0 * * *",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "0 0 * * *"
+            )
 
             Text(
                 text = "Once a day"
@@ -171,22 +121,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "0 0 * * MON",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "0 0 * * MON"
+            )
 
             Text(
                 text = "Every Monday"
@@ -205,22 +142,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "*",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "*"
+            )
 
             Text(
                 text = "Any value"
@@ -239,22 +163,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = ",",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = ","
+            )
 
             Text(
                 text = "Value list separator"
@@ -273,22 +184,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "-",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "-"
+            )
 
             Text(
                 text = "Range values"
@@ -307,22 +205,9 @@ fun ScheduleCronCheatsheet() {
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .padding(
-                        start = 8.dp,
-                        end = 8.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
-                    )
-            ) {
-                Text(
-                    text = "/",
-                    fontFamily = FontFamily.Monospace
-                )
-            }
+            CodeText(
+                text = "/"
+            )
 
             Text(
                 text = "Step values"
