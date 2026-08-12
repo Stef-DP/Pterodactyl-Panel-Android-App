@@ -1,7 +1,5 @@
 package com.stefdp.pterodactylpanel.screens.application.locations.popups
 
-import android.R.attr.checked
-import android.R.attr.fontWeight
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,12 +19,9 @@ import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
-import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsUiState
 import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsViewModel
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.ClientServerBackupsTabUiState
-import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.ClientServerBackupsTabViewModel
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
@@ -132,7 +127,9 @@ fun CreateLocationPopup(
                     )
                 },
                 buttonType = ButtonType.PRIMARY,
-                enabled = state.locations != null
+                enabled =
+                    state.locations != null &&
+                    state.newLocationShortCode.text.trim().isNotBlank()
             ) {
                 Text("Create")
             }
