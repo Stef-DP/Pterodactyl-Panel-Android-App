@@ -10,8 +10,33 @@ on:
   workflow_dispatch:
 
 jobs:
+  check_commit:
+    runs-on: node
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Commit Message
+        id: check
+        run: |
+          if [ "${{ forgejo.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+            
+            exit 0
+          fi
+          
+          PATTERN='^\[(qa|alpha|beta|production)(,(qa|alpha|beta|production))*\]'
+          
+          if echo "${{ forgejo.event.head_commit.message }}" | grep -qE "$PATTERN"; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
   build:
-    if: forgejo.event_name == 'workflow_dispatch' || (forgejo.event_name == 'push' && forgejo.event.head_commit.message =~ '^\[(qa|alpha|beta|production)(,(qa|alpha|beta|production))*\]')
+    needs: check_commit
+    if: needs.check_commit.outputs.should_run == 'true'
     runs-on: node
     steps:
       - uses: actions/checkout@v4
