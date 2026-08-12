@@ -5,12 +5,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationLocation
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQuerySort
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListNodesResponse
 import com.stefdp.pterodactylpanel.network.application.requests.createNode
 import com.stefdp.pterodactylpanel.network.application.requests.getNodeStatus
+import com.stefdp.pterodactylpanel.network.application.requests.listLocations
 import com.stefdp.pterodactylpanel.network.application.requests.listNodes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +24,7 @@ data class ApplicationNodesUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val nodes: List<ApplicationNode>? = null,
+    val locations: List<ApplicationLocation> = emptyList(),
     val page: Long = 1,
     val pagination: ListNodesResponse.Meta.Pagination? = null,
     val nodesStatus: Map<Long, Boolean?> = emptyMap(),
@@ -82,15 +85,26 @@ class ApplicationNodesViewModel : ViewModel() {
 
             val nodes = nodesRes.getOrNull()
 
+            val locations = listAllLocations(
+                context = context
+            )
+
             _state.update {
                 it.copy(
                     nodes = nodes?.data ?: emptyList(),
+                    locations = locations,
+                    selectedNewNodeLocation = locations.firstOrNull()
+                        ?.attributes
+                        ?.id
+                        ?.toString()
+                        ?.let { id -> setOf(id) }
+                        ?: emptySet(),
                     pagination = nodes?.meta?.pagination,
                     isRefreshing = false,
                     isLoading = false,
                     nodesStatus = nodes?.data?.associate { node ->
                         node.attributes.id to null
-                    } ?: emptyMap()
+                    } ?: emptyMap(),
                 )
             }
 
@@ -98,6 +112,36 @@ class ApplicationNodesViewModel : ViewModel() {
                 context = context
             )
         }
+    }
+
+    suspend fun listAllLocations(
+        context: Context
+    ): List<ApplicationLocation> {
+        val outputLocations = mutableListOf<ApplicationLocation>()
+
+        var currentPage = 1L
+        var hasNextPage = true
+
+        while (hasNextPage) {
+            val locationsRes = listLocations(
+                context = context,
+                page = currentPage
+            )
+
+            if (locationsRes.isFailure) break
+
+            val locations = locationsRes.getOrNull() ?: break
+            outputLocations.addAll(locations.data)
+
+            val nextLink = locations.meta.pagination.links.next
+            if (!nextLink.isNullOrEmpty()) {
+                currentPage++
+            } else {
+                hasNextPage = false
+            }
+        }
+
+        return outputLocations
     }
 
     fun updateNodesStatus(
@@ -177,7 +221,21 @@ class ApplicationNodesViewModel : ViewModel() {
 
         _state.update {
             it.copy(
-                showCreateNodePopup = false
+                showCreateNodePopup = false,
+                newNodeName = TextFieldValue(""),
+                newNodeDescription = TextFieldValue(""),
+                selectedNewNodeLocation = emptySet(),
+                newNodePublic = true,
+                newNodeFQDN = TextFieldValue(""),
+                newNodeUseSsl = true,
+                newNodeBehindProxy = false,
+                newNodeDaemonServerFileDirectory = TextFieldValue("/var/lib/pterodactyl/volumes"),
+                newNodeTotalMemory = TextFieldValue(""),
+                newNodeMemoryOverallocation = TextFieldValue(""),
+                newNodeTotalDisk = TextFieldValue(""),
+                newNodeDiskOverallocation = TextFieldValue(""),
+                newNodeDaemonPort = TextFieldValue("8080"),
+                newNodeDaemonSftpPort = TextFieldValue("2022")
             )
         }
     }
@@ -333,6 +391,8 @@ class ApplicationNodesViewModel : ViewModel() {
                     updateData(
                         context = context
                     )
+
+                    hideCreateNodePopup(true)
 
                     onSuccess()
                 }
