@@ -84,7 +84,9 @@ fun Modifier.scrollbar(
     drawWithContent {
         drawContent()
 
-        val showScrollbar = config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f
+        val isScrollable = scrollState.maxValue > 0
+
+        val showScrollbar = isScrollable && (config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f)
 
         if (showScrollbar) {
             val topPadding = topPaddingDp.toPx()
@@ -180,9 +182,12 @@ fun Modifier.lazyScrollbar(
     drawWithContent {
         drawContent()
 
-        val showScrollbar = config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f
         val layoutInfo = listState.layoutInfo
         val visibleItems = layoutInfo.visibleItemsInfo
+
+        val isScrollable = listState.canScrollForward || listState.canScrollBackward
+
+        val showScrollbar = isScrollable && (config.alwaysKeepScrollbar || isScrollingOrPanning || scrollbarAlpha > 0.0f)
 
         if (showScrollbar && layoutInfo.totalItemsCount > 0 && visibleItems.isNotEmpty()) {
             val topPadding = topPaddingDp.toPx()
