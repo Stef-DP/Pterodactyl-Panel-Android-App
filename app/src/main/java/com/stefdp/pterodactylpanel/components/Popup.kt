@@ -27,6 +27,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
 fun Popup(
@@ -63,7 +64,10 @@ fun Popup(
                 .clip(RoundedCornerShape(BASE_CORNER_RADIUS.dp))
 
             Card(
-                modifier = if (scrollable) mainModifier.verticalScroll(scrollState) else mainModifier,
+                modifier = if (scrollable)
+                    mainModifier.verticalScrollWithScrollbar(scrollState)
+                else
+                    mainModifier,
                 shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer
