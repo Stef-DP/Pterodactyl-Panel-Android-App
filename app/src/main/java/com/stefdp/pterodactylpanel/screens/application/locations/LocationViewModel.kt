@@ -96,7 +96,9 @@ class ApplicationLocationsViewModel : ViewModel() {
 
         _state.update {
             it.copy(
-                showCreateLocationPopup = false
+                showCreateLocationPopup = false,
+                newLocationShortCode = TextFieldValue(""),
+                newLocationDescription = TextFieldValue(""),
             )
         }
     }
