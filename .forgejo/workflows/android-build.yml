@@ -11,15 +11,49 @@ on:
 
 jobs:
   build:
-    if: forgejo.event_name == 'workflow_dispatch' || (forgejo.event_name == 'push' && (startsWith(forgejo.event.head_commit.message, '[build]') || startsWith(forgejo.event.head_commit.message, '[release]')))
+    if: forgejo.event_name == 'workflow_dispatch' || (forgejo.event_name == 'push' && matches(forgejo.event.head_commit.message, '^\[(qa|alpha|beta|production)(,(qa|alpha|beta|production))*\]'))
     runs-on: node
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get App Version
+        id: app_version_code
+        run: |
+          VERSION_CODE=$(sed -n 's/.*versionCode = \([0-9]\+\).*/\1/p' ${{ env.main_project_module }}/build.gradle.kts | head -1)
+          echo "app_version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "Found version code: $VERSION_CODE"
+
+      - name: Stop if missing release notes
+        run: |
+          if [ ! -f "fastlane/metadata/android/en-US/changelogs/${{ steps.app_version_code.outputs.app_version_code }}.txt" ]; then
+            echo "No release notes found. Please add release notes in fastlane/metadata/android/<language>/changelogs/"
+            
+            exit 1
+          fi
 
       - name: Install ZIP Util
         run: |
           apt-get update
           apt-get install zip -y
+
+      - name: Parse Tracks
+        id: parse_tracks
+        run: |
+          EVENT_NAME="${{ forgejo.event_name }}"
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            TRACKS="alpha"
+          else
+            COMMIT_MESSAGE="${{ forgejo.event.head_commit.message }}"
+            TRACKS=$(echo "$COMMIT_MESSAGE" | grep -oP '(?<=^\[).+?(?=\])' | head -n 1)
+            
+            if [ -z "$TRACKS" ]; then
+              TRACKS="qa"
+            fi
+          fi
+
+          echo "tracks=$TRACKS" >> $GITHUB_OUTPUT
+          echo "Selected Google Play track(s): $TRACKS"
 
       - name: Get App Version
         id: app_version
@@ -27,6 +61,13 @@ jobs:
           VERSION_NAME=$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' ${{ env.main_project_module }}/build.gradle.kts | head -1)
           echo "app_version=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "Found version: $VERSION_NAME"
+
+      - name: Get App Package ID
+        id: app_package_id
+        run: |
+          PACKAGE_ID=$(sed -n 's/.*applicationId = "\(.*\)"/\1/p' ${{ env.main_project_module }}/build.gradle.kts | head -1)
+          echo "app_package_id=$PACKAGE_ID" >> $GITHUB_OUTPUT
+          echo "Found package ID: $PACKAGE_ID"
 
       - name: Get NDK Version
         id: ndk_version
@@ -141,3 +182,38 @@ jobs:
           token: ${{ secrets.FORGEJO_TOKEN }}
           tag: "v${{ steps.app_version.outputs.app_version }}"
           release-dir: ${{ github.workspace }}/output
+
+      - name: Prepare Release Notes
+        run: |
+          mkdir -p whatsnew
+
+          FASTLANE_DIR="fastlane/metadata/android"
+          VERSION_CODE="${{ steps.app_version_code.outputs.app_version_code }}"
+
+          for lang_dir in "$FASTLANE_DIR"/*/; do
+            LANG=$(basename "$lang_dir")
+            CHANGELOG_FILE="${lang_dir}changelogs/${VERSION_CODE}.txt"
+
+            if [ -f "$CHANGELOG_FILE" ]; then
+              case "$LANG" in
+                it) BCP_LANG="it-IT" ;;
+                *)  BCP_LANG="$LANG" ;;
+              esac
+
+              cp "$CHANGELOG_FILE" "whatsnew/whatsnew-${BCP_LANG}"
+              echo "Mapped $LANG to whatsnew/whatsnew-${BCP_LANG}"
+            fi
+          done
+
+      - name: Upload AAB to Google Play Store
+        uses: https://github.com/r0adkll/upload-google-play@v1.12.0
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_STORE_JSON_KEY }}
+          packageName: ${{ steps.app_package_id.outputs.app_package_id }}
+          releaseFiles: ${{ github.workspace }}/output/*.aab
+          releaseName: "v${{ steps.app_version.outputs.app_version }}"
+          tracks: ${{ steps.parse_tracks.outputs.tracks }}
+          status: completed
+          changesNotSentForReview: false
+          debugSymbols: ${{ github.workspace }}/output/native-debug-symbols.zip
+          whatsNewDirectory: whatsnew
