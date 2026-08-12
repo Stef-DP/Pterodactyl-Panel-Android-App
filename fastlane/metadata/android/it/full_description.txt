@@ -1,0 +1,10 @@
+Pterodactyl Panel è un'app che ti permette di gestire la tua instanza self-hosted di Pterodactyl Panel.
+
+Gestire i tuoi server:
+Puoi gestire tutti gli aspetti dei tuoi server, Console, Files, Databases, Schedules, Subutenti/Utenti, Backups, Network/Allocazioni, Avvio, Impostazioni e vedere la loro Attività.
+
+Gestire il tuo account:
+Puoi cambiare l'email o la password, attivare o disattivare il 2FA, gestire API keys e SSH keys e vedere la tua attività.
+
+In un aggiornamento futuro:
+Saranno aggiungere tutte le funzioni amministratore, come gestire altri utenti, creare server, gestire nodi, allocazioni etc.

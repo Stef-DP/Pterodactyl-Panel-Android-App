@@ -1,0 +1,10 @@
+Pterodactyl Panel is an Android app to manage your self-hosted Pterodactyl Panel instance.
+
+Manage your own servers:
+You can manage all the aspects of your servers: Console, Files, Databases, Schedules, Subusers/Users, Backups, Network/Allocations, Startup, Settings and view its Activity.
+
+Manage your own User:
+You can change your email or password, toggle 2FA on or off, manage API and SSH keys and view your own activity.
+
+In a future release:
+All the admin features will be added, such as managing other users, creating servers, managing nodes, allocations, etc.
