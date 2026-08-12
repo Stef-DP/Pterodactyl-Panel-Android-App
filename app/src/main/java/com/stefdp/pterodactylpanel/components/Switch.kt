@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ fun Switch(
     enabled: Boolean = true,
     label: CharSequence,
     description: CharSequence? = null,
+    descriptionColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -62,7 +64,7 @@ fun Switch(
             Text(
                 text = description.toAnnotatedString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    color = descriptionColor
                 ),
                 modifier = Modifier.padding(
                     horizontal = 8.dp
