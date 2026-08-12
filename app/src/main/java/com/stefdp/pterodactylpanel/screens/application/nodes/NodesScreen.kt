@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,6 +49,7 @@ import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQuerySort
 import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.screens.application.nodes.popups.CreateNodePopup
 import com.stefdp.pterodactylpanel.ui.theme.Green
 import com.stefdp.pterodactylpanel.ui.theme.Yellow
 import nl.jacobras.humanreadable.HumanReadable
@@ -93,7 +95,12 @@ fun ApplicationNodesScreen(
         updateData()
     }
 
-    // TODO: add create node popup
+    CreateNodePopup(
+        activity = activity,
+        context = context,
+        state = state,
+        viewModel = viewModel
+    )
 
     PullToRefreshBox(
         isRefreshing = state.isRefreshing,
@@ -153,20 +160,26 @@ fun ApplicationNodesScreen(
                     modifier = Modifier.height(8.dp)
                 )
 
-                val tableStatusWidth = 50.dp
+                val tableStatusWidth = 80.dp
                 val tableNameWidth = 200.dp
                 val tableLocationWidth = 200.dp
-                val tableMemoryWidth = 100.dp
-                val tableDiskWidth = 100.dp
+                val tableMemoryWidth = 130.dp
+                val tableDiskWidth = 130.dp
                 val tableServersWidth = 100.dp
-                val tableSSLWidth = 80.dp
-                val tablePublicWidth = 80.dp
+                val tableSSLWidth = 70.dp
+                val tablePublicWidth = 75.dp
 
                 val headers: List<TableHeaderData> = listOf(
                     TableHeaderData(
                         name = "status",
-                        width = tableStatusWidth
-                    ) {},
+                        width = tableStatusWidth,
+                        arrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Status",
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
 
                     TableHeaderData(
                         name = "name",
@@ -220,7 +233,8 @@ fun ApplicationNodesScreen(
 
                     TableHeaderData(
                         name = "ssl",
-                        width = tableSSLWidth
+                        width = tableSSLWidth,
+                        arrangement = Arrangement.Center
                     ) {
                         Text(
                             text = "SSL",
@@ -244,11 +258,14 @@ fun ApplicationNodesScreen(
                         cells = listOf(
                             TableCellData(
                                 width = tableStatusWidth,
+                                arrangement = Arrangement.Center
                             ) {
                                 val isNodeOnline = state.nodesStatus[node.id]
 
                                 if (isNodeOnline == null) {
-                                    CircularProgressIndicator()
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                    )
 
                                     return@TableCellData
                                 }
@@ -354,6 +371,7 @@ fun ApplicationNodesScreen(
 
                             TableCellData(
                                 width = tableSSLWidth,
+                                arrangement = Arrangement.Center
                             ) {
                                 val icon = when (node.scheme) {
                                     ApplicationNode.Attributes.Scheme.HTTPS -> painterResource(R.drawable.lock)
@@ -379,6 +397,7 @@ fun ApplicationNodesScreen(
 
                             TableCellData(
                                 width = tablePublicWidth,
+                                arrangement = Arrangement.Center
                             ) {
                                 val icon = when (node.public) {
                                     true -> painterResource(R.drawable.visibility)
