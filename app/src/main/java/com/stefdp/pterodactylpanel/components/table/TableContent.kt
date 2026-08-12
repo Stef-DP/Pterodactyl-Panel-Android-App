@@ -87,7 +87,8 @@ fun TableContent(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(cell.padding)
-                                            .align(Alignment.CenterStart)
+                                            .align(Alignment.CenterStart),
+                                        horizontalArrangement = cell.arrangement
                                     ) {
                                         cell.content()
                                     }
@@ -144,5 +145,6 @@ fun TableContent(
 data class TableCellData(
     val width: Dp,
     val padding: Dp = 12.dp,
+    val arrangement: Arrangement.Horizontal = Arrangement.Start,
     val content: @Composable () -> Unit,
 )

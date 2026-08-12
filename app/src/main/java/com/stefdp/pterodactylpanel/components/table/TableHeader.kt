@@ -4,6 +4,7 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -112,7 +113,8 @@ fun TableHeader(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(header.padding),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = header.arrangement
                     ) {
                         header.content()
                         HeaderOptions()
@@ -141,5 +143,6 @@ data class TableHeaderData(
     val onSortChanged: () -> Unit = {},
     val onSearchClick: () -> Unit = {},
     val searchEnabled: Boolean = true,
+    val arrangement: Arrangement.Horizontal = Arrangement.Start,
     val content: @Composable () -> Unit,
 )
