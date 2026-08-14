@@ -68,7 +68,8 @@ class ApplicationLocationViewModel : ViewModel() {
                             descriptionInput = TextFieldValue(location.attributes.long ?: "")
                         )
                     }
-                }.onFailure { error ->
+                }
+                .onFailure { error ->
                     Logger.error(TAG, "Failed to fetch location data: ${error.message}")
 
                     _state.update {
