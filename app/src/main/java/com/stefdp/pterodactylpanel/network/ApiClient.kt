@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.stefdp.pterodactylpanel.network.application.PterodactylApplicationApiService
 import com.stefdp.pterodactylpanel.network.client.PterodactylClientApiService
 import com.stefdp.pterodactylpanel.DEBUG_NETWORK
+import com.stefdp.pterodactylpanel.network.node.PterodactylNodeApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -75,5 +76,34 @@ object PterodactylApiClient {
         return retrofit
             .build()
             .create(PterodactylApplicationApiService::class.java)
+    }
+
+    fun getNodeApiService(baseUrl: String, includeNull: Boolean = false): PterodactylNodeApiService {
+        val formattedUrl = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
+
+        val fullUrl = formattedUrl + "api/"
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl(fullUrl)
+
+        if (DEBUG_NETWORK) {
+            retrofit.client(okHttpClient)
+        }
+
+        retrofit.addConverterFactory(ScalarsConverterFactory.create())
+
+        if (includeNull) {
+            val gson = GsonBuilder()
+                .serializeNulls()
+                .create()
+
+            retrofit.addConverterFactory(GsonConverterFactory.create(gson))
+        } else {
+            retrofit.addConverterFactory(GsonConverterFactory.create())
+        }
+
+        return retrofit
+            .build()
+            .create(PterodactylNodeApiService::class.java)
     }
 }

@@ -128,11 +128,6 @@ interface PterodactylApplicationApiService {
         @Query("include") include: String? = null // list of ListNodesQueryInclude separated by ","
     ): Response<ApplicationNode>
 
-    @OPTIONS
-    suspend fun getNodeStatus(
-        @Url url: String,
-    ): Response<ResponseBody>
-
     @GET("nodes/{nodeId}/configuration")
     suspend fun getNodeConfiguration(
         @Header("Authorization") authorization: String,
