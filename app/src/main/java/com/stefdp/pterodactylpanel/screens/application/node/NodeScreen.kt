@@ -29,6 +29,7 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.node.tabs.about.AboutTab
+import com.stefdp.pterodactylpanel.screens.application.node.tabs.settings.SettingsTab
 
 @Composable
 fun ApplicationNodeScreen(
@@ -132,6 +133,15 @@ fun ApplicationNodeScreen(
                                 activity = activity,
                                 node = state.node,
                                 nodeConfiguration = state.nodeConfiguration,
+                                refreshIndex = refreshIndex
+                            )
+                        }
+
+                        NodeTab.SETTINGS -> {
+                            SettingsTab(
+                                context = context,
+                                activity = activity,
+                                node = state.node,
                                 refreshIndex = refreshIndex
                             )
                         }
