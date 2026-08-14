@@ -64,11 +64,11 @@ fun ApplicationNodesScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -148,7 +148,7 @@ fun ApplicationNodesScreen(
                             viewModel.showCreateNodePopup()
                         },
                         modifier = Modifier.weight(1f),
-                        enabled = state.nodes != null
+                        enabled = state.nodes != null && !state.locationsLoading
                     ) {
                         Text(
                             text = "Create New"

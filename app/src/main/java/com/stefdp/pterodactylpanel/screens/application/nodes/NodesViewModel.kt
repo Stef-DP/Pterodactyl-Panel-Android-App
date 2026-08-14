@@ -11,9 +11,9 @@ import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodes
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQuerySort
 import com.stefdp.pterodactylpanel.network.application.models.responses.ListNodesResponse
 import com.stefdp.pterodactylpanel.network.application.requests.createNode
-import com.stefdp.pterodactylpanel.network.application.requests.getNodeStatus
 import com.stefdp.pterodactylpanel.network.application.requests.listLocations
 import com.stefdp.pterodactylpanel.network.application.requests.listNodes
+import com.stefdp.pterodactylpanel.network.node.requests.getNodeStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 
 data class ApplicationNodesUiState(
     val isLoading: Boolean = false,
+    val locationsLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val nodes: List<ApplicationNode>? = null,
     val locations: List<ApplicationLocation> = emptyList(),
@@ -64,6 +65,7 @@ class ApplicationNodesViewModel : ViewModel() {
             _state.update {
                 it.copy(
                     isLoading = true,
+                    locationsLoading = true,
                     nodes = null,
                     isRefreshing = isRefresh
                 )
@@ -85,13 +87,23 @@ class ApplicationNodesViewModel : ViewModel() {
 
             val nodes = nodesRes.getOrNull()
 
+            _state.update {
+                it.copy(
+                    nodes = nodes?.data ?: emptyList(),
+                    pagination = nodes?.meta?.pagination,
+                    isLoading = false,
+                    nodesStatus = nodes?.data?.associate { node ->
+                        node.attributes.id to null
+                    } ?: emptyMap(),
+                )
+            }
+
             val locations = listAllLocations(
                 context = context
             )
 
             _state.update {
                 it.copy(
-                    nodes = nodes?.data ?: emptyList(),
                     locations = locations,
                     selectedNewNodeLocation = locations.firstOrNull()
                         ?.attributes
@@ -99,12 +111,8 @@ class ApplicationNodesViewModel : ViewModel() {
                         ?.toString()
                         ?.let { id -> setOf(id) }
                         ?: emptySet(),
-                    pagination = nodes?.meta?.pagination,
-                    isRefreshing = false,
-                    isLoading = false,
-                    nodesStatus = nodes?.data?.associate { node ->
-                        node.attributes.id to null
-                    } ?: emptyMap(),
+                    locationsLoading = false,
+                    isRefreshing = false
                 )
             }
 
@@ -134,6 +142,7 @@ class ApplicationNodesViewModel : ViewModel() {
             outputLocations.addAll(locations.data)
 
             val nextLink = locations.meta.pagination.links.next
+
             if (!nextLink.isNullOrEmpty()) {
                 currentPage++
             } else {
@@ -166,8 +175,7 @@ class ApplicationNodesViewModel : ViewModel() {
                 val nodeBaseUrl = "$nodeScheme://$nodeFQDN:$nodePort"
 
                 val status = getNodeStatus(
-                    context = context,
-                    url = "$nodeBaseUrl/api/system"
+                    nodeUrl = nodeBaseUrl,
                 )
 
                 status
