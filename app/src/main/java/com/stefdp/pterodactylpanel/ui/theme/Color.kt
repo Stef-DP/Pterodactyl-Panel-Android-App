@@ -53,3 +53,5 @@ val AvatarColors = listOf(
 val Yellow = Color(0xFFC38622)
 val Red = ErrorDark
 val Green = Color(0xFF219C7B)
+val DarkGreen = Color(0xFF04A25C)
+val DarkerGreen = Color(0xFF018148)
