@@ -78,8 +78,8 @@ fun CreateNodePopup(
                 label = "Name",
                 description = "Character limits: \"a-z A-Z 0-9 _ . -\" and \"[Space]\" (min 1, max 100 characters)",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -93,7 +93,8 @@ fun CreateNodePopup(
                 singleLine = false,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(100.dp),
+                enabled = !state.isLoading
             )
 
             Select(
@@ -111,7 +112,8 @@ fun CreateNodePopup(
                 selectedIds = state.selectedNewNodeLocation,
                 onSelectionChange = {
                     viewModel.setSelectedNewNodeLocation(it)
-                }
+                },
+                enabled = !state.isLoading
             )
 
             Switch(
@@ -122,6 +124,7 @@ fun CreateNodePopup(
                 label = "Public Node",
                 description = "By turning this off you will be denying the ability to auto-deploy to this node",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -130,10 +133,10 @@ fun CreateNodePopup(
                     viewModel.setNewNodeFQDN(it)
                 },
                 label = "FQDN",
-                description = "ease enter domain name (e.g \"node.example.com\") to be used for connecting to the daemon. An IP address may be used only if you are not using SSL for this node",
+                description = "Please enter domain name (e.g \"node.example.com\") to be used for connecting to the daemon. An IP address may be used only if you are not using SSL for this node",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             Switch(
@@ -144,6 +147,7 @@ fun CreateNodePopup(
                 label = "Communicate over SSL",
                 description = "If your Panel is configured to use a secure connection. In order for browsers to connect to your node it must use a SSL connection",
                 descriptionColor = MaterialTheme.colorScheme.error,
+                enabled = !state.isLoading
             )
 
             Switch(
@@ -154,6 +158,7 @@ fun CreateNodePopup(
                 label = "Behind Proxy",
                 description = "If you are running the daemon behind a proxy such as Cloudflare, select this to have the daemon skip looking for certificates on boot",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                enabled = !state.isLoading
             )
         }
 
@@ -178,8 +183,8 @@ fun CreateNodePopup(
                 label = "Daemon Server File Directory",
                 description = "Enter the directory where server files should be stored. If you use OVH you should check your partition scheme. You may need to use \"/home/daemon-data\" to have enough space",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -193,8 +198,8 @@ fun CreateNodePopup(
                 label = "Total Memory (MiB)",
                 description = "Enter the total amount of memory available for new servers",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -222,8 +227,8 @@ fun CreateNodePopup(
                 label = "Memory Over-Allocation (%)",
                 description = "If you would like to allow overallocation of memory enter the percentage that you want to allow. To disable checking for overallocation enter \"-1\" into the field. Entering \"0\" will prevent creating new servers if it would put the node over the limit",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -237,8 +242,8 @@ fun CreateNodePopup(
                 label = "Total Disk Space (MiB)",
                 description = "Enter the total amount of disk space available for new servers",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -266,8 +271,8 @@ fun CreateNodePopup(
                 label = "Disk Over-Allocation (%)",
                 description = "If you would like to allow overallocation of disk space enter the percentage that you want to allow. To disable checking for overallocation enter \"-1\" into the field. Entering \"0\" will prevent creating new servers if it would put the node over the limit",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -287,8 +292,8 @@ fun CreateNodePopup(
                     keyboardType = KeyboardType.Number
                 ),
                 label = "Daemon Port",
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
 
             TextInput(
@@ -310,8 +315,8 @@ fun CreateNodePopup(
                 label = "Daemon SFTP Port",
                 description = "The daemon runs its own SFTP management container and does not use the SSHd process on the main physical server. Do not use the same port that you have assigned for your physical server's SSH process. If you will be running the daemon behind CloudFlare® you should set the daemon port to \"8443\" to allow websocket proxying over SSL",
                 descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !state.isLoading
             )
         }
 
