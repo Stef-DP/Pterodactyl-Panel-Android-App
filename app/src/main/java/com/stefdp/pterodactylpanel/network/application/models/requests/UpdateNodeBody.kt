@@ -4,16 +4,16 @@ import com.google.gson.annotations.SerializedName
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 
 data class UpdateNodeBody(
-    @SerializedName("daemon_listen") val daemonListen: Int? = null,
-    @SerializedName("daemon_sftp") val daemonSftp: Int? = null,
-    val disk: Long? = null,
-    @SerializedName("disk_overallocate") val diskOverallocate: Long? = null,
-    val fqdn: String? = null,
-    @SerializedName("location_id") val locationId: Long? = null,
-    val memory: Long? = null,
-    @SerializedName("memory_overallocate") val memoryOverallocate: Long? = null,
-    val name: String? = null,
-    val scheme: ApplicationNode.Attributes.Scheme? = null,
+    @SerializedName("daemon_listen") val daemonListen: Int,
+    @SerializedName("daemon_sftp") val daemonSftp: Int,
+    val disk: Long,
+    @SerializedName("disk_overallocate") val diskOverallocate: Long,
+    val fqdn: String,
+    @SerializedName("location_id") val locationId: Long,
+    val memory: Long,
+    @SerializedName("memory_overallocate") val memoryOverallocate: Long,
+    val name: String,
+    val scheme: ApplicationNode.Attributes.Scheme,
     @SerializedName("behind_proxy") val behindProxy: Boolean? = null,
     @SerializedName("daemon_base") val daemonBase: String? = null,
     val description: String? = null,
@@ -21,3 +21,16 @@ data class UpdateNodeBody(
     val public: Boolean? = null,
     @SerializedName("upload_size") val uploadSize: Long? = null
 )
+
+/*
+daemonListen: Int,
+    daemonSftp: Int,
+    disk: Long,
+    diskOverallocate: Long,
+    fqdn: String,
+    locationId: Long,
+    memory: Long,
+    memoryOverallocate: Long,
+    name: String,
+    scheme: ApplicationNode.Attributes.Scheme,
+ */
