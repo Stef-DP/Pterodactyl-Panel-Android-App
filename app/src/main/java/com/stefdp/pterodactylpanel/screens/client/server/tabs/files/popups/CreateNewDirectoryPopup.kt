@@ -69,31 +69,14 @@ fun CreateNewDirectoryPopup(
             enabled = !state.isLoading
         )
 
-        FlowRow {
-            Text(
-                text = "This directory will be created as"
-            )
+        val basePath = Paths.get("/")
 
-            val folderPathText = buildAnnotatedString {
-                append("/${state.filesPath.joinToString("/")}/")
+        val absoluteNormalizedPath = basePath.resolve(state.newDirectoryName.text).normalize()
+        val relativePath = basePath.relativize(absoluteNormalizedPath).toString()
 
-                withStyle(
-                    style = SpanStyle(
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    val basePath = Paths.get("/")
-
-                    val absoluteNormalizedPath = basePath.resolve(state.newDirectoryName.text).normalize()
-
-                    append(basePath.relativize(absoluteNormalizedPath).toString())
-                }
-            }
-
-            CodeText(
-                text = folderPathText
-            )
-        }
+        CodeText(
+            text = "This directory will be created as `/${state.filesPath.joinToString("/")}/$relativePath`"
+        )
 
         Spacer(
             modifier = Modifier.height(4.dp)

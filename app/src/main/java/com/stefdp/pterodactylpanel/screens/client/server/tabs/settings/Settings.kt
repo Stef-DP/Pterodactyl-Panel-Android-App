@@ -193,7 +193,7 @@ fun SettingsTab(
                 )
 
                 CodeText(
-                    text = server?.attributes?.node ?: "Unknown"
+                    text = "`${server?.attributes?.node ?: "Unknown"}`"
                 )
             }
 
@@ -213,8 +213,9 @@ fun SettingsTab(
 
                 val serverUuid = server?.attributes?.uuid ?: "00000000-0000-0000-0000-000000000000"
 
+                // TODO: improve click hitbox
                 CodeText(
-                    text = serverUuid,
+                    text = "`$serverUuid`",
                     trailingModifier = Modifier.clickable(
                         enabled = true,
                         onClick = {

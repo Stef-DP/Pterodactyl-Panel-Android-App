@@ -72,7 +72,7 @@ fun ApiKeyDisplay(
             )
 
             CodeText(
-                text = apiKey.attributes.identifier
+                text = "`${apiKey.attributes.identifier}`"
             )
         }
 

@@ -50,19 +50,9 @@ fun DeleteApiKeyPopup(
             fontWeight = FontWeight.Bold,
         )
 
-        FlowRow {
-            Text(
-                text = "All requests using the "
-            )
-
-            CodeText(
-                text = apiKey.attributes.identifier
-            )
-
-            Text(
-                text = " key will be invalidated"
-            )
-        }
+        CodeText(
+            text = "All requests using the `${apiKey.attributes.identifier}` key will be invalidated"
+        )
 
         Row(
             modifier = Modifier

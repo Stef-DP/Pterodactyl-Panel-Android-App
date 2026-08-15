@@ -24,6 +24,7 @@ import com.neoutils.highlight.compose.extension.toAnnotatedString
 import com.neoutils.highlight.core.Highlight
 import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.CodeBlockText
 import com.stefdp.pterodactylpanel.components.CodeText
 import com.stefdp.pterodactylpanel.components.Popup
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.activity.AccountSettingsActivityTabUiState
@@ -56,17 +57,9 @@ fun MetadataPopup(
         val prettyGson = GsonBuilder().setPrettyPrinting().create()
         val prettyJsonString = prettyGson.toJson(activity.attributes.properties)
 
-        val highlight = remember(jsonHighlightColors) {
-            Highlight(jsonHighlightColors)
-        }
-
-        val annotatedString = remember(prettyJsonString, highlight) {
-            highlight.toAnnotatedString(prettyJsonString)
-        }
-
-        CodeText(
-            text = annotatedString,
-            modifier = Modifier.fillMaxWidth()
+        CodeBlockText(
+            text = prettyJsonString,
+            highlightColors = jsonHighlightColors,
         )
 
         Row(

@@ -149,7 +149,7 @@ fun AboutTab(
                     label = "Daemon Version",
                 ) {
                     CodeText(
-                        text = state.systemData?.version ?: "N/A",
+                        text = "`${state.systemData?.version ?: "N/A"}`",
                         modifier = Modifier.shimmerable(
                             enabled = state.systemData?.version == null,
                             width = 80.dp
@@ -160,21 +160,16 @@ fun AboutTab(
                 InfoRow(
                     label = "System Information"
                 ) {
-                    Text(
-                        text = "${state.systemData?.system?.os} (${state.systemData?.system?.architecture})",
+                    CodeText(
+                        text = "${state.systemData?.system?.os} (${state.systemData?.system?.architecture}) `${state.systemData?.system?.kernelVersion ?: "N/A"}`",
                         modifier = Modifier.shimmerable(
-                            enabled = state.systemData?.system?.os == null || state.systemData?.system?.architecture == null,
-                            width = 150.dp
+                            enabled =
+                                state.systemData?.system?.os == null ||
+                                state.systemData?.system?.architecture == null ||
+                                state.systemData?.system?.kernelVersion == null,
+                            width = 100.dp,
                         ),
                         textAlign = TextAlign.End
-                    )
-
-                    CodeText(
-                        text = state.systemData?.system?.kernelVersion ?: "N/A",
-                        modifier = Modifier.shimmerable(
-                            enabled = state.systemData?.system?.kernelVersion == null,
-                            width = 150.dp
-                        )
                     )
                 }
 

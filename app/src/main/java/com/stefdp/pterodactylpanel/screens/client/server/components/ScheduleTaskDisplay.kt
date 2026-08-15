@@ -85,7 +85,7 @@ fun ScheduleTaskDisplay(
         }
 
         CodeText(
-            text = task.attributes.payload
+            text = "`${task.attributes.payload}`"
         )
 
         if (task.attributes.continueOnFailure) {

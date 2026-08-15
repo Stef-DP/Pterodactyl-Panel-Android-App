@@ -38,7 +38,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "*/5 * * * *"
+                text = "`*/5 * * * *`"
             )
 
             Text(
@@ -59,7 +59,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "0 */1 * * *"
+                text = "`0 */1 * * *`"
             )
 
             Text(
@@ -80,7 +80,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "0 8-12 * * *"
+                text = "`0 8-12 * * *`"
             )
 
             Text(
@@ -101,7 +101,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "0 0 * * *"
+                text = "`0 0 * * *`"
             )
 
             Text(
@@ -122,7 +122,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "0 0 * * MON"
+                text = "`0 0 * * MON`"
             )
 
             Text(
@@ -143,7 +143,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "*"
+                text = "`*`"
             )
 
             Text(
@@ -164,7 +164,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = ","
+                text = "`,`"
             )
 
             Text(
@@ -185,7 +185,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "-"
+                text = "`-`"
             )
 
             Text(
@@ -206,7 +206,7 @@ fun ScheduleCronCheatsheet() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CodeText(
-                text = "/"
+                text = "`/`"
             )
 
             Text(

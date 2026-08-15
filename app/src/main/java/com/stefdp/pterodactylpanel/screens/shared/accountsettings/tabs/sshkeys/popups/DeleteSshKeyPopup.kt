@@ -50,19 +50,9 @@ fun DeleteSshKeyPopup(
             fontWeight = FontWeight.Bold,
         )
 
-        FlowRow {
-            Text(
-                text = "Removing the "
-            )
-
-            CodeText(
-                text = sshKey.attributes.name
-            )
-
-            Text(
-                text = " SSH key will invalidate its usage across the Panel"
-            )
-        }
+        CodeText(
+            text = "Removing the `${sshKey.attributes.name}` SSH key will invalidate its usage across the Panel"
+        )
 
         Row(
             modifier = Modifier

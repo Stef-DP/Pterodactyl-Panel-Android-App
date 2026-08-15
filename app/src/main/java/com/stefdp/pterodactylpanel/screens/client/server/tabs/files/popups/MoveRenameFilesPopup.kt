@@ -75,26 +75,14 @@ fun MoveRenameFilesPopup(
             }
         )
 
-        FlowRow {
-            Text(
-                text = "New Location:",
-                fontWeight = FontWeight.Bold
-            )
+        val basePath = Paths.get("/")
 
-            val folderPathText = buildAnnotatedString {
-                append("/${state.filesPath.joinToString("/")}/")
+        val absoluteNormalizedPath = basePath.resolve(state.newDirectoryName.text).normalize()
+        val relativePath = basePath.relativize(absoluteNormalizedPath).toString()
 
-                val basePath = Paths.get("/")
-
-                val absoluteNormalizedPath = basePath.resolve(state.newDirectoryName.text).normalize()
-
-                append(basePath.relativize(absoluteNormalizedPath).toString())
-            }
-
-            CodeText(
-                text = folderPathText
-            )
-        }
+        CodeText(
+            text = "New Location: `/${state.filesPath.joinToString("/")}/$relativePath`"
+        )
 
         Spacer(
             modifier = Modifier.height(4.dp)

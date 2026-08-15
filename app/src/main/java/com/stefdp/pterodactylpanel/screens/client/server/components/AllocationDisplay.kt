@@ -151,7 +151,7 @@ fun AllocationDisplayItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CodeText(
-            text = value
+            text = "`$value`"
         )
 
         Text(

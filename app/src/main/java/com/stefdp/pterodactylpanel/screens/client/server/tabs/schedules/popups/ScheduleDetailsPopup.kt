@@ -133,7 +133,7 @@ fun ScheduleDetailsPopup(
                     )
 
                     CodeText(
-                        text = value
+                        text = "`$value`"
                     )
                 }
             }
