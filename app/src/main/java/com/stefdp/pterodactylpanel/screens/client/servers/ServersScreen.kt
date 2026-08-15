@@ -175,7 +175,6 @@ fun ClientServersScreen(
                         }
 
                         ServerDisplay(
-                            context = context,
                             server = server,
                             serverStats = serverStats,
                             statsLoading = serverStatsLoading,

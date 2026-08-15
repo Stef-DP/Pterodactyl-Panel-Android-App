@@ -1,6 +1,5 @@
 package com.stefdp.pterodactylpanel.screens.client.servers.components
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,21 +26,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.BASE_CORNER_RADIUS
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.network.client.models.Server
 import com.stefdp.pterodactylpanel.network.client.models.ServerState
 import com.stefdp.pterodactylpanel.network.client.models.ServerStats
+import com.stefdp.pterodactylpanel.screens.shared.accountsettings.components.ApiKeyDisplay
+import com.stefdp.pterodactylpanel.screens.shared.accountsettings.components.previewApiKey
 import com.stefdp.pterodactylpanel.ui.theme.Green
+import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 import com.stefdp.pterodactylpanel.ui.theme.Red
 import com.stefdp.pterodactylpanel.ui.theme.Yellow
+import com.stefdp.pterodactylpanel.ui.theme.attributes
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import nl.jacobras.humanreadable.HumanReadable
 
 @Composable
 fun ServerDisplay(
-    context: Context,
     server: Server,
     serverStats: ServerStats?,
     statsLoading: Boolean,
@@ -72,15 +79,31 @@ fun ServerDisplay(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = server.attributes.name,
-                    modifier = Modifier.weight(0.9f),
-                    color = if (isDisabled) {
-                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
+                Column(
+                    modifier = Modifier.weight(0.9f)
+                ) {
+                    Text(
+                        text = server.attributes.name,
+                        color = if (isDisabled) {
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
+                        },
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    if (server.attributes.description.isNotBlank()) {
+                        Text(
+                            text = server.attributes.description,
+                            color = if (isDisabled) {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
                     }
-                )
+                }
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -272,5 +295,79 @@ fun ServerDisplay(
                 .width(6.dp)
                 .background(statusColor)
         ) {}
+    }
+}
+
+val previewServer = Server(
+    attributes = Server.Attributes(
+        serverOwner = true,
+        identifier = "aaaaaaaa",
+        deprecatedUuidShort = "aaaaaaaa",
+        serverIdentifier = "aaaaaaaa",
+        internalId = 1,
+        uuid = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        name = "Test Server",
+        node = "Test Node",
+        isNodeUnderMaintenance = false,
+        sftpDetails = Server.Attributes.SftpDetails(
+            ip = "0.0.0.0",
+            port = 2022
+        ),
+        description = "Test Server Description",
+        limits = Server.Attributes.Limits(
+            memory = 2048,
+            swap = 0,
+            disk = 20480,
+            io = 500,
+            cpu = 200,
+            threads = null,
+            oomDisabled = true
+        ),
+        invocation = "bash",
+        dockerImage = "ghcr.io/pterodactyl/yolks:java_17",
+        eggFeatures = listOf("java", "mariadb"),
+        featureLimits = Server.Attributes.FeatureLimits(
+            databases = 5,
+            allocations = 5,
+            backups = 5
+        ),
+        status = null,
+        isSuspended = false,
+        isInstalling = false,
+        isTransferring = false,
+        relationships = Server.Attributes.Relationships(
+            allocations = Server.Attributes.Relationships.Allocations(
+                data = emptyList()
+            ),
+            variables = Server.Attributes.Relationships.Variables(
+                data = emptyList()
+            )
+        )
+    )
+)
+
+@Preview
+@Composable
+fun ServerDisplayPreview() {
+    PterodactylPanelTheme {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            containerColor = MaterialTheme.colorScheme.outline,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ) { innerPadding ->
+            Surface(
+                modifier = Modifier.padding(innerPadding),
+                color = MaterialTheme.colorScheme.outline
+            ) {
+                Column {
+                    ServerDisplay(
+                        server = previewServer,
+                        serverStats = null,
+                        statsLoading = true,
+                        onOpen = {}
+                    )
+                }
+            }
+        }
     }
 }
