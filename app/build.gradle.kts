@@ -124,4 +124,7 @@ dependencies {
 
     // AvatarKt
     implementation(libs.avatar.kt)
+
+    // KAML
+    implementation(libs.kaml)
 }

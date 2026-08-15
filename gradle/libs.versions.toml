@@ -47,6 +47,9 @@ gravatar = "2.5.1"
 # AvatarKt
 avatar-kt = "0.3.0"
 
+# KAML
+kaml = "0.104.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -104,6 +107,9 @@ gravatar-ui = { group = "com.gravatar", name = "gravatar-ui", version.ref = "gra
 
 # AvatarKt
 avatar-kt = { group = "io.github.feliperce", name = "avatarkt", version.ref = "avatar-kt" }
+
+# YAML
+kaml = { group = "com.charleskorn.kaml", name = "kaml", version.ref = "kaml" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
