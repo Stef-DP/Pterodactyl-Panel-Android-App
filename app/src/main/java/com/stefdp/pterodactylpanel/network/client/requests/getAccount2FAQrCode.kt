@@ -54,7 +54,7 @@ suspend fun getAccount2FAQrCode(
 
             if (json.errors.isNotEmpty()) {
                 val alreadyEnabledError = json.errors.find {
-                    it.detail == "Two-factor authentication is already enabled on this account."
+                    it.status == "400" || it.detail == "Two-factor authentication is already enabled on this account."
                 }
 
                 if (alreadyEnabledError != null) {
