@@ -21,7 +21,8 @@ fun Table(
     rows: List<TableRowData>,
     loading: Boolean,
     scrollbarConfig: TableScrollbarConfig = TableScrollbarConfig(),
-    borderColor: Color = MaterialTheme.colorScheme.outline
+    borderColor: Color = MaterialTheme.colorScheme.outline,
+    lazy: Boolean = true
 ) {
     val scrollState = rememberScrollState()
 
@@ -50,12 +51,14 @@ fun Table(
             scrollState = scrollState,
             rows = rows,
             scrollbarConfig = scrollbarConfig,
-            borderColor = borderColor
+            borderColor = borderColor,
+            lazy = lazy
         )
     }
 }
 
 data class TableRowData(
+    val id: String,
     val cells: List<TableCellData>,
     val clickable: Boolean = false,
     val onClick: () -> Unit = {}

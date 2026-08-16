@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.stefdp.pterodactylpanel.R
 import com.stefdp.pterodactylpanel.utils.horizontalScrollWithScrollbar
 import com.stefdp.pterodactylpanel.utils.verticalLazyScrollbar
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
 fun TableContent(
@@ -41,28 +43,99 @@ fun TableContent(
     scrollState: ScrollState,
     rows: List<TableRowData>,
     scrollbarConfig: TableScrollbarConfig,
-    borderColor: Color = MaterialTheme.colorScheme.outline
+    borderColor: Color = MaterialTheme.colorScheme.outline,
+    lazy: Boolean,
 ) {
-    val lazyListState = rememberLazyListState()
-
     Box(modifier = modifier) {
-        LazyColumn(
-            state = lazyListState,
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalLazyScrollbar(
-                    listState = lazyListState,
-                    scrollbarConfig = scrollbarConfig.vertical
-                )
-                .horizontalScrollWithScrollbar(
-                    scrollState = scrollState,
-                    scrollbarConfig = scrollbarConfig.horizontal
-                )
-        ) {
-            if (rows.isNotEmpty()) {
-                items(rows.size) { rowNumber ->
-                    val row = rows[rowNumber]
+        if (lazy) {
+            val lazyListState = rememberLazyListState()
 
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalLazyScrollbar(
+                        listState = lazyListState,
+                        scrollbarConfig = scrollbarConfig.vertical
+                    )
+                    .horizontalScrollWithScrollbar(
+                        scrollState = scrollState,
+                        scrollbarConfig = scrollbarConfig.horizontal
+                    )
+            ) {
+                if (rows.isNotEmpty()) {
+                    items(
+                        count = rows.size,
+                        key = { rowNumber -> rows[rowNumber].id }
+                    ) { rowNumber ->
+                        val row = rows[rowNumber]
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(IntrinsicSize.Max)
+                                .clickable(
+                                    enabled = row.clickable,
+                                    onClick = row.onClick
+                                )
+                        ) {
+                            row.cells.forEachIndexed { index, cell ->
+                                Column(
+                                    modifier = Modifier
+                                        .width(cell.width)
+                                        .fillMaxHeight()
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .weight(1f)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(cell.padding)
+                                                .align(Alignment.CenterStart),
+                                            horizontalArrangement = cell.arrangement
+                                        ) {
+                                            cell.content()
+                                        }
+
+                                        if (index < row.cells.lastIndex) {
+                                            VerticalDivider(
+                                                modifier = Modifier.align(Alignment.CenterEnd),
+                                                color = borderColor.copy(alpha = TABLE_BORDER_ALPHA),
+                                                thickness = 2.dp
+                                            )
+                                        }
+                                    }
+
+                                    HorizontalDivider(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        color = borderColor.copy(alpha = TABLE_BORDER_ALPHA),
+                                        thickness = 2.dp,
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            val verticalScrollState = rememberScrollState()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScrollWithScrollbar(
+                        scrollState = verticalScrollState,
+                        scrollbarConfig = scrollbarConfig.vertical
+                    )
+                    .horizontalScrollWithScrollbar(
+                        scrollState = scrollState,
+                        scrollbarConfig = scrollbarConfig.horizontal
+                    )
+            ) {
+                for (row in rows) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -113,6 +186,8 @@ fun TableContent(
                 }
             }
         }
+
+
 
         if (rows.isEmpty()) {
             Column(
