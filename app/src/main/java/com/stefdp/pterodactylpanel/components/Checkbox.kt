@@ -37,7 +37,7 @@ fun Checkbox(
             .clip(RoundedCornerShape(4.dp))
             .border(
                 width = if (checked) (-1).dp else 2.dp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(4.dp)
             )
             .background(
@@ -45,13 +45,13 @@ fun Checkbox(
                     if (enabled) {
                         MaterialTheme.colorScheme.primary
                     } else {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
                     }
                 } else {
                     if (enabled) {
                         MaterialTheme.colorScheme.outline
                     } else {
-                        MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
                     }
                 }
             )
@@ -67,7 +67,7 @@ fun Checkbox(
                 tint = if (enabled) {
                     MaterialTheme.colorScheme.onPrimary
                 } else {
-                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
+                    MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f)
                 }
             )
         }
@@ -91,6 +91,8 @@ fun FilePreview() {
                 ) {
                     Checkbox(checked = true, onToggle = {})
                     Checkbox(checked = false, onToggle = {})
+                    Checkbox(checked = true, enabled = false, onToggle = {})
+                    Checkbox(checked = false, enabled = false, onToggle = {})
                 }
             }
         }
