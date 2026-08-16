@@ -1,5 +1,6 @@
 package com.stefdp.pterodactylpanel.components
 
+import android.R.attr.enabled
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,6 +49,7 @@ private const val SIZE = 50
 
 @Composable
 fun Pager(
+    modifier: Modifier = Modifier,
     onFirstPageClick: () -> Unit,
     onPreviousPageClick: () -> Unit,
     onCustomPageInput: (Long) -> Unit,
@@ -60,9 +62,7 @@ fun Pager(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 12.dp
-            ),
+            .then(modifier),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         val firstPageButtonEnabled = enabled && currentPage > 1

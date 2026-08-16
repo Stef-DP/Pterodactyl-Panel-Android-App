@@ -255,6 +255,7 @@ fun ApplicationNodesScreen(
 
                 val rows: List<TableRowData>? = state.nodes?.map { (_, node) ->
                     TableRowData(
+                        id = node.id.toString(),
                         cells = listOf(
                             TableCellData(
                                 width = tableStatusWidth,
@@ -436,7 +437,7 @@ fun ApplicationNodesScreen(
             Pager(
                 currentPage = state.page,
                 totalPages = state.pagination?.totalPages ?: 1,
-                enabled = !state.nodes.isNullOrEmpty(),
+                enabled = !state.isLoading,
                 onFirstPageClick = {
                     viewModel.setPage(1)
                 },
@@ -451,7 +452,10 @@ fun ApplicationNodesScreen(
                 },
                 onLastPageClick = {
                     viewModel.setPage(state.pagination?.totalPages ?: 1)
-                }
+                },
+                modifier = Modifier.padding(
+                    horizontal = 12.dp
+                )
             )
         }
     }

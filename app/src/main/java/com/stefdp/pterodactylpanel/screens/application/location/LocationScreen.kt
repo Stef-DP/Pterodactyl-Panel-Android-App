@@ -254,6 +254,7 @@ fun ApplicationLocationScreen(
                         ?.size ?: 0
 
                     TableRowData(
+                        id = node.id.toString(),
                         cells = listOf(
                             TableCellData(
                                 width = tableIdWidth

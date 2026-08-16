@@ -168,7 +168,10 @@ fun ActivityTab(
             },
             onLastPageClick = {
                 viewModel.setPage(state.pagination?.totalPages ?: 1)
-            }
+            },
+            modifier = Modifier.padding(
+                horizontal = 12.dp
+            )
         )
     }
 }

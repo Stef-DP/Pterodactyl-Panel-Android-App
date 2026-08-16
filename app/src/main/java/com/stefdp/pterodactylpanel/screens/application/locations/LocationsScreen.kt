@@ -209,6 +209,7 @@ fun ApplicationLocationsScreen(
 
                 val rows: List<TableRowData>? = state.locations?.map { (_, location) ->
                     TableRowData(
+                        id = location.id.toString(),
                         cells = listOf(
                             TableCellData(
                                 width = tableIdWidth
@@ -294,7 +295,10 @@ fun ApplicationLocationsScreen(
                 },
                 onLastPageClick = {
                     viewModel.setPage(state.pagination?.totalPages ?: 1)
-                }
+                },
+                modifier = Modifier.padding(
+                    horizontal = 12.dp
+                )
             )
         }
     }
