@@ -56,12 +56,9 @@ class ApplicationNodeAllocationsTabViewModel : ViewModel() {
                 return@launch
             }
 
-            val oldAllocations = _state.value.allocations
-
             _state.update {
                 it.copy(
                     isLoading = true,
-                    allocations = emptyList()
                 )
             }
 
@@ -92,7 +89,6 @@ class ApplicationNodeAllocationsTabViewModel : ViewModel() {
 
                     _state.update {
                         it.copy(
-                            allocations = oldAllocations,
                             isLoading = false
                         )
                     }
