@@ -31,6 +31,7 @@ import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.node.tabs.about.AboutTab
 import com.stefdp.pterodactylpanel.screens.application.node.tabs.allocations.AllocationsTab
 import com.stefdp.pterodactylpanel.screens.application.node.tabs.configuration.ConfigurationTab
+import com.stefdp.pterodactylpanel.screens.application.node.tabs.servers.ServersTab
 import com.stefdp.pterodactylpanel.screens.application.node.tabs.settings.SettingsTab
 
 @Composable
@@ -44,11 +45,11 @@ fun ApplicationNodeScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -166,8 +167,14 @@ fun ApplicationNodeScreen(
                             )
                         }
 
-                        else -> {
-                            Text("WIP")
+                        NodeTab.SERVERS -> {
+                            ServersTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                node = state.node,
+                                refreshIndex = refreshIndex
+                            )
                         }
                     }
                 }

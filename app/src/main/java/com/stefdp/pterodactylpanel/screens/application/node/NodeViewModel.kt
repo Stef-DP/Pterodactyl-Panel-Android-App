@@ -20,7 +20,7 @@ data class ApplicationNodeUiState(
     val isRefreshing: Boolean = false,
     val node: ApplicationNode? = null,
     val nodeConfiguration: GetNodeConfigurationResponse? = null,
-    val currentTab: NodeTab = NodeTab.ALLOCATIONS // TODO: set back to ABOUT
+    val currentTab: NodeTab = NodeTab.ABOUT
 )
 
 private const val TAG = "ApplicationNodeViewModel"
