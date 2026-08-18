@@ -10,6 +10,7 @@ import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServerVariable
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationUser
+import com.stefdp.pterodactylpanel.network.application.models.requests.ListNestEggsQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNestsQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListServersQueryInclude
@@ -19,6 +20,8 @@ import com.stefdp.pterodactylpanel.network.application.requests.listNests
 import com.stefdp.pterodactylpanel.network.application.requests.listNodes
 import com.stefdp.pterodactylpanel.network.application.requests.listServers
 import com.stefdp.pterodactylpanel.network.application.requests.listUsers
+import com.stefdp.pterodactylpanel.network.models.plus
+import com.stefdp.pterodactylpanel.network.models.toQueryString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -102,11 +105,11 @@ class ApplicationServersViewModel : ViewModel() {
                 filterExternalId = filterExternalId,
                 sort = sort,
                 page = _state.value.page,
-                include = ListServersQueryInclude.toQueryString(
+                include = listOf(
                     ListServersQueryInclude.USER,
                     ListServersQueryInclude.NODE,
                     ListServersQueryInclude.ALLOCATIONS
-                )
+                ).toQueryString()
             )
 
             val servers = serversRes.getOrNull()
@@ -201,10 +204,10 @@ class ApplicationServersViewModel : ViewModel() {
             val nodesRes = listNodes(
                 context = context,
                 page = currentPage,
-                include = ListNodesQueryInclude.toQueryString(
+                include = listOf(
                     ListNodesQueryInclude.ALLOCATIONS,
                     ListNodesQueryInclude.LOCATION
-                )
+                ).toQueryString()
             )
 
             if (nodesRes.isFailure) break
@@ -237,10 +240,10 @@ class ApplicationServersViewModel : ViewModel() {
             val nestsRes = listNests(
                 context = context,
                 page = currentPage,
-                include = ListNestsQueryInclude.toQueryString(
+                include = listOf(
                     ListNestsQueryInclude.EGGS,
-                    ListNestsQueryInclude.EGGS_VARIABLES
-                )
+                    ListNestsQueryInclude.EGGS + ListNestEggsQueryInclude.VARIABLES
+                ).toQueryString()
             )
 
             if (nestsRes.isFailure) break
