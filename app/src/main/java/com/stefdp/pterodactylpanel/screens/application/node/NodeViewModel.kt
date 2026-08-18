@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNodesQueryInclude
+import com.stefdp.pterodactylpanel.network.application.models.requests.ListServersQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.responses.GetNodeConfigurationResponse
 import com.stefdp.pterodactylpanel.network.application.requests.getNode
 import com.stefdp.pterodactylpanel.network.application.requests.getNodeConfiguration
+import com.stefdp.pterodactylpanel.network.models.plus
+import com.stefdp.pterodactylpanel.network.models.toQueryString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,11 +53,14 @@ class ApplicationNodeViewModel : ViewModel() {
             val nodeRes = getNode(
                 context = context,
                 nodeId = nodeId,
-                include = ListNodesQueryInclude.toQueryString(
+                include = listOf(
                     ListNodesQueryInclude.LOCATION,
                     ListNodesQueryInclude.SERVERS,
+                    ListNodesQueryInclude.SERVERS + ListServersQueryInclude.USER,
+                    ListNodesQueryInclude.SERVERS + ListServersQueryInclude.NEST,
+                    ListNodesQueryInclude.SERVERS + ListServersQueryInclude.EGG,
                     ListNodesQueryInclude.ALLOCATIONS
-                )
+                ).toQueryString()
             )
 
             nodeRes

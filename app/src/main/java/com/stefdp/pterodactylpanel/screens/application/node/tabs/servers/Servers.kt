@@ -49,23 +49,17 @@ fun ServersTab(
         mutableIntStateOf(-1)
     }
 
-    fun updateData() {
-        viewModel.listAllUsers(context)
-        viewModel.listAllNests(context)
-    }
-
     LaunchedEffect(node?.attributes?.id, refreshIndex) {
         if (node == null) return@LaunchedEffect
 
         val isFirstLoad = lastRefreshIndex == -1
         val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
 
-        if (!isExplicitRefresh && !isFirstLoad && state.users.isEmpty() && state.nests.isEmpty()) return@LaunchedEffect
+        if (!isExplicitRefresh && !isFirstLoad && state.servers.isEmpty()) return@LaunchedEffect
 
         lastRefreshIndex = refreshIndex
 
         viewModel.init(node)
-        updateData()
     }
 
     Column(
@@ -148,7 +142,7 @@ fun ServersTab(
                     TableCellData(
                         width = tableOwnerWidth
                     ) {
-                        val user = state.users.find { it.attributes.id == server.user }?.attributes
+                        val user = server.relationships?.user?.attributes
 
                         Text(
                             text = user?.username ?: "Loading...",
@@ -169,11 +163,11 @@ fun ServersTab(
                     TableCellData(
                         width = tableServiceWidth
                     ) {
-                        val nest = state.nests.find { it.attributes.id == server.nest }
-                        val egg = nest?.attributes?.relationships?.eggs?.data?.find { it.attributes.id == server.egg }
+                        val nest = server.relationships?.nest?.attributes
+                        val egg = server.relationships?.egg?.attributes
 
                         Text(
-                            text = "${nest?.attributes?.name ?: "Loading..."} (${egg?.attributes?.name ?: "Loading..."})",
+                            text = "${nest?.name ?: "Loading..."} (${egg?.name ?: "Loading..."})",
                             modifier = Modifier.shimmerable(
                                 enabled = nest == null || egg == null
                             )
