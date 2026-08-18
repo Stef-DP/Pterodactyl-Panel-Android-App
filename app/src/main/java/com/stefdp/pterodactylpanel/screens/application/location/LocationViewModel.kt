@@ -10,6 +10,7 @@ import com.stefdp.pterodactylpanel.network.application.models.requests.ListLocat
 import com.stefdp.pterodactylpanel.network.application.requests.deleteLocation
 import com.stefdp.pterodactylpanel.network.application.requests.getLocation
 import com.stefdp.pterodactylpanel.network.application.requests.updateLocation
+import com.stefdp.pterodactylpanel.network.models.toQueryString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -51,10 +52,10 @@ class ApplicationLocationViewModel : ViewModel() {
             val locationRes = getLocation(
                 context = context,
                 locationId = locationId,
-                include = ListLocationsQueryInclude.toQueryString(
+                include = listOf(
                     ListLocationsQueryInclude.NODES,
                     ListLocationsQueryInclude.SERVERS
-                )
+                ).toQueryString()
             )
 
             locationRes

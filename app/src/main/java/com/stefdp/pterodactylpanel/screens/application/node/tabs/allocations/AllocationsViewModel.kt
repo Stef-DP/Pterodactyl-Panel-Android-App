@@ -12,6 +12,7 @@ import com.stefdp.pterodactylpanel.network.application.models.responses.ListNode
 import com.stefdp.pterodactylpanel.network.application.requests.createNodeAllocation
 import com.stefdp.pterodactylpanel.network.application.requests.deleteNodeAllocation
 import com.stefdp.pterodactylpanel.network.application.requests.listNodeAllocations
+import com.stefdp.pterodactylpanel.network.models.toQueryString
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -66,9 +67,9 @@ class ApplicationNodeAllocationsTabViewModel : ViewModel() {
                 context = context,
                 nodeId = nodeId!!,
                 page = _state.value.page,
-                include = ListNodeAllocationsQueryInclude.toQueryString(
+                include = listOf(
                     ListNodeAllocationsQueryInclude.SERVER
-                )
+                ).toQueryString()
             )
 
             allocationsRes

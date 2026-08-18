@@ -13,6 +13,7 @@ import com.stefdp.pterodactylpanel.network.application.models.responses.ListNode
 import com.stefdp.pterodactylpanel.network.application.requests.createNode
 import com.stefdp.pterodactylpanel.network.application.requests.listLocations
 import com.stefdp.pterodactylpanel.network.application.requests.listNodes
+import com.stefdp.pterodactylpanel.network.models.toQueryString
 import com.stefdp.pterodactylpanel.network.node.requests.getNodeStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -79,10 +80,10 @@ class ApplicationNodesViewModel : ViewModel() {
                 filterDaemonTokenId = filterDaemonTokenId,
                 sort = sort,
                 page = _state.value.page,
-                include = ListNodesQueryInclude.toQueryString(
+                include = listOf(
                     ListNodesQueryInclude.LOCATION,
                     ListNodesQueryInclude.SERVERS
-                )
+                ).toQueryString()
             )
 
             val nodes = nodesRes.getOrNull()
