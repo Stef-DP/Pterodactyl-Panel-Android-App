@@ -261,7 +261,7 @@ fun Select(
         }
 
         if (description != null) {
-            Text(
+            CodeText(
                 text = description.toAnnotatedString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)

@@ -39,14 +39,14 @@ fun LabeledCheckbox(
         )
 
         Column {
-            Text(
+            CodeText(
                 text = label.toAnnotatedString(),
                 fontWeight = FontWeight.Bold,
                 color = if (enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
             )
 
             if (description != null) {
-                Text(
+                CodeText(
                     text = description.toAnnotatedString(),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
@@ -72,8 +72,8 @@ fun LabeledCheckboxPreview() {
             ) {
                 Column {
                     LabeledCheckbox(
-                        label = "Checkbox Label",
-                        description = "This is a description for the checkbox.",
+                        label = "Checkbox Label `with some` code",
+                        description = "This is a description for the checkbox `with some` code.",
                         checked = true,
                         onToggle = {},
                         enabled = true

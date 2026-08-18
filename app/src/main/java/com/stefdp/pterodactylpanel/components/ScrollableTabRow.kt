@@ -85,7 +85,7 @@ fun ScrollableTabRow(
                     }
 
                     if (tab.label != null) {
-                        Text(
+                        CodeText(
                             text = tab.label,
                             modifier = Modifier.padding(
                                 top = 16.dp,

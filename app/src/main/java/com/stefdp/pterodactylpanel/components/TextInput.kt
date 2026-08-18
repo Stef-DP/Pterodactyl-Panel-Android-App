@@ -39,13 +39,18 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -155,7 +160,7 @@ fun TextInput(
                 label = if (label != null) {
                     {
                         Row {
-                            Text(
+                            CodeText(
                                 text = label.toAnnotatedString(),
                                 overflow = TextOverflow.Ellipsis,
                                 maxLines = 1,
@@ -180,7 +185,7 @@ fun TextInput(
                 } else null,
                 placeholder = if (placeholder != null) {
                     {
-                        Text(
+                        CodeText(
                             text = placeholder.toAnnotatedString(),
                             overflow = TextOverflow.Ellipsis,
                             maxLines = 1,
@@ -262,7 +267,9 @@ fun TextInput(
                 ) {
                     filteredSuggestions.forEach { option ->
                         DropdownMenuItem(
-                            text = { Text(text = option) },
+                            text = {
+                                CodeText(text = option)
+                            },
                             onClick = {
                                 onValueChange(
                                     TextFieldValue(
@@ -280,7 +287,7 @@ fun TextInput(
         }
 
         if (description != null) {
-            Text(
+            CodeText(
                 text = description.toAnnotatedString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = descriptionColor
@@ -309,8 +316,8 @@ fun TextInputPreview() {
                         value = TextFieldValue("hello\nworld\nhello\nwold"),
                         onValueChange = {},
                         label = "label",
-                        description = "description",
-                        placeholder = "placeholder",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
                         enabled = true,
                         isPassword = false,
                         singleLine = true,
@@ -320,8 +327,8 @@ fun TextInputPreview() {
                         value = TextFieldValue("hello\nworld\nhello\nwold"),
                         onValueChange = {},
                         label = "label",
-                        description = "description",
-                        placeholder = "placeholder",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
                         enabled = false,
                         isPassword = false,
                         singleLine = true,
@@ -331,8 +338,104 @@ fun TextInputPreview() {
                         value = TextFieldValue("hello\nworld\nhello\nwold"),
                         onValueChange = {},
                         label = "label",
-                        description = "description",
-                        placeholder = "placeholder",
+                        description = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("Advanced: ")
+                            }
+
+                            append("The IO performance of this server relative to other running containers on the system. Value should be between `10` and `1000`. Please see ")
+
+                            withLink(
+                                link = LinkAnnotation.Url(
+                                    url = "https://docs.docker.com/engine/reference/run/#block-io-bandwidth-blkio-constraint"
+                                )
+                            ) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    append("this documentation")
+                                }
+                            }
+
+                            append(" for more information about it")
+                        },
+                        placeholder = "placeholder `with some` code",
+                        enabled = true,
+                        isPassword = false,
+                        singleLine = true,
+                    )
+
+                    TextInput(
+                        value = TextFieldValue("hello\nworld\nhello\nwold"),
+                        onValueChange = {},
+                        label = "label",
+                        description = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("Advanced: ")
+                            }
+
+                            append("The IO performance of this server relative to other running containers on the system. Value should be between `10` and `1000`. Please see ")
+
+                            withLink(
+                                link = LinkAnnotation.Url(
+                                    url = "https://docs.docker.com/engine/reference/run/#block-io-bandwidth-blkio-constraint"
+                                )
+                            ) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    append("this documentation")
+                                }
+                            }
+
+                            append(" for more information about it")
+                        },
+                        placeholder = "placeholder `with some` code",
+                        enabled = false,
+                        isPassword = false,
+                        singleLine = true,
+                    )
+
+                    TextInput(
+                        value = TextFieldValue(""),
+                        onValueChange = {},
+                        label = "label",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
+                        enabled = true,
+                        isPassword = false,
+                        singleLine = true,
+                    )
+
+                    TextInput(
+                        value = TextFieldValue(""),
+                        onValueChange = {},
+                        label = "label",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
+                        enabled = false,
+                        isPassword = false,
+                        singleLine = true,
+                    )
+
+                    TextInput(
+                        value = TextFieldValue("hello\nworld\nhello\nwold"),
+                        onValueChange = {},
+                        label = "label",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
                         enabled = true,
                         isPassword = true,
                         singleLine = true,
@@ -342,8 +445,8 @@ fun TextInputPreview() {
                         value = TextFieldValue("hello\nworld\nhello\nwold"),
                         onValueChange = {},
                         label = "label",
-                        description = "description",
-                        placeholder = "placeholder",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
                         enabled = false,
                         isPassword = true,
                         singleLine = true,
@@ -353,8 +456,8 @@ fun TextInputPreview() {
                         value = TextFieldValue("hello\nworld\nhello\nwold"),
                         onValueChange = {},
                         label = "label",
-                        description = "description",
-                        placeholder = "placeholder",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
                         enabled = true,
                         isPassword = false,
                         singleLine = false,
@@ -364,8 +467,8 @@ fun TextInputPreview() {
                         value = TextFieldValue("hello\nworld\nhello\nwold"),
                         onValueChange = {},
                         label = "label",
-                        description = "description",
-                        placeholder = "placeholder",
+                        description = "description `with some` code",
+                        placeholder = "placeholder `with some` code",
                         enabled = false,
                         isPassword = false,
                         singleLine = false,

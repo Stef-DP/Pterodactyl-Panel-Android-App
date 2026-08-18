@@ -47,7 +47,7 @@ fun MoreActionsButton(
 
                 DropdownMenuItem(
                     text = {
-                        Text(
+                        CodeText(
                             text = item.label,
                             color = if (enabled && item.enabled)
                                 textColor

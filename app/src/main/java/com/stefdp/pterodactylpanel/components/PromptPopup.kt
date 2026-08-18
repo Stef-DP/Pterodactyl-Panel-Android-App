@@ -50,7 +50,7 @@ fun PromptPopup(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(
+            CodeText(
                 text = title.toAnnotatedString(),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
@@ -75,7 +75,7 @@ fun PromptPopup(
             }
         }
 
-        Text(
+        CodeText(
             text = description.toAnnotatedString()
         )
 
@@ -95,7 +95,7 @@ fun PromptPopup(
                     buttonType = cancelButtonType,
                     enabled = !isLoading
                 ) {
-                    Text(cancelText.toAnnotatedString())
+                    CodeText(cancelText.toAnnotatedString())
                 }
 
                 Button(
@@ -105,7 +105,7 @@ fun PromptPopup(
                     buttonType = successButtonType,
                     enabled = !isLoading
                 ) {
-                    Text(successText.toAnnotatedString())
+                    CodeText(successText.toAnnotatedString())
                 }
             }
         } else {
@@ -123,7 +123,7 @@ fun PromptPopup(
                     buttonType = cancelButtonType,
                     enabled = !isLoading
                 ) {
-                    Text(cancelText.toAnnotatedString())
+                    CodeText(cancelText.toAnnotatedString())
                 }
 
                 Button(
@@ -133,7 +133,7 @@ fun PromptPopup(
                     buttonType = successButtonType,
                     enabled = !isLoading
                 ) {
-                    Text(successText.toAnnotatedString())
+                    CodeText(successText.toAnnotatedString())
                 }
             }
         }

@@ -53,7 +53,7 @@ fun Switch(
                 modifier = Modifier.width(8.dp)
             )
 
-            Text(
+            CodeText(
                 text = label.toAnnotatedString(),
                 fontWeight = FontWeight.Bold,
                 color = if (enabled) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
@@ -61,7 +61,7 @@ fun Switch(
         }
 
         if (description != null) {
-            Text(
+            CodeText(
                 text = description.toAnnotatedString(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = descriptionColor
@@ -93,7 +93,7 @@ fun SwitchPreview() {
                         onCheckedChange = {},
                         enabled = true,
                         label = "test label",
-                        description = "a very long description to test how it goes on a new line hello hello hello hello hello hello hello"
+                        description = "a very long description `with some` code to test how it goes on a new line hello hello hello hello hello hello hello"
                     )
 
                     Switch(
@@ -101,7 +101,7 @@ fun SwitchPreview() {
                         onCheckedChange = {},
                         enabled = true,
                         label = "test label",
-                        description = "a very long description to test how it goes on a new line hello hello hello hello hello hello hello"
+                        description = "a very long description `with some` code to test how it goes on a new line hello hello hello hello hello hello hello"
                     )
 
                     Switch(
@@ -109,7 +109,7 @@ fun SwitchPreview() {
                         onCheckedChange = {},
                         enabled = false,
                         label = "test label",
-                        description = "a very long description to test how it goes on a new line hello hello hello hello hello hello hello"
+                        description = "a very long description `with some` code to test how it goes on a new line hello hello hello hello hello hello hello"
                     )
 
                     Switch(
@@ -117,7 +117,7 @@ fun SwitchPreview() {
                         onCheckedChange = {},
                         enabled = false,
                         label = "test label",
-                        description = "a very long description to test how it goes on a new line hello hello hello hello hello hello hello"
+                        description = "a very long description `with some` code to test how it goes on a new line hello hello hello hello hello hello hello"
                     )
                 }
             }
