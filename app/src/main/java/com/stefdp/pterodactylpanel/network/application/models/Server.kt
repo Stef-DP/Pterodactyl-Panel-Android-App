@@ -13,7 +13,7 @@ data class ApplicationServer(
         val identifier: String,
         val name: String,
         val description: String? = null,
-        val status: String?,
+        val status: Status?,
         val suspended: Boolean,
         val limits: Limits,
         @SerializedName("feature_limits") val featureLimits: FeatureLimits,
@@ -27,6 +27,25 @@ data class ApplicationServer(
         @SerializedName("created_at") val createdAt: String,
         val relationships: Relationships? = null
     ) {
+        enum class Status(val value: String) {
+            @SerializedName("installing")
+            INSTALLING("installing"),
+
+            @SerializedName("install_failed")
+            INSTALL_FAILED("install_failed"),
+
+            @SerializedName("reinstall_failed")
+            REINSTALL_FAILED("reinstall_failed"),
+
+            @SerializedName("suspended")
+            SUSPENDED("suspended"),
+
+            @SerializedName("restoring_backup")
+            RESTORING_BACKUP("restoring_backup");
+
+            override fun toString(): String = value
+        }
+
         data class Limits(
             val memory: Long,
             val swap: Long,
