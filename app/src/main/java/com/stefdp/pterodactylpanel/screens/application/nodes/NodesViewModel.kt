@@ -26,7 +26,7 @@ data class ApplicationNodesUiState(
     val isRefreshing: Boolean = false,
     val nodes: List<ApplicationNode>? = null,
     val locations: List<ApplicationLocation> = emptyList(),
-    val page: Long = 1,
+    val page: Long = 1L,
     val pagination: ListNodesResponse.Meta.Pagination? = null,
     val nodesStatus: Map<Long, Boolean?> = emptyMap(),
     val showCreateNodePopup: Boolean = false,
@@ -122,7 +122,7 @@ class ApplicationNodesViewModel : ViewModel() {
         }
     }
 
-    suspend fun listAllLocations(
+    private suspend fun listAllLocations(
         context: Context
     ): List<ApplicationLocation> {
         val outputLocations = mutableListOf<ApplicationLocation>()
@@ -139,6 +139,7 @@ class ApplicationNodesViewModel : ViewModel() {
             if (locationsRes.isFailure) break
 
             val locations = locationsRes.getOrNull() ?: break
+
             outputLocations.addAll(locations.data)
 
             val nextLink = locations.meta.pagination.links.next
