@@ -1,9 +1,10 @@
 package com.stefdp.pterodactylpanel.network.client.models.requests
 
-import com.google.gson.annotations.SerializedName
+import com.stefdp.pterodactylpanel.network.models.QueryInclude
 
-enum class ListServerDatabasesQueryInclude(val value: String) {
-    @SerializedName("password")
+enum class ListServerDatabasesQueryInclude(
+    override val value: String
+) : QueryInclude {
     PASSWORD("password");
 
     override fun toString(): String = value

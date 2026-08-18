@@ -1,26 +1,12 @@
 package com.stefdp.pterodactylpanel.network.application.models.requests
 
-import com.google.gson.annotations.SerializedName
+import com.stefdp.pterodactylpanel.network.models.QueryInclude
 
-enum class ListNestsQueryInclude(val value: String) {
-    @SerializedName("eggs")
+enum class ListNestsQueryInclude(
+    override val value: String
+) : QueryInclude {
     EGGS("eggs"),
-
-    @SerializedName("eggs.variables")
-    EGGS_VARIABLES("eggs.variables"),
-
-    @SerializedName("servers")
     SERVERS("servers");
 
     override fun toString(): String = value
-
-    companion object {
-        fun toQueryString(vararg includes: ListNestsQueryInclude): String {
-            return includes.joinToString(",") { it.value }
-        }
-
-        fun toQueryString(includes: Collection<ListNestsQueryInclude>): String {
-            return includes.joinToString(",") { it.value }
-        }
-    }
 }

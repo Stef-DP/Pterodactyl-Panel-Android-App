@@ -1,9 +1,10 @@
 package com.stefdp.pterodactylpanel.network.client.models.requests
 
-import com.google.gson.annotations.SerializedName
+import com.stefdp.pterodactylpanel.network.models.QueryInclude
 
-enum class GetServerActivityQueryInclude(val value: String) {
-    @SerializedName("actor")
+enum class GetServerActivityQueryInclude(
+    override val value: String
+) : QueryInclude {
     ACTOR("actor");
 
     override fun toString(): String = value

@@ -1,23 +1,12 @@
 package com.stefdp.pterodactylpanel.network.client.models.requests
 
-import com.google.gson.annotations.SerializedName
+import com.stefdp.pterodactylpanel.network.models.QueryInclude
 
-enum class ListServersQueryInclude(val value: String) {
-    @SerializedName("egg")
+enum class ListServersQueryInclude(
+    override val value: String
+) : QueryInclude {
     EGG("egg"),
-
-    @SerializedName("subusers")
     SUBUSERS("subusers");
 
     override fun toString(): String = value
-
-    companion object {
-        fun toQueryString(vararg includes: ListServersQueryInclude): String {
-            return includes.joinToString(",") { it.value }
-        }
-
-        fun toQueryString(includes: Collection<ListServersQueryInclude>): String {
-            return includes.joinToString(",") { it.value }
-        }
-    }
 }
