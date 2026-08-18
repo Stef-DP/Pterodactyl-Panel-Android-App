@@ -6,6 +6,9 @@ enum class ListNestsQueryInclude(val value: String) {
     @SerializedName("eggs")
     EGGS("eggs"),
 
+    @SerializedName("eggs.variables")
+    EGGS_VARIABLES("eggs.variables"),
+
     @SerializedName("servers")
     SERVERS("servers");
 
