@@ -148,10 +148,10 @@ fun ServersTab(
                     TableCellData(
                         width = tableOwnerWidth
                     ) {
-                        val user = state.users.find { it.attributes.id == server.user }
+                        val user = state.users.find { it.attributes.id == server.user }?.attributes
 
                         Text(
-                            text = user?.attributes?.username ?: "Loading...",
+                            text = user?.username ?: "Loading...",
                             color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .shimmerable(
@@ -160,7 +160,7 @@ fun ServersTab(
                                 .clickable(
                                     enabled = user != null,
                                     onClick = {
-                                        navController.navigate(ApplicationUserScreen(user!!.attributes.id))
+                                        navController.navigate(ApplicationUserScreen(user!!.id))
                                     }
                                 )
                         )
