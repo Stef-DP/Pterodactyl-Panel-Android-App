@@ -85,6 +85,7 @@ fun CreateServerPopup(
                 enabled = !state.isLoading
             )
 
+            // TODO: maybe remove the suggestions cuz if the server has thousands of users it might take a while to load them all at a rate of 50 per request
             TextInput(
                 value = state.newServerOwner,
                 onValueChange = {
