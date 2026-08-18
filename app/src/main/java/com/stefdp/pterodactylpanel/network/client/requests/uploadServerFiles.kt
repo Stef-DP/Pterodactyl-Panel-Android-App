@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.Logger
-import com.stefdp.pterodactylpanel.network.ApiErrorResponse
+import com.stefdp.pterodactylpanel.network.models.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.client.models.SignedUrl
 import com.stefdp.pterodactylpanel.transferservice.CountingRequestBody

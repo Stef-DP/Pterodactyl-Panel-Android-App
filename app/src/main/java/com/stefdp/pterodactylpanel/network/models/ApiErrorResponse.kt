@@ -1,4 +1,4 @@
-package com.stefdp.pterodactylpanel.network
+package com.stefdp.pterodactylpanel.network.models
 
 data class ApiErrorResponse(
     val errors: List<ApiError>

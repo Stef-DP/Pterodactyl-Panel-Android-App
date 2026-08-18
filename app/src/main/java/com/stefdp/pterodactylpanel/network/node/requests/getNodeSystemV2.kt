@@ -1,11 +1,9 @@
 package com.stefdp.pterodactylpanel.network.node.requests
 
-import android.content.Context
 import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.Logger
-import com.stefdp.pterodactylpanel.network.ApiErrorResponse
+import com.stefdp.pterodactylpanel.network.models.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
-import com.stefdp.pterodactylpanel.network.node.models.responses.GetNodeSystemV1Response
 import com.stefdp.pterodactylpanel.network.node.models.responses.GetNodeSystemV2Response
 
 private const val TAG = "NodeApi[getNodeSystemV2]"

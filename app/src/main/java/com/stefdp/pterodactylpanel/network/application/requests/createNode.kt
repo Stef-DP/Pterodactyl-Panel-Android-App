@@ -3,7 +3,7 @@ package com.stefdp.pterodactylpanel.network.application.requests
 import android.content.Context
 import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.Logger
-import com.stefdp.pterodactylpanel.network.ApiErrorResponse
+import com.stefdp.pterodactylpanel.network.models.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.requests.CreateNodeBody

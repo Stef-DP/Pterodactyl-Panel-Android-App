@@ -2,10 +2,8 @@ package com.stefdp.pterodactylpanel.network.client.requests
 
 import android.content.Context
 import com.google.gson.Gson
-import com.stefdp.pterodactylpanel.network.ApiErrorResponse
+import com.stefdp.pterodactylpanel.network.models.ApiErrorResponse
 import com.stefdp.pterodactylpanel.network.PterodactylApiClient
-import com.stefdp.pterodactylpanel.network.client.models.requests.GetAccountActivityQuerySort
-import com.stefdp.pterodactylpanel.network.client.models.responses.GetAccountActivityResponse
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.client.models.requests.GetServerActivityQuerySort
