@@ -70,6 +70,7 @@ import com.stefdp.pterodactylpanel.screens.application.location.ApplicationLocat
 import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsScreen
 import com.stefdp.pterodactylpanel.screens.application.node.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesScreen
+import com.stefdp.pterodactylpanel.screens.application.servers.ApplicationServersScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.AccountSettingsScreen
@@ -366,7 +367,12 @@ fun AppNavigation(
         }
 
         composable<ApplicationServersScreen> {
-            // TODO: add application servers screen
+            ApplicationServersScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding,
+            )
         }
 
         composable<ApplicationServerScreen> { backStackEntry ->
