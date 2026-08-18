@@ -33,6 +33,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import com.neoutils.highlight.compose.extension.toAnnotatedString
 import com.neoutils.highlight.core.Highlight
 import com.neoutils.highlight.core.scheme.TextColorScheme
+import com.stefdp.pterodactylpanel.utils.toAnnotatedString
 import kotlin.math.max
 import kotlin.math.min
 
@@ -85,7 +87,7 @@ private const val InlineCodeSpacerId = "inline-code-horizontal-spacer"
 
 @Composable
 fun CodeText(
-    text: String,
+    text: CharSequence,
     modifier: Modifier = Modifier,
     trailingModifier: Modifier = Modifier,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
@@ -98,6 +100,7 @@ fun CodeText(
     codeCornerRadius: Dp = 4.dp,
     codeHorizontalPadding: Dp = 4.dp,
     codeOuterHorizontalPadding: Dp = 1.dp,
+    fontWeight: FontWeight = FontWeight.Normal
 ) {
     val parsedText = remember(text) { parseInlineCode(text) }
     var layoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
@@ -147,6 +150,7 @@ fun CodeText(
         overflow = overflow,
         softWrap = softWrap,
         maxLines = maxLines,
+        fontWeight = fontWeight,
         inlineContent = inlineContent,
         onTextLayout = {
             layoutResult = it
@@ -159,7 +163,7 @@ private data class ParsedInlineCode(
     val codeRanges: List<TextRange>,
 )
 
-private fun parseInlineCode(source: String): ParsedInlineCode {
+private fun parseInlineCode(source: CharSequence): ParsedInlineCode {
     val codeRanges = mutableListOf<TextRange>()
 
     val annotatedText = buildAnnotatedString {
@@ -169,12 +173,12 @@ private fun parseInlineCode(source: String): ParsedInlineCode {
             val openingStart = source.indexOf('`', startIndex = sourceOffset)
 
             if (openingStart == -1) {
-                append(source.substring(sourceOffset))
+                append(source.subSequence(sourceOffset, source.length))
 
                 break
             }
 
-            append(source.substring(sourceOffset, openingStart))
+            append(source.subSequence(sourceOffset, openingStart))
 
             val delimiterLength = source.backtickRunLengthAt(openingStart)
             val codeStartInSource = openingStart + delimiterLength
@@ -185,7 +189,8 @@ private fun parseInlineCode(source: String): ParsedInlineCode {
             )
 
             if (closingStart == -1) {
-                append(source.substring(openingStart))
+                append(source.subSequence(openingStart, source.length))
+
                 break
             }
 
@@ -197,7 +202,7 @@ private fun parseInlineCode(source: String): ParsedInlineCode {
             val codeStartInOutput = length
 
             withStyle(SpanStyle(fontFamily = FontFamily.Monospace)) {
-                append(source.substring(codeStartInSource, closingStart))
+                append(source.subSequence(codeStartInSource, closingStart))
             }
 
             val codeEndInOutput = length
@@ -221,7 +226,7 @@ private fun parseInlineCode(source: String): ParsedInlineCode {
     )
 }
 
-private fun String.backtickRunLengthAt(startIndex: Int): Int {
+private fun CharSequence.backtickRunLengthAt(startIndex: Int): Int {
     var endIndex = startIndex
 
     while (endIndex < length && this[endIndex] == '`') {
@@ -231,7 +236,7 @@ private fun String.backtickRunLengthAt(startIndex: Int): Int {
     return endIndex - startIndex
 }
 
-private fun String.findMatchingBacktickRun(
+private fun CharSequence.findMatchingBacktickRun(
     startIndex: Int,
     runLength: Int,
 ): Int {
