@@ -140,20 +140,28 @@ class ApplicationServersViewModel : ViewModel() {
 
             val firstNode = nodes.firstOrNull()
 
-            setNewServerNode(firstNode?.attributes?.id?.toString()?.let { setOf(it) } ?: emptySet())
+            setNewServerNode(
+                firstNode?.attributes?.id?.toString()
+                    ?.let { setOf(it) }
+                    ?: emptySet()
+            )
 
             val nests = listNests(context)
 
             _state.update {
                 it.copy(
                     nests = nests,
-                    nestsLoading = false
+                    nestsLoading = false,
                 )
             }
 
             val firstNest = nests.firstOrNull()
 
-            setNewServerNest(firstNest?.attributes?.id?.toString()?.let { setOf(it) } ?: emptySet())
+            setNewServerNest(
+                firstNest?.attributes?.id?.toString()
+                    ?.let { setOf(it) }
+                    ?: emptySet()
+            )
         }
     }
 
@@ -311,11 +319,45 @@ class ApplicationServersViewModel : ViewModel() {
     ) {
         if (_state.value.isLoading && !skipLoading) return
 
+        val firstNode = _state.value.nodes.firstOrNull()
+        val firstNest = _state.value.nests.firstOrNull()
+        val firstEgg = firstNest?.attributes?.relationships?.eggs?.data?.firstOrNull()
+
         _state.update {
             it.copy(
                 showCreateServerPopup = false,
+                newServerOwner = emptySet(),
+                newServerOwnerSearchQuery = ""
             )
         }
+
+        setNewServerName(TextFieldValue(""))
+        setNewServerDescription(TextFieldValue(""))
+        setNewServerNode(
+            firstNode?.attributes?.id?.toString()
+                ?.let { setOf(it) }
+                ?: emptySet()
+        )
+        setNewServerDatabaseLimit(TextFieldValue("0"))
+        setNewServerAllocationLimit(TextFieldValue("0"))
+        setNewServerBackupLimit(TextFieldValue("0"))
+        setNewServerCpuLimit(TextFieldValue("0"))
+        setNewServerCpuPinning(TextFieldValue(""))
+        setNewServerMemory(TextFieldValue(""))
+        setNewServerSwap(TextFieldValue("0"))
+        setNewServerDisk(TextFieldValue(""))
+        setNewServerIo(TextFieldValue("500"))
+        setNewServerEnableOOMKiller(false)
+        setNewServerNest(
+            firstNest?.attributes?.id?.toString()
+                ?.let { setOf(it) } ?: emptySet()
+        )
+        setNewServerEgg(
+            firstEgg?.attributes?.id?.toString()
+                ?.let { setOf(it) }
+                ?: emptySet()
+        )
+        setNewServerSkipEggInstallScript(false)
     }
 
     fun setNewServerName(name: TextFieldValue) {
@@ -548,7 +590,9 @@ class ApplicationServersViewModel : ViewModel() {
         setNewServerStartupCommand(TextFieldValue(startupCommand))
         setNewServerVariables(variables)
         setNewServerVariableContents(
-            variables.associate { it.attributes.envVariable to TextFieldValue(it.attributes.defaultValue) }
+            variables.associate {
+                it.attributes.envVariable to TextFieldValue(it.attributes.defaultValue)
+            }
         )
     }
 
