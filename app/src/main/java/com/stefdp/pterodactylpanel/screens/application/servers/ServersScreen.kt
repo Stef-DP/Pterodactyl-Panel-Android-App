@@ -403,7 +403,8 @@ fun ApplicationServersScreen(
                             width = 1.dp,
                             color = MaterialTheme.colorScheme.outline,
                             shape = RoundedCornerShape(BASE_CORNER_RADIUS.dp)
-                        )
+                        ),
+                    lazy = false
                 )
 
                 Spacer(
