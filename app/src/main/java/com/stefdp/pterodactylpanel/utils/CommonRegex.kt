@@ -10,3 +10,4 @@ val PermissionModeRegex = Regex("""^[0-7]*$""")
 val VariableRegex = Regex("\\{\\{(.*?)\\}\\}")
 
 val EmailRegex = Regex("""^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$""")
+val NameRegex = Regex("""^[a-zA-Z0-9-. ]*$""")
