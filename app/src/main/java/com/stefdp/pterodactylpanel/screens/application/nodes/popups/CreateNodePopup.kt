@@ -27,6 +27,7 @@ import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesUiState
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesViewModel
+import com.stefdp.pterodactylpanel.utils.NameRegex
 
 @Composable
 fun CreateNodePopup(
@@ -71,7 +72,7 @@ fun CreateNodePopup(
             TextInput(
                 value = state.newNodeName,
                 onValueChange = {
-                    if (it.text.trim().length > 100) return@TextInput
+                    if (!it.text.matches(NameRegex) || it.text.trim().length > 100) return@TextInput
 
                     viewModel.setNewNodeName(it)
                 },
