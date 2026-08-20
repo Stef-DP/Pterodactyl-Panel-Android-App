@@ -50,10 +50,22 @@ import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
+import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.servers.popups.CreateServerPopup
 import com.stefdp.pterodactylpanel.ui.theme.Green
 import com.stefdp.pterodactylpanel.ui.theme.Yellow
 import com.stefdp.pterodactylpanel.utils.shimmerable
+
+val errorCategories = listOf(
+    ApplicationServer.Attributes.Status.SUSPENDED,
+    ApplicationServer.Attributes.Status.INSTALL_FAILED,
+    ApplicationServer.Attributes.Status.REINSTALL_FAILED
+)
+
+val warningCategories = listOf(
+    ApplicationServer.Attributes.Status.INSTALLING,
+    ApplicationServer.Attributes.Status.RESTORING_BACKUP,
+)
 
 @Composable
 fun ApplicationServersScreen(
@@ -65,11 +77,11 @@ fun ApplicationServersScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -330,17 +342,6 @@ fun ApplicationServersScreen(
                             TableCellData(
                                 width = tableStatusWidth
                             ) {
-                                val errorCategories = listOf(
-                                    ApplicationServer.Attributes.Status.SUSPENDED,
-                                    ApplicationServer.Attributes.Status.INSTALL_FAILED,
-                                    ApplicationServer.Attributes.Status.REINSTALL_FAILED
-                                )
-
-                                val warningCategories = listOf(
-                                    ApplicationServer.Attributes.Status.INSTALLING,
-                                    ApplicationServer.Attributes.Status.RESTORING_BACKUP,
-                                )
-
                                 val pillColor = when {
                                     server.suspended || server.status in errorCategories -> MaterialTheme.colorScheme.error
                                     server.status in warningCategories -> Yellow
