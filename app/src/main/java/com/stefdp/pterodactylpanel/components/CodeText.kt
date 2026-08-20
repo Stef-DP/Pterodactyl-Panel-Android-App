@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,7 +91,7 @@ fun CodeText(
     text: CharSequence,
     modifier: Modifier = Modifier,
     trailingModifier: Modifier = Modifier,
-    style: TextStyle = MaterialTheme.typography.bodyMedium,
+    style: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,
     overflow: TextOverflow = TextOverflow.Clip,
@@ -100,7 +101,7 @@ fun CodeText(
     codeCornerRadius: Dp = 4.dp,
     codeHorizontalPadding: Dp = 4.dp,
     codeOuterHorizontalPadding: Dp = 1.dp,
-    fontWeight: FontWeight = FontWeight.Normal
+    fontWeight: FontWeight? = null
 ) {
     val parsedText = remember(text) { parseInlineCode(text) }
     var layoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
