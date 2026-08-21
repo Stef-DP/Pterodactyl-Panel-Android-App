@@ -32,6 +32,7 @@ import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.about.AboutTab
+import com.stefdp.pterodactylpanel.screens.application.server.tabs.details.DetailsTab
 
 @Composable
 fun ApplicationServerScreen(
@@ -145,6 +146,16 @@ fun ApplicationServerScreen(
                     when (state.currentTab) {
                         ServerTab.ABOUT -> {
                             AboutTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
+                        }
+
+                        ServerTab.DETAILS -> {
+                            DetailsTab(
                                 navController = navController,
                                 context = context,
                                 activity = activity,
