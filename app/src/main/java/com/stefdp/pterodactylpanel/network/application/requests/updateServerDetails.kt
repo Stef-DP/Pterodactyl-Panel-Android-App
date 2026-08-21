@@ -14,8 +14,8 @@ private const val TAG = "ApplicationApi[updateServerDetails]"
 suspend fun updateServerDetails(
     context: Context,
     serverId: Long,
-    name: String? = null,
-    user: Long? = null,
+    name: String,
+    user: Long,
     externalId: String? = null,
     description: String? = null,
 ): Result<ApplicationServer> {
