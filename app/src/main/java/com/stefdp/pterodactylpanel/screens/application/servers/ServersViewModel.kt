@@ -176,12 +176,14 @@ class ApplicationServersViewModel : ViewModel() {
             )
         }
 
+        val currentOwner = _state.value.newServerOwnerSuggestions.find { it.attributes.id.toString() in _state.value.newServerOwner }
+
         val query = _state.value.newServerOwnerSearchQuery
 
         if (query.length < 2 && _state.value.newServerOwner.isEmpty()) {
             _state.update {
                 it.copy(
-                    newServerOwnerSuggestions = emptyList()
+                    newServerOwnerSuggestions = listOfNotNull(currentOwner)
                 )
             }
 
@@ -214,9 +216,19 @@ class ApplicationServersViewModel : ViewModel() {
                 return@launch
             }
 
+            val usersList = if (currentOwner != null) {
+                if (currentOwner.attributes.id in users.data.map { it.attributes.id }) {
+                    users.data
+                } else {
+                    users.data + currentOwner
+                }
+            } else {
+                users.data
+            }
+
             _state.update {
                 it.copy(
-                    newServerOwnerSuggestions = users.data,
+                    newServerOwnerSuggestions = usersList,
                     newServerOwnerSuggestionsLoading = false
                 )
             }
