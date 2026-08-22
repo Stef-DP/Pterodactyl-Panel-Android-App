@@ -20,7 +20,7 @@ data class ApplicationServerUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val server: ApplicationServer? = null,
-    val currentTab: ServerTab = ServerTab.DETAILS // TODO: set back to ABOUT
+    val currentTab: ServerTab = ServerTab.BUILD_CONFIGURATION // TODO: set back to ABOUT
 )
 
 private const val TAG = "ApplicationServerViewModel"
@@ -34,6 +34,7 @@ class ApplicationServerViewModel : ViewModel() {
     fun init(
         context: Context,
         serverId: Long,
+        onReloadFinish: () -> Unit,
         onError: (String) -> Unit,
         isRefresh: Boolean = false
     ) {
@@ -70,6 +71,8 @@ class ApplicationServerViewModel : ViewModel() {
                             server = server
                         )
                     }
+
+                    onReloadFinish()
                 }
                 .onFailure { error ->
                     Logger.error(TAG, "Failed to fetch server: ${error.message}")

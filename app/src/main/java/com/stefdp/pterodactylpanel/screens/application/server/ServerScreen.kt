@@ -30,8 +30,8 @@ import com.stefdp.pterodactylpanel.components.PullToRefreshBox
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
-import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.about.AboutTab
+import com.stefdp.pterodactylpanel.screens.application.server.tabs.buildconfiguration.BuildConfigurationTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.details.DetailsTab
 
 @Composable
@@ -53,20 +53,34 @@ fun ApplicationServerScreen(
 
     val state by viewModel.state.collectAsState()
 
-    fun reload(isRefresh: Boolean = false) {
+    var refreshIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
+    fun reload(
+        isRefresh: Boolean = false,
+        onReloadFinish: () -> Unit = {},
+        increaseRefreshIndex: Boolean = false,
+        onError: (String) -> Unit = { error ->
+            Notification.show(
+                activity = activity,
+                duration = 3000L
+            ) {
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        },
+    ) {
         viewModel.init(
             context = context,
             serverId = serverId,
-            onError = { error ->
-                Notification.show(
-                    activity = activity,
-                    duration = 3000L
-                ) {
-                    Text(
-                        text = error,
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
+            onError = onError,
+            onReloadFinish = {
+                if (isRefresh || increaseRefreshIndex) refreshIndex++
+
+                onReloadFinish()
             },
             isRefresh = isRefresh
         )
@@ -123,18 +137,12 @@ fun ApplicationServerScreen(
             enabled = state.server != null && !state.isLoading
         )
 
-        var refreshIndex by rememberSaveable {
-            mutableIntStateOf(0)
-        }
-
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = {
                 reload(
                     isRefresh = true
                 )
-
-                refreshIndex++
             }
         ) {
             Column(
@@ -161,6 +169,17 @@ fun ApplicationServerScreen(
                                 activity = activity,
                                 server = state.server,
                                 refreshIndex = refreshIndex
+                            )
+                        }
+
+                        ServerTab.BUILD_CONFIGURATION -> {
+                            BuildConfigurationTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex,
+                                reload = ::reload
                             )
                         }
 
