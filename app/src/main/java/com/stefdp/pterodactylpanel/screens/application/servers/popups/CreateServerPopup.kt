@@ -261,12 +261,14 @@ fun CreateServerPopup(
 
             Select(
                 options = allocations.map { (_, allocation) ->
+                    val allocationValue = "${allocation.alias ?: allocation.ip}:${allocation.port}"
+
                     SelectOption(
                         id = allocation.id.toString(),
-                        searchLabel = "${allocation.ip}:${allocation.port}",
+                        searchLabel = allocationValue,
                         label = {
                             Text(
-                                text = "${allocation.ip}:${allocation.port}"
+                                text = allocationValue
                             )
                         }
                     )
@@ -286,12 +288,14 @@ fun CreateServerPopup(
 
             Select(
                 options = additionalAllocations.map { (_, allocation) ->
+                    val allocationValue = "${allocation.alias ?: allocation.ip}:${allocation.port}"
+
                     SelectOption(
                         id = allocation.id.toString(),
-                        searchLabel = "${allocation.ip}:${allocation.port}",
+                        searchLabel = allocationValue,
                         label = {
                             Text(
-                                text = "${allocation.ip}:${allocation.port}"
+                                text = allocationValue
                             )
                         }
                     )
