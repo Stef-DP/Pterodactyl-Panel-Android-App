@@ -33,6 +33,7 @@ import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.about.AboutTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.buildconfiguration.BuildConfigurationTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.details.DetailsTab
+import com.stefdp.pterodactylpanel.screens.application.server.tabs.startup.StartupTab
 
 @Composable
 fun ApplicationServerScreen(
@@ -180,6 +181,16 @@ fun ApplicationServerScreen(
                                 server = state.server,
                                 refreshIndex = refreshIndex,
                                 reload = ::reload
+                            )
+                        }
+
+                        ServerTab.STARTUP -> {
+                            StartupTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
                             )
                         }
 
