@@ -39,6 +39,7 @@ import com.stefdp.pterodactylpanel.components.Select
 import com.stefdp.pterodactylpanel.components.SelectOption
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
+import com.stefdp.pterodactylpanel.utils.NameRegex
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
 @Composable
@@ -91,11 +92,14 @@ fun DetailsTab(
             TextInput(
                 value = state.serverName,
                 onValueChange = {
+                    if (!it.text.trim().matches(NameRegex)) return@TextInput
+
                     viewModel.setServerName(it)
                 },
                 enabled = !state.isLoading,
                 label = "Server Name",
                 description = "Character limits: `a-zA-Z0-9_-` and `[Space]`",
+                descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                 required = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -108,6 +112,7 @@ fun DetailsTab(
                 enabled = !state.isLoading,
                 label = "External Identifier",
                 description = "Leave empty to not assign an external identifier for this server. The external ID should be unique to this server and not be in use by any other servers",
+                descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                 modifier = Modifier.fillMaxWidth()
             )
 
