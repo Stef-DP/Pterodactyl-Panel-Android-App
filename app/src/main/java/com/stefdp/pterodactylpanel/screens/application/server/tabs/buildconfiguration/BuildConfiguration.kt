@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.application.server.tabs.buildconfiguration
 
 import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -91,7 +92,8 @@ fun BuildConfigurationTab(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScrollWithScrollbar(scrollState)
+            .verticalScrollWithScrollbar(scrollState),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Container(
             title = {
@@ -237,10 +239,6 @@ fun BuildConfigurationTab(
             )
         }
 
-        Spacer(
-            modifier = Modifier.height(12.dp)
-        )
-
         Container(
             title = {
                 Text(
@@ -301,10 +299,6 @@ fun BuildConfigurationTab(
                 enabled = !state.isLoading
             )
         }
-
-        Spacer(
-            modifier = Modifier.height(12.dp)
-        )
 
         Container(
             title = {
@@ -399,10 +393,6 @@ fun BuildConfigurationTab(
                 multiple = true
             )
         }
-
-        Spacer(
-            modifier = Modifier.height(8.dp)
-        )
 
         Button(
             onClick = {
