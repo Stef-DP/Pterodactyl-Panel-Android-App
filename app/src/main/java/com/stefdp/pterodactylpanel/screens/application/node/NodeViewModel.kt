@@ -37,6 +37,7 @@ class ApplicationNodeViewModel : ViewModel() {
     fun init(
         context: Context,
         nodeId: Long,
+        onReloadFinish: () -> Unit,
         onError: (String) -> Unit,
         isRefresh: Boolean = false
     ) {
@@ -80,6 +81,8 @@ class ApplicationNodeViewModel : ViewModel() {
                                     isLoading = false
                                 )
                             }
+
+                            onReloadFinish()
                         }
                         .onFailure { error ->
                             Logger.error(TAG, "Failed to fetch node configuration: ${error.message}")

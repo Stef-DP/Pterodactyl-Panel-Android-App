@@ -53,7 +53,15 @@ fun ApplicationNodeScreen(
 
     val state by viewModel.state.collectAsState()
 
-    fun reload(isRefresh: Boolean = false) {
+    var refreshIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
+    fun reload(
+        isRefresh: Boolean = false,
+        onReloadFinish: () -> Unit = {},
+        increaseRefreshIndex: Boolean = false
+    ) {
         viewModel.init(
             context = context,
             nodeId = nodeId,
@@ -67,6 +75,11 @@ fun ApplicationNodeScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+            },
+            onReloadFinish = {
+                if (isRefresh || increaseRefreshIndex) refreshIndex++
+
+                onReloadFinish()
             },
             isRefresh = isRefresh
         )
@@ -108,18 +121,12 @@ fun ApplicationNodeScreen(
             enabled = state.node != null && !state.isLoading
         )
 
-        var refreshIndex by rememberSaveable {
-            mutableIntStateOf(0)
-        }
-
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = {
                 reload(
                     isRefresh = true
                 )
-
-                refreshIndex++
             }
         ) {
             Column(
