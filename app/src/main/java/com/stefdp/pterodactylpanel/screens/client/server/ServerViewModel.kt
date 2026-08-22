@@ -48,6 +48,7 @@ class ClientServerViewModel : ViewModel() {
         isRestoringBackup: Boolean = false,
         isServerOwner: Boolean = false,
         onError: (String) -> Unit,
+        onReloadFinish: () -> Unit,
         isRefresh: Boolean = false
     ) {
         viewModelScope.launch {
@@ -95,6 +96,8 @@ class ClientServerViewModel : ViewModel() {
                             isLoading = false
                         )
                     }
+
+                    onReloadFinish()
                 }
                 .onFailure { error ->
                     Logger.error(TAG, "Failed to fetch server data: ${error.message}")

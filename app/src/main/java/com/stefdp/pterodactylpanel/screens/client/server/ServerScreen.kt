@@ -45,6 +45,7 @@ import com.stefdp.pterodactylpanel.components.PullToRefreshBox
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.network.client.models.ServerSubuser
+import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.activity.ActivityTab
 import com.stefdp.pterodactylpanel.screens.client.server.tabs.backups.BackupsTab
@@ -84,7 +85,15 @@ fun ClientServerScreen(
 
     val state by viewModel.state.collectAsState()
 
-    fun reload(isRefresh: Boolean = false) {
+    var refreshIndex by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
+    fun reload(
+        isRefresh: Boolean = false,
+        onReloadFinish: () -> Unit = {},
+        increaseRefreshIndex: Boolean = false
+    ) {
         viewModel.init(
             context = context,
             serverId = serverId,
@@ -105,6 +114,11 @@ fun ClientServerScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+            },
+            onReloadFinish = {
+                if (isRefresh || increaseRefreshIndex) refreshIndex++
+
+                onReloadFinish()
             },
             isRefresh = isRefresh
         )
@@ -160,14 +174,12 @@ fun ClientServerScreen(
                 }
 
                 return@map tab
-                // TODO: when admin side is done, remove IS_DEBUG check
-            } + if (localLoggedUser?.attributes?.admin == true && IS_DEBUG) {
+            } + if (localLoggedUser?.attributes?.admin == true) {
                 Tab(
                     icon = openInNewIcon,
                     iconContentDescription = "Open in admin view",
                     id = "admin",
-                    active = false,
-                    enabled = false // TODO: enabled when the admin side is done
+                    active = false
                 )
             } else null
 
@@ -178,7 +190,9 @@ fun ClientServerScreen(
             tabs = tabs,
             onTabClick = { tab ->
                 if (tab.id == "admin") {
-                    // TODO: navigate to admin screen
+                    navController.navigate(ApplicationServerScreen(state.server!!.attributes.internalId))
+
+                    return@ScrollableTabRow
                 }
 
                 viewModel.setCurrentTab(ServerTab.valueOf(tab.id.uppercase()))
@@ -186,18 +200,12 @@ fun ClientServerScreen(
             enabled = state.server != null && !state.isLoading
         )
 
-        var refreshIndex by rememberSaveable {
-            mutableIntStateOf(0)
-        }
-
         PullToRefreshBox(
             isRefreshing = state.isRefreshing,
             onRefresh = {
                 reload(
                     isRefresh = true
                 )
-
-                refreshIndex++
             }
         ) {
             Column(
