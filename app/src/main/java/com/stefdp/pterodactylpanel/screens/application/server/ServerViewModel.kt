@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.Logger
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListNestsQueryInclude
+import com.stefdp.pterodactylpanel.network.application.models.requests.ListServerDatabasesQueryInclude
 import com.stefdp.pterodactylpanel.network.application.models.requests.ListServersQueryInclude
 import com.stefdp.pterodactylpanel.network.application.requests.getServer
 import com.stefdp.pterodactylpanel.network.models.plus
@@ -20,7 +21,7 @@ data class ApplicationServerUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val server: ApplicationServer? = null,
-    val currentTab: ServerTab = ServerTab.STARTUP // TODO: set back to ABOUT
+    val currentTab: ServerTab = ServerTab.DATABASES // TODO: set back to ABOUT
 )
 
 private const val TAG = "ApplicationServerViewModel"
@@ -58,7 +59,8 @@ class ApplicationServerViewModel : ViewModel() {
                     ListServersQueryInclude.NEST,
                     ListServersQueryInclude.EGG,
                     ListServersQueryInclude.ALLOCATIONS,
-                    ListServersQueryInclude.DATABASES
+                    ListServersQueryInclude.DATABASES,
+                    ListServersQueryInclude.DATABASES + ListServerDatabasesQueryInclude.HOST
                 ).toQueryString()
             )
 
