@@ -25,12 +25,15 @@ import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
 
 @Composable
 fun Container(
+    modifier: Modifier = Modifier,
     title: @Composable RowScope.() -> Unit,
     titleArrangement: Arrangement.Horizontal = Arrangement.SpaceBetween,
     titleAlignment: Alignment.Vertical = Alignment.CenterVertically,
     content: @Composable () -> Unit,
 ) {
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         Row(
             horizontalArrangement = titleArrangement,
             modifier = Modifier
