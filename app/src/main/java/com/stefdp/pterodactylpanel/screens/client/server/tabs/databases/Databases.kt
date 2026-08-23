@@ -57,10 +57,12 @@ fun DatabasesTab(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(server?.attributes?.identifier, refreshIndex) {
+        if (server == null) return@LaunchedEffect
+
         val isFirstLoad = lastRefreshIndex == -1
         val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
 
-        if (!isExplicitRefresh && !isFirstLoad && server != null && state.databases.isNotEmpty()) return@LaunchedEffect
+        if (!isExplicitRefresh && !isFirstLoad && state.databases.isNotEmpty()) return@LaunchedEffect
 
         lastRefreshIndex = refreshIndex
 
