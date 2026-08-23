@@ -21,6 +21,7 @@ object AccountSettingsScreen : AppScreen
 data class ClientServerScreen(
     val serverId: String,
     val directory: String? = null,
+    val switchToDatabases: Boolean = false,
     val isServerSuspended: Boolean = false,
     val isServerInstalling: Boolean = false,
     val isServerTransferring: Boolean = false,

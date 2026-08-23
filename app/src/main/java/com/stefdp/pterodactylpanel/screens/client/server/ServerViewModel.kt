@@ -41,6 +41,7 @@ class ClientServerViewModel : ViewModel() {
         context: Context,
         serverId: String,
         directory: String?,
+        switchToDatabases: Boolean = false,
         isSuspended: Boolean = false,
         isInstalling: Boolean = false,
         isTransferring: Boolean = false,
@@ -65,6 +66,14 @@ class ClientServerViewModel : ViewModel() {
                     isRestoringBackup = isRestoringBackup,
                     isServerOwner = isServerOwner,
                 )
+            }
+
+            if (switchToDatabases) {
+                _state.update {
+                    it.copy(
+                        currentTab = ServerTab.DATABASES,
+                    )
+                }
             }
 
             if (directory != null) {

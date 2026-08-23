@@ -66,6 +66,7 @@ fun ClientServerScreen(
     activity: FragmentActivity,
     innerPadding: PaddingValues,
     serverId: String,
+    switchToDatabases: Boolean = false,
     directory: String? = null,
     isSuspended: Boolean = false,
     isInstalling: Boolean = false,
@@ -104,6 +105,7 @@ fun ClientServerScreen(
             isRestoringBackup = isRestoringBackup,
             isServerOwner = isServerOwner,
             directory = directory,
+            switchToDatabases = switchToDatabases,
             onError = { error ->
                 Notification.show(
                     activity = activity,

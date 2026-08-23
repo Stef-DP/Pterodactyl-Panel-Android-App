@@ -316,6 +316,7 @@ fun AppNavigation(
                 innerPadding = innerPadding,
                 serverId = clientServerScreen.serverId,
                 directory = clientServerScreen.directory,
+                switchToDatabases = clientServerScreen.switchToDatabases,
                 isSuspended = clientServerScreen.isServerSuspended,
                 isInstalling = clientServerScreen.isServerInstalling,
                 isTransferring = clientServerScreen.isServerTransferring,
