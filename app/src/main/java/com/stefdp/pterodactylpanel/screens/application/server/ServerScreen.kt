@@ -137,7 +137,7 @@ fun ApplicationServerScreen(
                 icon = openInNewIcon,
                 iconContentDescription = "Open in user view",
                 id = "user",
-                active = true,
+                active = false,
                 enabled = state.server != null
             )
         }
