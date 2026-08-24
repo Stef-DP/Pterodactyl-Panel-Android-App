@@ -31,9 +31,11 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
+import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.about.AboutTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.buildconfiguration.BuildConfigurationTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.databases.DatabasesTab
+import com.stefdp.pterodactylpanel.screens.application.server.tabs.delete.DeleteTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.details.DetailsTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.manage.ManageTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.startup.StartupTab
@@ -61,11 +63,11 @@ fun ApplicationServerScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -234,8 +236,14 @@ fun ApplicationServerScreen(
                             )
                         }
 
-                        else -> {
-                            Text("WIP")
+                        ServerTab.DELETE -> {
+                            DeleteTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex
+                            )
                         }
                     }
                 }
@@ -272,12 +280,6 @@ enum class ServerTab(
         id = "databases",
         label = "Databases"
     ),
-
-    // i think no api endpoint return that
-//    MOUNTS(
-//        id = "mounts",
-//        label = "Mounts"
-//    ),
 
     MANAGE(
         id = "manage",
