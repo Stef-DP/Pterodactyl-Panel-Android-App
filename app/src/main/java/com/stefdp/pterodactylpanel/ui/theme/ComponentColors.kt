@@ -48,6 +48,8 @@ fun getButtonColors(
         ButtonType.SECONDARY -> MaterialTheme.colorScheme.secondary
         ButtonType.TERTIARY -> MaterialTheme.colorScheme.background
         ButtonType.ERROR -> MaterialTheme.colorScheme.error
+        ButtonType.WARNING -> Yellow
+        ButtonType.SUCCESS -> Green
     }
 
     val contentColor = when (buttonType) {
@@ -55,6 +57,8 @@ fun getButtonColors(
         ButtonType.SECONDARY -> MaterialTheme.colorScheme.onSecondary
         ButtonType.TERTIARY -> MaterialTheme.colorScheme.onSurface
         ButtonType.ERROR -> MaterialTheme.colorScheme.onError
+        ButtonType.WARNING -> MaterialTheme.colorScheme.onPrimary
+        ButtonType.SUCCESS -> MaterialTheme.colorScheme.onPrimary
     }
 
     return ButtonDefaults.buttonColors().copy(

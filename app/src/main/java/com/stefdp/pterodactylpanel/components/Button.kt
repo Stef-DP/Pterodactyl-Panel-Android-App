@@ -60,6 +60,8 @@ enum class ButtonType {
     SECONDARY,
     TERTIARY,
     ERROR,
+    SUCCESS,
+    WARNING
 }
 
 @Preview(showBackground = true, showSystemUi = true,
