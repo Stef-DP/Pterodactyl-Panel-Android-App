@@ -29,12 +29,26 @@ import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.PullToRefreshBox
 import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.about.AboutTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.buildconfiguration.BuildConfigurationTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.databases.DatabasesTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.details.DetailsTab
+import com.stefdp.pterodactylpanel.screens.application.server.tabs.manage.ManageTab
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.startup.StartupTab
+
+val installingStatuses = listOf(
+    ApplicationServer.Attributes.Status.INSTALLING,
+    ApplicationServer.Attributes.Status.INSTALL_FAILED
+)
+
+val disallowedDuringInstallIds = listOf(
+    ServerTab.DETAILS.id,
+    ServerTab.BUILD_CONFIGURATION.id,
+    ServerTab.STARTUP.id,
+    ServerTab.DATABASES.id
+)
 
 @Composable
 fun ApplicationServerScreen(
@@ -109,7 +123,9 @@ fun ApplicationServerScreen(
             state.currentTab,
             state.server
         ) {
-            ServerTab.entries.map { serverTab ->
+            ServerTab.entries.mapNotNull { serverTab ->
+                if (state.server?.attributes?.status in installingStatuses && serverTab.id in disallowedDuringInstallIds) return@mapNotNull null
+
                 Tab(
                     label = serverTab.label,
                     id = serverTab.id,
@@ -119,7 +135,8 @@ fun ApplicationServerScreen(
                 icon = openInNewIcon,
                 iconContentDescription = "Open in user view",
                 id = "user",
-                active = state.server != null
+                active = true,
+                enabled = state.server != null
             )
         }
 
@@ -197,6 +214,17 @@ fun ApplicationServerScreen(
 
                         ServerTab.DATABASES -> {
                             DatabasesTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                server = state.server,
+                                refreshIndex = refreshIndex,
+                                reload = ::reload
+                            )
+                        }
+
+                        ServerTab.MANAGE -> {
+                            ManageTab(
                                 navController = navController,
                                 context = context,
                                 activity = activity,

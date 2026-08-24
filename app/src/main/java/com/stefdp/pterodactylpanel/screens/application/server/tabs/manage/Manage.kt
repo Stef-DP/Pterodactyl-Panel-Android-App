@@ -1,0 +1,230 @@
+package com.stefdp.pterodactylpanel.screens.application.server.tabs.manage
+
+import android.content.Context
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.stefdp.pterodactylpanel.components.Button
+import com.stefdp.pterodactylpanel.components.ButtonType
+import com.stefdp.pterodactylpanel.components.Container
+import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.network.application.models.ApplicationServer
+import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
+
+@Composable
+fun ManageTab(
+    navController: NavHostController,
+    context: Context,
+    activity: FragmentActivity,
+    viewModel: ApplicationServerManageTabViewModel = viewModel(),
+    server: ApplicationServer?,
+    refreshIndex: Int,
+    reload: (
+        isRefresh: Boolean,
+        onReloadFinish: () -> Unit,
+        increaseRefreshIndex: Boolean,
+        onError: (String) -> Unit
+    ) -> Unit
+) {
+    val state by viewModel.state.collectAsState()
+
+    var lastRefreshIndex by rememberSaveable {
+        mutableIntStateOf(-1)
+    }
+
+    LaunchedEffect(server?.attributes?.id, refreshIndex) {
+        if (server == null) return@LaunchedEffect
+
+        val isFirstLoad = lastRefreshIndex == -1
+        val isExplicitRefresh = refreshIndex != lastRefreshIndex && !isFirstLoad
+
+        if (!isExplicitRefresh && !isFirstLoad) return@LaunchedEffect
+
+        lastRefreshIndex = refreshIndex
+
+        viewModel.init(server)
+    }
+
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScrollWithScrollbar(scrollState),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Container(
+            title = {
+                Text(
+                    text = "Reinstall Server",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+            },
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    append("This will reinstall the server with the assigned service scripts. ")
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Danger!")
+                    }
+
+                    append(" This could overwrite server data")
+                }
+            )
+
+            Button(
+                onClick = {
+                    viewModel.reinstallServer(
+                        context = context,
+                        reload = reload,
+                        onSuccess = {
+                            Notification.show(
+                                activity = activity,
+                                duration = 3000L
+                            ) {
+                                Text(
+                                    text = "This server has been queued for a reinstallation beginning now"
+                                )
+                            }
+                        },
+                        onError = { error ->
+                            Notification.show(
+                                activity = activity,
+                                duration = 3000L
+                            ) {
+                                Text(
+                                    text = error,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                    )
+                },
+                enabled = !state.isInstalling && !state.isLoading,
+                buttonType = ButtonType.ERROR,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = if (state.isInstalling) {
+                        "Server Must Install Properly to Reinstall"
+                    } else {
+                        "Reinstall Server"
+                    }
+                )
+            }
+        }
+
+        Container(
+            title = {
+                Text(
+                    text = if (state.isSuspended) "Unsuspend Server" else "Suspend Server",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        ) {
+            Text(
+                text = if (state.isSuspended) {
+                    "This will unsuspend the server and restore normal user access"
+                } else {
+                    "This will suspend the server, stop any running processes, and immediately block the user from being able to access their files or otherwise manage the server through the panel or API"
+                }
+            )
+
+            Button(
+                onClick = {
+                    if (state.isSuspended) {
+                        viewModel.unsuspendServer(
+                            context = context,
+                            reload = reload,
+                            onSuccess = {
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = "Server suspension status has been changed to unsuspended"
+                                    )
+                                }
+                            },
+                            onError = { error ->
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = error,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        )
+                    } else {
+                        viewModel.suspendServer(
+                            context = context,
+                            reload = reload,
+                            onSuccess = {
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = "Server suspension status has been changed to suspended"
+                                    )
+                                }
+                            },
+                            onError = { error ->
+                                Notification.show(
+                                    activity = activity,
+                                    duration = 3000L
+                                ) {
+                                    Text(
+                                        text = error,
+                                        color = MaterialTheme.colorScheme.error
+                                    )
+                                }
+                            }
+                        )
+                    }
+                },
+                enabled = !state.isLoading,
+                buttonType = if (state.isSuspended) ButtonType.SUCCESS else ButtonType.WARNING,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = if (state.isSuspended) {
+                        "Unsuspend Server"
+                    } else {
+                        "Suspend Server"
+                    }
+                )
+            }
+        }
+    }
+}

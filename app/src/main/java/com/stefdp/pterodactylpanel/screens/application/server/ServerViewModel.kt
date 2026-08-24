@@ -21,7 +21,7 @@ data class ApplicationServerUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val server: ApplicationServer? = null,
-    val currentTab: ServerTab = ServerTab.DATABASES // TODO: set back to ABOUT
+    val currentTab: ServerTab = ServerTab.MANAGE // TODO: set back to ABOUT
 )
 
 private const val TAG = "ApplicationServerViewModel"
