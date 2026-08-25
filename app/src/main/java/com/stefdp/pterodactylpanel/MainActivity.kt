@@ -69,6 +69,7 @@ import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.location.ApplicationLocationScreen
 import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsScreen
 import com.stefdp.pterodactylpanel.screens.application.nest.ApplicationNestScreen
+import com.stefdp.pterodactylpanel.screens.application.nestegg.ApplicationNestEggScreen
 import com.stefdp.pterodactylpanel.screens.application.nests.ApplicationNestsScreen
 import com.stefdp.pterodactylpanel.screens.application.node.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesScreen
@@ -436,10 +437,14 @@ fun AppNavigation(
         composable<ApplicationNestEggScreen> { backStackEntry ->
             val applicationNestEggScreen = backStackEntry.toRoute<ApplicationNestEggScreen>()
 
-//            applicationNestEggScreen.nestId
-//            applicationNestEggScreen.eggId
-
-            // TODO: add application nest egg screen
+            ApplicationNestEggScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding,
+                nestId = applicationNestEggScreen.nestId,
+                eggId = applicationNestEggScreen.eggId
+            )
         }
     }
 }

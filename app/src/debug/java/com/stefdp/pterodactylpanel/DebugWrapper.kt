@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import com.stefdp.pterodactylpanel.screens.AppScreen
 import com.stefdp.pterodactylpanel.screens.AccountSettingsScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationLocationsScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNestEggScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNestScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNestsScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
@@ -18,7 +19,10 @@ import com.stefdp.pterodactylpanel.screens.LoadingScreen
 const val IS_DEBUG = true
 const val DEBUG_NETWORK = false
 
-val DEBUG_SCREEN: AppScreen = ApplicationNestScreen(1L)//LoadingScreen
+val DEBUG_SCREEN: AppScreen = ApplicationNestEggScreen(
+    nestId = 1L,
+    eggId = 1L
+)//LoadingScreen
 
 @Composable
 fun DebugWrapper(content: @Composable () -> Unit) {
