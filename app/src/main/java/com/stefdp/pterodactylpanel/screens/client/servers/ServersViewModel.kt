@@ -20,7 +20,8 @@ data class ClientServersUiState(
     val servers: List<Server>? = null,
     val pagination: ListServersResponse.Meta.Pagination? = null,
     val page: Long = 1,
-    val isRefreshing: Boolean = false
+    val isRefreshing: Boolean = false,
+    val showOtherServers: Boolean = false
 )
 
 class ClientServersViewModel : ViewModel() {
@@ -34,7 +35,6 @@ class ClientServersViewModel : ViewModel() {
         filterExternalId: String? = null,
         filterDescription: String? = null,
         filterAny: String? = null,
-        type: GetServersQueryType? = null,
         isRefresh: Boolean = false
     )  {
         viewModelScope.launch {
@@ -52,7 +52,11 @@ class ClientServersViewModel : ViewModel() {
                 filterExternalId = filterExternalId,
                 filterDescription = filterDescription,
                 filterAny = filterAny,
-                type = type,
+                type = if (_state.value.showOtherServers) {
+                    GetServersQueryType.ADMIN
+                } else {
+                    null
+                },
                 perPage = 10,
                 page = _state.value.page,
             )
@@ -92,6 +96,15 @@ class ClientServersViewModel : ViewModel() {
             it.copy(
                 servers = null,
                 page = page
+            )
+        }
+    }
+
+    fun setShowOtherServers(showOtherServers: Boolean) {
+        _state.update {
+            it.copy(
+                servers = null,
+                showOtherServers = showOtherServers
             )
         }
     }

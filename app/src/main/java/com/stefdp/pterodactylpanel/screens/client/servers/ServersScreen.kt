@@ -30,9 +30,9 @@ import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.LocalLoggedUser
 import com.stefdp.pterodactylpanel.components.Pager
 import com.stefdp.pterodactylpanel.components.PullToRefreshBox
+import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.network.client.models.Server
 import com.stefdp.pterodactylpanel.network.client.models.ServerStats
-import com.stefdp.pterodactylpanel.network.client.models.requests.GetServersQueryType
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.components.ServerDisplay
@@ -64,7 +64,6 @@ fun ClientServersScreen(
         filterExternalId: String? = null,
         filterDescription: String? = null,
         filterAny: String? = null,
-        type: GetServersQueryType? = null,
         isRefresh: Boolean = false
     ) {
         viewModel.updateData(
@@ -74,14 +73,13 @@ fun ClientServersScreen(
             filterExternalId = filterExternalId,
             filterDescription = filterDescription,
             filterAny = filterAny,
-            type = type,
             isRefresh = isRefresh
         )
     }
 
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(state.page) {
+    LaunchedEffect(state.page, state.showOtherServers) {
         updateData()
         scrollState.animateScrollTo(0)
     }
@@ -103,6 +101,29 @@ fun ClientServersScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            val isAdmin = localLoggedUser?.attributes?.admin == true
+
+            if (isAdmin) {
+                Switch(
+                    checked = state.showOtherServers,
+                    onCheckedChange = {
+                        viewModel.setShowOtherServers(it)
+                    },
+                    label = if (state.showOtherServers) {
+                        "Showing Others' Servers"
+                    } else {
+                        "Showing Your Servers"
+                    },
+                    modifier = Modifier.padding(
+                        start = 12.dp,
+                        end = 12.dp,
+                        top = 12.dp,
+                        bottom = 4.dp
+                    ),
+                    enabled = state.servers != null
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .verticalScrollWithScrollbar(
@@ -110,9 +131,10 @@ fun ClientServersScreen(
                     )
                     .weight(1f)
                     .padding(
-                        start = 12.dp,
-                        end = 12.dp,
-                        top = 12.dp
+                        horizontal = 12.dp,
+                    )
+                    .padding(
+                        top = if (isAdmin) 0.dp else 12.dp
                     ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
