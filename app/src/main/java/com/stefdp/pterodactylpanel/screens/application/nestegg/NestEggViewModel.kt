@@ -18,7 +18,7 @@ data class ApplicationNestEggUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val egg: ApplicationEgg? = null,
-    val currentTab: NestEggTab = NestEggTab.CONFIGURATION,
+    val currentTab: NestEggTab = NestEggTab.VARIABLES, // TODO: set back to CONFIGURATION
     val backHistory: List<NestEggTab> = emptyList()
 )
 

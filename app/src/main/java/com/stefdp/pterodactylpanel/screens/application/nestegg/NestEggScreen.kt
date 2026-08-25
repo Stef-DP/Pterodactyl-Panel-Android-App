@@ -32,6 +32,7 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.nestegg.tabs.configuration.ConfigurationTab
+import com.stefdp.pterodactylpanel.screens.application.nestegg.tabs.variables.VariablesTab
 
 @Composable
 fun ApplicationNestEggScreen(
@@ -154,6 +155,16 @@ fun ApplicationNestEggScreen(
                     when (state.currentTab) {
                         NestEggTab.CONFIGURATION -> {
                             ConfigurationTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                egg = state.egg,
+                                refreshIndex = refreshIndex
+                            )
+                        }
+
+                        NestEggTab.VARIABLES -> {
+                            VariablesTab(
                                 navController = navController,
                                 context = context,
                                 activity = activity,
