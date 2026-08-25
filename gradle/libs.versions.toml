@@ -19,7 +19,7 @@ core-splashscreen = "1.2.0"
 retrofit = "3.0.0"
 converter-gson = "3.0.0"
 converter-scalars = "3.0.0"
-logging-interceptor = "5.4.0"
+logging-interceptor = "5.5.0"
 navigationCompose = "2.9.8"
 
 # Skeleton Loading
