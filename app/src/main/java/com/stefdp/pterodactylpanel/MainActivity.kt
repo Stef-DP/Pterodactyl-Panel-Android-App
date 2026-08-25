@@ -68,6 +68,7 @@ import com.stefdp.pterodactylpanel.screens.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.location.ApplicationLocationScreen
 import com.stefdp.pterodactylpanel.screens.application.locations.ApplicationLocationsScreen
+import com.stefdp.pterodactylpanel.screens.application.nests.ApplicationNestsScreen
 import com.stefdp.pterodactylpanel.screens.application.node.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.application.server.ApplicationServerScreen
@@ -411,7 +412,12 @@ fun AppNavigation(
         }
 
         composable<ApplicationNestsScreen> {
-            // TODO: add application nests screen
+            ApplicationNestsScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding
+            )
         }
 
         composable<ApplicationNestScreen> { backStackEntry ->
