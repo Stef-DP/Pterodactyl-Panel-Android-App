@@ -415,7 +415,7 @@ fun ApplicationServersScreen(
                 Pager(
                     currentPage = state.page,
                     totalPages = state.pagination?.totalPages ?: 1,
-                    enabled = state.servers != null && !state.servers.isNullOrEmpty(),
+                    enabled = !state.servers.isNullOrEmpty(),
                     onFirstPageClick = {
                         viewModel.setPage(1)
                     },
