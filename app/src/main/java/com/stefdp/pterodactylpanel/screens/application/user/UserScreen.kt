@@ -38,6 +38,7 @@ import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
+import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.users.Languages
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
@@ -53,11 +54,11 @@ fun ApplicationUserScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
