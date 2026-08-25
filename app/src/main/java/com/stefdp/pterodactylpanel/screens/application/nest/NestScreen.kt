@@ -40,6 +40,7 @@ import com.stefdp.pterodactylpanel.components.table.TableCellData
 import com.stefdp.pterodactylpanel.components.table.TableHeaderData
 import com.stefdp.pterodactylpanel.components.table.TableRowData
 import com.stefdp.pterodactylpanel.screens.ApplicationNestEggScreen
+import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.utils.shimmerable
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
 
@@ -54,11 +55,11 @@ fun ApplicationNestScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
