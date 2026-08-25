@@ -13,7 +13,7 @@ private const val TAG = "ApplicationApi[getNestEgg]"
 suspend fun getNestEgg(
     context: Context,
     nestId: Long,
-    eggid: Long,
+    eggId: Long,
     include: String? = null,
 ): Result<ApplicationEgg> {
     try {
@@ -37,7 +37,7 @@ suspend fun getNestEgg(
         val response = PterodactylApiClient.getApplicationApiService(serverUrl).getNestEgg(
             authorization = "Bearer $token",
             nestId = nestId,
-            eggId = eggid,
+            eggId = eggId,
             include = include,
         )
 
