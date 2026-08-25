@@ -64,11 +64,11 @@ fun ApplicationNestsScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -170,7 +170,7 @@ fun ApplicationNestsScreen(
 
                     val tableIdWidth = 100.dp
                     val tableNameWidth = 180.dp
-                    val tableDescriptionWidth = 220.dp
+                    val tableDescriptionWidth = 250.dp
                     val tableEggsWidth = 100.dp
                     val tableServersWidth = 100.dp
 
