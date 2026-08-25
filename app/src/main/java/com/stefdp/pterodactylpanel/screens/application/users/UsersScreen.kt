@@ -161,7 +161,7 @@ fun ApplicationUsersScreen(
                     modifier = Modifier.height(8.dp)
                 )
 
-                val tableIdWidth = 90.dp
+                val tableIdWidth = 100.dp
                 val tableEmailWidth = 300.dp
                 val tableClientNameWidth = 230.dp
                 val tableUsernameWidth = 160.dp
