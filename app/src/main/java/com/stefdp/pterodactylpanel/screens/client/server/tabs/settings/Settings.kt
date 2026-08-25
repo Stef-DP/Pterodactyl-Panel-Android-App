@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -213,7 +214,6 @@ fun SettingsTab(
 
                 val serverUuid = server?.attributes?.uuid ?: "00000000-0000-0000-0000-000000000000"
 
-                // TODO: improve click hitbox
                 CodeText(
                     text = "`$serverUuid`",
                     trailingModifier = Modifier.clickable(
@@ -228,7 +228,8 @@ fun SettingsTab(
                                 clipboardManager.setClipEntry(clipData)
                             }
                         }
-                    )
+                    ),
+                    textAlign = TextAlign.End
                 )
             }
         }
