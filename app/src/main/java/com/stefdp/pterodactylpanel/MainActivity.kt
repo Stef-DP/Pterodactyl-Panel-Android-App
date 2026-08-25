@@ -72,6 +72,7 @@ import com.stefdp.pterodactylpanel.screens.application.node.ApplicationNodeScree
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.application.server.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.application.servers.ApplicationServersScreen
+import com.stefdp.pterodactylpanel.screens.application.user.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.application.users.ApplicationUsersScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
@@ -403,9 +404,13 @@ fun AppNavigation(
         composable<ApplicationUserScreen> { backStackEntry ->
             val applicationUserScreen = backStackEntry.toRoute<ApplicationUserScreen>()
 
-//            applicationUserScreen.userId
-
-            // TODO: add application user screen
+            ApplicationUserScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding,
+                userId = applicationUserScreen.userId
+            )
         }
 
         composable<ApplicationNestsScreen> {
