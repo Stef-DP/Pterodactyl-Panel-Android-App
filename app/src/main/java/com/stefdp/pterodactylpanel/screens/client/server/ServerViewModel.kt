@@ -26,7 +26,8 @@ data class ClientServerUiState(
     val isInstalling: Boolean = false,
     val isTransferring: Boolean = false,
     val isNodeUnderMaintenance: Boolean = false,
-    val isRestoringBackup: Boolean = false
+    val isRestoringBackup: Boolean = false,
+    val backHistory: List<ServerTab> = emptyList()
 )
 
 private const val TAG = "ClientServerViewModel"
@@ -141,7 +142,21 @@ class ClientServerViewModel : ViewModel() {
         ) return
 
         _state.update {
-            it.copy(currentTab = tab)
+            it.copy(
+                currentTab = tab,
+                backHistory = it.backHistory + it.currentTab
+            )
+        }
+    }
+
+    fun handleBack() {
+        _state.update {
+            val lastTab = it.backHistory.lastOrNull() ?: ServerTab.CONSOLE
+
+            it.copy(
+                currentTab = lastTab,
+                backHistory = it.backHistory.dropLast(1)
+            )
         }
     }
 }

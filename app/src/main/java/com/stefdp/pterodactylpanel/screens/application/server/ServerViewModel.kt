@@ -21,7 +21,8 @@ data class ApplicationServerUiState(
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
     val server: ApplicationServer? = null,
-    val currentTab: ServerTab = ServerTab.ABOUT
+    val currentTab: ServerTab = ServerTab.ABOUT,
+    val backHistory: List<ServerTab> = emptyList()
 )
 
 private const val TAG = "ApplicationServerViewModel"
@@ -93,7 +94,21 @@ class ApplicationServerViewModel : ViewModel() {
 
     fun setCurrentTab(tab: ServerTab) {
         _state.update {
-            it.copy(currentTab = tab)
+            it.copy(
+                currentTab = tab,
+                backHistory = it.backHistory + it.currentTab
+            )
+        }
+    }
+
+    fun handleBack() {
+        _state.update {
+            val lastTab = it.backHistory.lastOrNull() ?: ServerTab.ABOUT
+
+            it.copy(
+                currentTab = lastTab,
+                backHistory = it.backHistory.dropLast(1)
+            )
         }
     }
 }

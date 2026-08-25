@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.shared.accountsettings
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -69,6 +70,12 @@ fun AccountSettingsScreen(
                 }
             }
         )
+    }
+
+    BackHandler(
+        enabled = state.backHistory.isNotEmpty()
+    ) {
+        viewModel.handleBack()
     }
 
     val saveableStateHolder = rememberSaveableStateHolder()

@@ -23,7 +23,8 @@ data class ApplicationNodeUiState(
     val isRefreshing: Boolean = false,
     val node: ApplicationNode? = null,
     val nodeConfiguration: GetNodeConfigurationResponse? = null,
-    val currentTab: NodeTab = NodeTab.ABOUT
+    val currentTab: NodeTab = NodeTab.ABOUT,
+    val backHistory: List<NodeTab> = emptyList()
 )
 
 private const val TAG = "ApplicationNodeViewModel"
@@ -114,7 +115,21 @@ class ApplicationNodeViewModel : ViewModel() {
 
     fun setCurrentTab(tab: NodeTab) {
         _state.update {
-            it.copy(currentTab = tab)
+            it.copy(
+                currentTab = tab,
+                backHistory = it.backHistory + it.currentTab
+            )
+        }
+    }
+
+    fun handleBack() {
+        _state.update {
+            val lastTab = it.backHistory.lastOrNull() ?: NodeTab.ABOUT
+
+            it.copy(
+                currentTab = lastTab,
+                backHistory = it.backHistory.dropLast(1)
+            )
         }
     }
 }

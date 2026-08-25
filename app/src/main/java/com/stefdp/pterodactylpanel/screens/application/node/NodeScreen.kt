@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.application.node
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -89,6 +90,12 @@ fun ApplicationNodeScreen(
 
     LaunchedEffect(nodeId) {
         reload()
+    }
+
+    BackHandler(
+        enabled = state.backHistory.isNotEmpty()
+    ) {
+        viewModel.handleBack()
     }
 
     Column(

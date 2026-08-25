@@ -97,7 +97,6 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
 }
 
 // TODO: when admin side is done, add "show others' servers" switch in main servers list when application api key is provided
-// TODO: in tabbed screens, use BackHandler so the back button switches between previous tabs instead of previous screen
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)

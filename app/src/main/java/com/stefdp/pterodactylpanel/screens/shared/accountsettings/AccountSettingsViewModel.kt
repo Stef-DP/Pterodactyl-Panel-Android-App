@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 data class AccountSettingsUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
-    val currentTab: AccountTab = AccountTab.ACCOUNT
+    val currentTab: AccountTab = AccountTab.ACCOUNT,
+    val backHistory: List<AccountTab> = emptyList()
 )
 
 private const val TAG = "AccountSettingsViewModel"
@@ -56,7 +57,21 @@ class AccountSettingsViewModel : ViewModel() {
 
     fun setCurrentTab(tab: AccountTab) {
         _state.update {
-            it.copy(currentTab = tab)
+            it.copy(
+                currentTab = tab,
+                backHistory = it.backHistory + it.currentTab
+            )
+        }
+    }
+
+    fun handleBack() {
+        _state.update {
+            val lastTab = it.backHistory.lastOrNull() ?: AccountTab.ACCOUNT
+
+            it.copy(
+                currentTab = lastTab,
+                backHistory = it.backHistory.dropLast(1)
+            )
         }
     }
 }

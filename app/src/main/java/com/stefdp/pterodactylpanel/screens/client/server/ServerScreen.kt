@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.client.server
 
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -130,6 +131,12 @@ fun ClientServerScreen(
 
     LaunchedEffect(serverId) {
         reload()
+    }
+
+    BackHandler(
+        enabled = state.backHistory.isNotEmpty()
+    ) {
+        viewModel.handleBack()
     }
 
     Column(
