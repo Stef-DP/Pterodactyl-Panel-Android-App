@@ -32,6 +32,7 @@ import com.stefdp.pterodactylpanel.components.ScrollableTabRow
 import com.stefdp.pterodactylpanel.components.Tab
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.screens.application.nestegg.tabs.configuration.ConfigurationTab
+import com.stefdp.pterodactylpanel.screens.application.nestegg.tabs.installscript.InstallScriptTab
 import com.stefdp.pterodactylpanel.screens.application.nestegg.tabs.variables.VariablesTab
 
 @Composable
@@ -46,11 +47,11 @@ fun ApplicationNestEggScreen(
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
-//    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
-//        navController.navigate(LoginScreen) {
-//            popUpTo(navController.graph.id) { inclusive = true }
-//        }
-//    }
+    if (localLoggedUser == null || !localLoggedUser.attributes.admin) {
+        navController.navigate(LoginScreen) {
+            popUpTo(navController.graph.id) { inclusive = true }
+        }
+    }
 
     val state by viewModel.state.collectAsState()
 
@@ -121,13 +122,7 @@ fun ApplicationNestEggScreen(
                     id = nestEggTab.id,
                     active = nestEggTab == state.currentTab
                 )
-            } + Tab(
-                icon = openInNewIcon,
-                iconContentDescription = "Open in user view",
-                id = "user",
-                active = false,
-                enabled = state.egg != null
-            )
+            }
         }
 
         ScrollableTabRow(
@@ -173,8 +168,14 @@ fun ApplicationNestEggScreen(
                             )
                         }
 
-                        else -> {
-                            Text("WIP")
+                        NestEggTab.INSTALL_SCRIPT -> {
+                            InstallScriptTab(
+                                navController = navController,
+                                context = context,
+                                activity = activity,
+                                egg = state.egg,
+                                refreshIndex = refreshIndex
+                            )
                         }
                     }
                 }
