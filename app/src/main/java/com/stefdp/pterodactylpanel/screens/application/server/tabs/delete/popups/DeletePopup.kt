@@ -15,6 +15,8 @@ import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Popup
+import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.delete.ApplicationServerDeleteTabUiState
 import com.stefdp.pterodactylpanel.screens.application.server.tabs.delete.ApplicationServerDeleteTabViewModel
 
@@ -100,7 +102,9 @@ fun DeletePopup(
                                 }
                             },
                             onSuccess = {
-                                navController.popBackStack()
+                                navController.navigate(ApplicationServersScreen) {
+                                    popUpTo<ApplicationServerScreen> { inclusive = true }
+                                }
                             }
                         )
                     }

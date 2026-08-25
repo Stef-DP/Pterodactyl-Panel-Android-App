@@ -43,6 +43,8 @@ import com.stefdp.pterodactylpanel.components.table.Table
 import com.stefdp.pterodactylpanel.components.table.TableCellData
 import com.stefdp.pterodactylpanel.components.table.TableHeaderData
 import com.stefdp.pterodactylpanel.components.table.TableRowData
+import com.stefdp.pterodactylpanel.screens.ApplicationLocationScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationLocationsScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 
@@ -158,7 +160,9 @@ fun ApplicationLocationScreen(
                                     }
                                 },
                                 onSuccess = {
-                                    navController.popBackStack()
+                                    navController.navigate(ApplicationLocationsScreen) {
+                                        popUpTo<ApplicationLocationScreen> { inclusive = true }
+                                    }
                                 }
                             )
                         },

@@ -48,6 +48,8 @@ import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.network.application.models.ApplicationNode
 import com.stefdp.pterodactylpanel.network.application.models.responses.GetNodeConfigurationResponse
+import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.ui.theme.DarkGreen
 import com.stefdp.pterodactylpanel.ui.theme.DarkerGreen
 import com.stefdp.pterodactylpanel.utils.shimmerable
@@ -338,7 +340,9 @@ fun AboutTab(
                     viewModel.deleteNode(
                         context = context,
                         onSuccess = {
-                            navController.popBackStack()
+                            navController.navigate(ApplicationNodesScreen) {
+                                popUpTo<ApplicationNodeScreen> { inclusive = true }
+                            }
                         },
                         onError = { error ->
                             Notification.show(
