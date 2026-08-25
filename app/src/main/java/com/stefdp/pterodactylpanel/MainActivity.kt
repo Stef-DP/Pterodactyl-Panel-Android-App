@@ -72,6 +72,7 @@ import com.stefdp.pterodactylpanel.screens.application.node.ApplicationNodeScree
 import com.stefdp.pterodactylpanel.screens.application.nodes.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.application.server.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.application.servers.ApplicationServersScreen
+import com.stefdp.pterodactylpanel.screens.application.users.ApplicationUsersScreen
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.AccountSettingsScreen
@@ -95,6 +96,7 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
 }
 
 // TODO: when admin side is done, add "show others' servers" switch in main servers list when application api key is provided
+// TODO: in tabbed screens, use BackHandler so the back button switches between previous tabs instead of previous screen
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
@@ -373,7 +375,7 @@ fun AppNavigation(
                 navController = navController,
                 activity = activity,
                 context = context,
-                innerPadding = innerPadding,
+                innerPadding = innerPadding
             )
         }
 
@@ -390,7 +392,12 @@ fun AppNavigation(
         }
 
         composable<ApplicationUsersScreen> {
-            // TODO: add application users screen
+            ApplicationUsersScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding
+            )
         }
 
         composable<ApplicationUserScreen> { backStackEntry ->

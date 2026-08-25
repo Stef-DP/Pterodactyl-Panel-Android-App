@@ -334,7 +334,7 @@ fun CreateNodePopup(
                     viewModel.hideCreateNodePopup()
                 },
                 buttonType = ButtonType.SECONDARY,
-                enabled = state.nodes != null
+                enabled = state.nodes != null && !state.isLoading
             ) {
                 Text("Cancel")
             }

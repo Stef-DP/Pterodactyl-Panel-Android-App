@@ -9,12 +9,13 @@ import com.stefdp.pterodactylpanel.screens.ApplicationNodeScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationNodesScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
+import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 
 const val IS_DEBUG = true
 const val DEBUG_NETWORK = false
 
-val DEBUG_SCREEN: AppScreen = ApplicationServerScreen(3)//LoadingScreen
+val DEBUG_SCREEN: AppScreen = ApplicationUsersScreen//LoadingScreen
 
 @Composable
 fun DebugWrapper(content: @Composable () -> Unit) {
