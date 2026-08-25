@@ -156,6 +156,10 @@ fun CreateUserPopup(
             )
         }
 
+        Spacer(
+            modifier = Modifier.height(12.dp)
+        )
+
         Container(
             title = {
                 Text(
