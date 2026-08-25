@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class ApplicationNestUiState(
-    val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val nest: ApplicationNest? = null
 )
@@ -39,7 +38,6 @@ class ApplicationNestViewModel : ViewModel() {
         viewModelScope.launch {
             _state.update {
                 it.copy(
-                    isLoading = true,
                     isRefreshing = isRefresh
                 )
             }
@@ -58,7 +56,6 @@ class ApplicationNestViewModel : ViewModel() {
                    _state.update {
                         it.copy(
                             isRefreshing = false,
-                            isLoading = false,
                             nest = nest,
                         )
                     }
@@ -68,7 +65,6 @@ class ApplicationNestViewModel : ViewModel() {
 
                     _state.update {
                         it.copy(
-                            isLoading = false,
                             isRefreshing = false
                         )
                     }
