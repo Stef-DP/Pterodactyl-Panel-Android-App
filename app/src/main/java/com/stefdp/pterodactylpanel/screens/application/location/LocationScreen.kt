@@ -3,6 +3,9 @@ package com.stefdp.pterodactylpanel.screens.application.location
 import android.content.Context
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +37,7 @@ import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.IconButton
 import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.components.PullToRefreshBox
 import com.stefdp.pterodactylpanel.components.TextInput
 import com.stefdp.pterodactylpanel.components.table.Table
 import com.stefdp.pterodactylpanel.components.table.TableCellData
@@ -58,8 +62,6 @@ fun ApplicationLocationScreen(
             popUpTo(navController.graph.id) { inclusive = true }
         }
     }
-
-    // TODO: add PullToRefreshBox
 
     val state by viewModel.state.collectAsState()
 
@@ -86,13 +88,23 @@ fun ApplicationLocationScreen(
         reload()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding)
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = {
+            reload(isRefresh = true)
+        },
+        modifier = Modifier.padding(innerPadding)
     ) {
+        val refreshScrollState = rememberScrollableState { 0f }
+
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(12.dp)
+                .scrollable(
+                    state = refreshScrollState,
+                    orientation = Orientation.Vertical
+                ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Container(
