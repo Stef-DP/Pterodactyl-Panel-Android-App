@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.LocalUpdateLoggedUser
 import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.screens.BiometricAuthScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoginScreen
 import com.stefdp.pterodactylpanel.ui.theme.Yellow
@@ -62,8 +63,14 @@ fun LoadingScreen(
                 }
             },
             onSuccess = { switchToBiometric ->
-                navController.navigate(ClientServersScreen) {
-                    popUpTo(navController.graph.id) { inclusive = true }
+                if (switchToBiometric) {
+                    navController.navigate(BiometricAuthScreen) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
+                } else {
+                    navController.navigate(ClientServersScreen) {
+                        popUpTo(navController.graph.id) { inclusive = true }
+                    }
                 }
             },
             updateLoggedUser = updateLoggedUser

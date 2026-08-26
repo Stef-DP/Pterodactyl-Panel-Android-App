@@ -16,7 +16,7 @@ import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
 
-const val IS_DEBUG = true
+const val IS_DEBUG = false
 const val DEBUG_NETWORK = false
 
 val DEBUG_SCREEN: AppScreen = ApplicationNestEggScreen(

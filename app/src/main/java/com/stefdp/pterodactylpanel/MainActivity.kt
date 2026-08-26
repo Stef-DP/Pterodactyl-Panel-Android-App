@@ -62,6 +62,7 @@ import com.stefdp.pterodactylpanel.screens.ApplicationServerScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationServersScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUserScreen
 import com.stefdp.pterodactylpanel.screens.ApplicationUsersScreen
+import com.stefdp.pterodactylpanel.screens.BiometricAuthScreen
 import com.stefdp.pterodactylpanel.screens.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.LoadingScreen
@@ -80,6 +81,7 @@ import com.stefdp.pterodactylpanel.screens.application.users.ApplicationUsersScr
 import com.stefdp.pterodactylpanel.screens.client.server.ClientServerScreen
 import com.stefdp.pterodactylpanel.screens.client.servers.ClientServersScreen
 import com.stefdp.pterodactylpanel.screens.shared.accountsettings.AccountSettingsScreen
+import com.stefdp.pterodactylpanel.screens.shared.biometricauth.BiometricAuthScreen
 import com.stefdp.pterodactylpanel.screens.shared.loading.LoadingScreen
 import com.stefdp.pterodactylpanel.screens.shared.login.LoginScreen
 import com.stefdp.pterodactylpanel.ui.theme.PterodactylPanelTheme
@@ -98,6 +100,8 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
         )
     }
 }
+
+// TODO: update the site
 
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
@@ -154,6 +158,7 @@ class MainActivity : FragmentActivity() {
                     val invalidRoutes = listOf(
                         LoginScreen::class.qualifiedName,
                         LoadingScreen::class.qualifiedName,
+                        BiometricAuthScreen::class.qualifiedName
                     )
 
                     Scaffold(
@@ -284,6 +289,15 @@ fun AppNavigation(
 
         composable<LoginScreen> {
             LoginScreen(
+                navController = navController,
+                activity = activity,
+                context = context,
+                innerPadding = innerPadding
+            )
+        }
+
+        composable<BiometricAuthScreen> {
+            BiometricAuthScreen(
                 navController = navController,
                 activity = activity,
                 context = context,

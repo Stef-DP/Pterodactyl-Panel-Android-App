@@ -1,11 +1,13 @@
 package com.stefdp.pterodactylpanel.screens.shared.loading
 
 import android.content.Context
+import androidx.biometric.BiometricManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stefdp.pterodactylpanel.network.application.requests.listUsers
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.utils.SecureStorage
+import com.stefdp.pterodactylpanel.utils.getBiometricStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,6 +35,7 @@ class LoadingViewModel : ViewModel() {
 
             val secureStore = SecureStorage.getInstance(context)
 
+            val unlockWithBiometrics = secureStore.get(SecureStorage.STORAGE_UNLOCK_WITH_BIOMETRICS_KEY)?.toBoolean() ?: false
             val serverUrl = secureStore.get(SecureStorage.STORAGE_SERVER_URL_KEY)
             val clientToken = secureStore.get(SecureStorage.STORAGE_CLIENT_TOKEN_KEY)
 
@@ -45,6 +48,8 @@ class LoadingViewModel : ViewModel() {
 
                 return@launch
             }
+
+            val biometricAuthenticationStatus = getBiometricStatus(context)
 
             val newLoggedUser = updateLoggedUser(context)
 
@@ -60,7 +65,7 @@ class LoadingViewModel : ViewModel() {
                 return@launch
             }
 
-            onSuccess(false)
+            onSuccess(unlockWithBiometrics && biometricAuthenticationStatus == BiometricManager.BIOMETRIC_SUCCESS)
         }
     }
 }

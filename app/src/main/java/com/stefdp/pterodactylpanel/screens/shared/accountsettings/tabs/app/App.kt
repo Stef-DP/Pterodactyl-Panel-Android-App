@@ -3,8 +3,10 @@ package com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.app
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.hardware.biometrics.BiometricManager
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +19,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -37,9 +43,15 @@ import com.stefdp.pterodactylpanel.components.Button
 import com.stefdp.pterodactylpanel.components.ButtonType
 import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
+import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.utils.createBiometricPrompt
+import com.stefdp.pterodactylpanel.utils.createPromptInfo
+import com.stefdp.pterodactylpanel.utils.getBiometricStatus
 import com.stefdp.pterodactylpanel.utils.hasNotificationsPermission
+import com.stefdp.pterodactylpanel.utils.promptBiometricAuthentication
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
+import kotlin.contracts.contract
 
 @Composable
 fun AppTab(
@@ -61,6 +73,10 @@ fun AppTab(
     val state by viewModel.state.collectAsState()
 
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshBiometricAuthenticationEnabled(context)
+    }
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -205,7 +221,89 @@ fun AppTab(
                 )
             }
         ) {
-            // TODO: add biometric auth
+            val lifecycleOwner = LocalLifecycleOwner.current
+
+            var biometricAuthenticationStatus by rememberSaveable {
+                mutableIntStateOf(getBiometricStatus(context))
+            }
+
+            DisposableEffect(lifecycleOwner) {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        biometricAuthenticationStatus = getBiometricStatus(context)
+                    }
+                }
+
+                lifecycleOwner.lifecycle.addObserver(observer)
+
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
+
+            val enrollBiometricAuthenticationLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) {}
+
+            Switch(
+                checked = state.biometricAuthenticationEnabled,
+                enabled = (
+                    biometricAuthenticationStatus == androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS || (
+                        biometricAuthenticationStatus == androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED &&
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                        )
+                ),
+                onCheckedChange = { checked ->
+                    val biometricPrompt = createBiometricPrompt(
+                        activity = activity,
+                        onSuccess = {
+                            viewModel.setBiometricAuthenticationEnabled(
+                                context = context,
+                                enabled = checked
+                            )
+                        },
+                        onError = { _, _ ->
+                            Notification.show(
+                                activity = activity,
+                                duration = 3000L
+                            ) {
+                                Text(
+                                    text = "Biometric Authentication Failed",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+                        }
+                    )
+
+                    val biometricPromptInfo = createPromptInfo()
+
+                    promptBiometricAuthentication(
+                        activity = activity,
+                        prompt = biometricPrompt,
+                        promptInfo = biometricPromptInfo,
+                        onBiometricNotEnrolledError = {
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return@promptBiometricAuthentication
+
+                            val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
+                                putExtra(
+                                    Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                                    BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                                )
+                            }
+
+                            enrollBiometricAuthenticationLauncher.launch(enrollIntent)
+                        }
+                    )
+                },
+                label = "Unlock with Biometrics",
+                description = AnnotatedString.fromHtml("Require biometric authentication to unlock the app.${
+                    if (biometricAuthenticationStatus == androidx.biometric.BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                        "<br> <b>NOTE:</b> You will be prompted to enroll an authentication method."
+                    else
+                        ""
+                }"),
+                descriptionColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
+            )
 
             Button(
                 onClick = {

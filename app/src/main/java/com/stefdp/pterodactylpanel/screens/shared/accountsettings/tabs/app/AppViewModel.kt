@@ -22,6 +22,7 @@ enum class UpdateDownloadFolderType {
 data class AccountSettingsAppTabUiState(
     val updateDownloadFolderType: UpdateDownloadFolderType = UpdateDownloadFolderType.FILE,
     val hasNotificationPermission: Boolean = false,
+    val biometricAuthenticationEnabled: Boolean = false,
 )
 
 private const val TAG = "AccountSettingsAppTabViewModel"
@@ -29,6 +30,34 @@ private const val TAG = "AccountSettingsAppTabViewModel"
 class AccountSettingsAppTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<AccountSettingsAppTabUiState> = MutableStateFlow(AccountSettingsAppTabUiState())
     val state: StateFlow<AccountSettingsAppTabUiState> = _state.asStateFlow()
+
+    fun refreshBiometricAuthenticationEnabled(context: Context) {
+        viewModelScope.launch {
+            val secureStore = SecureStorage.getInstance(context)
+
+            _state.update {
+                it.copy(
+                    biometricAuthenticationEnabled = secureStore.get(SecureStorage.STORAGE_UNLOCK_WITH_BIOMETRICS_KEY).toBoolean()
+                )
+            }
+        }
+    }
+
+    fun setBiometricAuthenticationEnabled(
+        context: Context,
+        enabled: Boolean
+    ) {
+        viewModelScope.launch {
+            val secureStore = SecureStorage.getInstance(context)
+            secureStore.set(SecureStorage.STORAGE_UNLOCK_WITH_BIOMETRICS_KEY, enabled.toString())
+
+            _state.update {
+                it.copy(
+                    biometricAuthenticationEnabled = enabled
+                )
+            }
+        }
+    }
 
     fun setUpdateDownloadFolderType(type: UpdateDownloadFolderType) {
         _state.update {

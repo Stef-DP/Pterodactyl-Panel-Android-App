@@ -12,6 +12,9 @@ object LoadingScreen : AppScreen
 object LoginScreen : AppScreen
 
 @Serializable
+object BiometricAuthScreen : AppScreen
+
+@Serializable
 object ClientServersScreen : AppScreen
 
 @Serializable
