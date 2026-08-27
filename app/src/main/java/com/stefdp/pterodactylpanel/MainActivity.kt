@@ -101,8 +101,6 @@ val LocalUpdateLoggedUser = compositionLocalOf<suspend (context: Context) -> Res
     }
 }
 
-// TODO: update the site
-
 class MainActivity : FragmentActivity() {
     private var isAppReady by mutableStateOf(false)
 
