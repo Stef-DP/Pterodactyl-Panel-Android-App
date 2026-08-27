@@ -6,6 +6,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
+import com.stefdp.pterodactylpanel.BuildConfig
 
 class UpdateManager(
     private val activity: FragmentActivity,
@@ -13,7 +14,7 @@ class UpdateManager(
     private val updateLauncher: ActivityResultLauncher<IntentSenderRequest>,
 ) : BaseUpdateManager {
     override fun getInstaller(): Installer {
-        getInstaller(activity)
+        return getInstaller(activity)
     }
 
     override suspend fun checkForUpdates(
