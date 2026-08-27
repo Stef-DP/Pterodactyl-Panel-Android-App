@@ -1,0 +1,2 @@
+Added admin side management (locations, nodes, servers, users and nests).
+Some features are read-only or missing because of API limitations.

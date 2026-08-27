@@ -1,0 +1,2 @@
+Aggiunta la gestione del lato admin (posizioni, nodi, server, utenti e nest).
+Alcune funzionalità sono sola lettura o assenti a causa di limiti dell'API.

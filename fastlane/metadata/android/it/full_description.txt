@@ -6,5 +6,24 @@ Puoi gestire tutti gli aspetti dei tuoi server, Console, Files, Databases, Sched
 Gestire il tuo account:
 Puoi cambiare l'email o la password, attivare o disattivare il 2FA, gestire API keys e SSH keys e vedere la tua attività.
 
-In un aggiornamento futuro:
-Saranno aggiungere tutte le funzioni amministratore, come gestire altri utenti, creare server, gestire nodi, allocazioni etc.
+Funzionalità solo per Admin:
+
+Gestire i server degli altri:
+Gestisci i server degli altri utenti allo stesso modo in cui gestisci i tuoi.
+
+Gestisci le posizioni:
+Visualizza, crea, aggiorna ed elimina le posizioni del pannello.
+
+Gestisci i nodi:
+Visualizza, crea, aggiorna ed elimina i nodi del pannello insieme alle loro allocazioni.
+
+Gestisci i server:
+Visualizza, crea, aggiorna ed elimina i server del pannello (la scheda "Databases" è di sola lettura e la scheda "Mounts" è assente a causa di limiti dell'API.
+
+Gestisci gli utenti:
+Visualizza, crea, aggiorna ed elimina gli utenti del pannello.
+
+Visualizza i nest e i loro egg:
+Visualizza i nest del pannello e i loro egg (NOTA: sola lettura a causa dei limiti dell'API)
+
+NOTA: Le impostazioni generali, dell'API, dei Database e dei Mounts non sono disponibili perché non esiste un endpoint API per recuperarli o gestirli.

@@ -6,5 +6,24 @@ You can manage all the aspects of your servers: Console, Files, Databases, Sched
 Manage your own User:
 You can change your email or password, toggle 2FA on or off, manage API and SSH keys and view your own activity.
 
-In a future release:
-All the admin features will be added, such as managing other users, creating servers, managing nodes, allocations, etc.
+Admin Only Features:
+
+Manage others' servers:
+Manage other people's servers the same way you manage your own.
+
+Manage the locations:
+View, create, update and delete the panel's locations.
+
+Manage the nodes:
+View, create, update and delete the panel's nodes along with their allocations.
+
+Manage the servers:
+View, create, update and delete the panel's servers ("Databases" tab is read-only and "Mounts" tab is missing as per API limitations).
+
+Manage the users:
+View, create, update and delete the panel's users.
+
+Preview the nests & their eggs:
+View the panel's nests & their eggs (NOTE: read-only as per API limitations)
+
+NOTE: Application settings, API, Databases, and Mounts are not available because there is no API endpoint to retrieve or manage them.
