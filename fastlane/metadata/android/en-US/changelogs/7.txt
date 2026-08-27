@@ -1,0 +1,2 @@
+Added update checking
+Added an animation on certain transitions like the loading state of the login screen

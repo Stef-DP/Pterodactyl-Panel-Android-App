@@ -123,18 +123,15 @@ jobs:
 
       - name: Build All Artifacts
         run: |
-          # ./gradlew assembleFdroidRelease
-          # ./gradlew assembleApkRelease
-          # ./gradlew ${{ env.main_project_module }}:bundlePlayRelease
-          ./gradlew assembleRelease
-          ./gradlew ${{ env.main_project_module }}:bundleRelease
+          ./gradlew assembleFdroidRelease
+          ./gradlew assembleApkRelease
+          ./gradlew ${{ env.main_project_module }}:bundlePlayRelease
 
       - name: Zip Native Debug Symbols
         run: |
           mkdir -p ${{ github.workspace }}/output
           
-          # SYMBOLS_DIR="${{ env.main_project_module }}/build/intermediates/merged_native_libs/playRelease/mergePlayReleaseNativeLibs/out/lib/"
-          SYMBOLS_DIR="${{ env.main_project_module }}/build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib/"
+          SYMBOLS_DIR="${{ env.main_project_module }}/build/intermediates/merged_native_libs/playRelease/mergePlayReleaseNativeLibs/out/lib/"
           
           if [ -d "$SYMBOLS_DIR" ]; then
             cd "$SYMBOLS_DIR"
@@ -151,11 +148,9 @@ jobs:
         run: |
           mkdir -p signing_staging
 
-          # cp ${{ env.main_project_module }}/build/outputs/apk/apk/release/*.apk signing_staging/
-          # cp ${{ env.main_project_module }}/build/outputs/apk/fdroid/release/*.apk signing_staging/
-          # cp ${{ env.main_project_module }}/build/outputs/bundle/playRelease/*.aab signing_staging/
-          cp ${{ env.main_project_module }}/build/outputs/apk/release/*.apk signing_staging/
-          cp ${{ env.main_project_module }}/build/outputs/bundle/release/*.aab signing_staging/
+          cp ${{ env.main_project_module }}/build/outputs/apk/apk/release/*.apk signing_staging/
+          cp ${{ env.main_project_module }}/build/outputs/apk/fdroid/release/*.apk signing_staging/
+          cp ${{ env.main_project_module }}/build/outputs/bundle/playRelease/*.aab signing_staging/
 
       - name: Sign Release Artifacts
         run: |
@@ -190,10 +185,8 @@ jobs:
       - name: Copy signed artifacts to output
         run: |
           # ---- reminder for myself, if this apk file name is changed, change in the froid repo too in the binary part ----
-          # cp signing_staging/*fdroid*-signed*.apk ${{ github.workspace }}/output/app-fdroid-release-signed.apk
-          # cp signing_staging/*apk*-signed*.apk ${{ github.workspace }}/output/app-apk-release-signed.apk
-          cp signing_staging/*-signed*.apk ${{ github.workspace }}/output/app-release-signed.apk
-          cp signing_staging/*-signed*.aab ${{ github.workspace }}/output/
+          cp signing_staging/*fdroid*-signed*.apk ${{ github.workspace }}/output/app-fdroid-release-signed.apk
+          cp signing_staging/*apk*-signed*.apk ${{ github.workspace }}/output/app-apk-release-signed.apk
 
       - name: Publish Release
         uses: actions/forgejo-release@v2.7.3

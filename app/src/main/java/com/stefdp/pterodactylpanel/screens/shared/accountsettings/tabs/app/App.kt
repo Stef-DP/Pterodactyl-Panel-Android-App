@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.shared.accountsettings.tabs.app
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.hardware.biometrics.BiometricManager
@@ -9,12 +10,25 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,13 +59,13 @@ import com.stefdp.pterodactylpanel.components.Container
 import com.stefdp.pterodactylpanel.components.Notification
 import com.stefdp.pterodactylpanel.components.Switch
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.updatemanager.UpdateManager
 import com.stefdp.pterodactylpanel.utils.createBiometricPrompt
 import com.stefdp.pterodactylpanel.utils.createPromptInfo
 import com.stefdp.pterodactylpanel.utils.getBiometricStatus
 import com.stefdp.pterodactylpanel.utils.hasNotificationsPermission
 import com.stefdp.pterodactylpanel.utils.promptBiometricAuthentication
 import com.stefdp.pterodactylpanel.utils.verticalScrollWithScrollbar
-import kotlin.contracts.contract
 
 @Composable
 fun AppTab(
@@ -59,6 +73,7 @@ fun AppTab(
     context: Context,
     activity: FragmentActivity,
     viewModel: AccountSettingsAppTabViewModel = viewModel(),
+    update: Boolean,
 ) {
     val localUpdateLoggedUser = LocalUpdateLoggedUser.current
 
@@ -75,6 +90,7 @@ fun AppTab(
     val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
+        viewModel.init(update)
         viewModel.refreshBiometricAuthenticationEnabled(context)
     }
 
@@ -209,6 +225,92 @@ fun AppTab(
                 Text(
                     text = "Change Backup Download Folder"
                 )
+            }
+
+            val updateLauncher = rememberLauncherForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult()
+            ) { result ->
+                if (result.resultCode != RESULT_OK) {
+                    Notification.show(
+                        activity = activity,
+                        duration = 3000L
+                    ) {
+                        Text(
+                            text = "Update failed or was cancelled",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+
+            val updateManager = UpdateManager(
+                activity = activity,
+                context = context,
+                updateLauncher = updateLauncher
+            )
+
+            Button(
+                onClick = {
+                    if (state.isUpdateAvailable) {
+                        viewModel.downloadUpdate(updateManager)
+                    } else {
+                        viewModel.checkForUpdates(
+                            updateManager = updateManager,
+                            onSuccess = { hasUpdate ->
+                                if (hasUpdate) {
+                                    Notification.show(
+                                        activity = activity,
+                                    ) {
+                                        Text(
+                                            text = if (hasUpdate) "An update is available!" else "You are on the latest version."
+                                        )
+                                    }
+                                } else {
+                                    Notification.show(
+                                        activity = activity,
+                                        duration = 3000L
+                                    ) {
+                                        Text(
+                                            text = "You're on the latest version"
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
+                },
+                enabled = !state.isLoading,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AnimatedVisibility(
+                    visible = state.isLoading && !state.isUpdateAvailable
+                ) {
+                    Row {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp,
+                            color = LocalContentColor.current
+                        )
+
+                        Spacer(
+                            modifier = Modifier.width(16.dp)
+                        )
+                    }
+                }
+
+                AnimatedContent(
+                    targetState = if (state.isUpdateAvailable) "Download Update" else "Check for updates",
+                    transitionSpec = {
+                        (
+                            fadeIn() + slideInVertically { height -> height }
+                        ) togetherWith (
+                            fadeOut() + slideOutVertically { height -> -height }
+                        )
+                    },
+                    label = "UpdateTextAnimation"
+                ) { targetText ->
+                    Text(text = targetText)
+                }
             }
         }
 

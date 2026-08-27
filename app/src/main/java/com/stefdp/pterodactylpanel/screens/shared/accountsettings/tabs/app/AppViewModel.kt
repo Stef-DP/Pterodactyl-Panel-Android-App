@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.stefdp.pterodactylpanel.network.client.models.User
 import com.stefdp.pterodactylpanel.screens.LoginScreen
+import com.stefdp.pterodactylpanel.updatemanager.UpdateManager
 import com.stefdp.pterodactylpanel.utils.SecureStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,8 @@ data class AccountSettingsAppTabUiState(
     val updateDownloadFolderType: UpdateDownloadFolderType = UpdateDownloadFolderType.FILE,
     val hasNotificationPermission: Boolean = false,
     val biometricAuthenticationEnabled: Boolean = false,
+    val isUpdateAvailable: Boolean = false,
+    val isLoading: Boolean = false,
 )
 
 private const val TAG = "AccountSettingsAppTabViewModel"
@@ -30,6 +33,16 @@ private const val TAG = "AccountSettingsAppTabViewModel"
 class AccountSettingsAppTabViewModel : ViewModel() {
     private val _state: MutableStateFlow<AccountSettingsAppTabUiState> = MutableStateFlow(AccountSettingsAppTabUiState())
     val state: StateFlow<AccountSettingsAppTabUiState> = _state.asStateFlow()
+
+    fun init(
+        update: Boolean
+    ) {
+        _state.update {
+            it.copy(
+                isUpdateAvailable = update
+            )
+        }
+    }
 
     fun refreshBiometricAuthenticationEnabled(context: Context) {
         viewModelScope.launch {
@@ -86,6 +99,40 @@ class AccountSettingsAppTabViewModel : ViewModel() {
             }
 
             secureStore.set(key, uri.toString())
+        }
+    }
+
+    fun checkForUpdates(
+        updateManager: UpdateManager,
+        onSuccess: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    isLoading = true
+                )
+            }
+
+            val hasUpdate = updateManager.checkForUpdates(
+                openStore = true
+            )
+
+            onSuccess(hasUpdate)
+
+            _state.update {
+                it.copy(
+                    isLoading = false,
+                    isUpdateAvailable = hasUpdate
+                )
+            }
+        }
+    }
+
+    fun downloadUpdate(
+        updateManager: UpdateManager,
+    ) {
+        viewModelScope.launch {
+            updateManager.update()
         }
     }
 

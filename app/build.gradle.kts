@@ -17,8 +17,8 @@ android {
         applicationId = "com.stefdp.pterodactylpanel"
         minSdk = 26
         targetSdk = 37
-        versionCode = 6
-        versionName = "1.1.0"
+        versionCode = 7
+        versionName = "1.2.0"
         ndkVersion = "29.0.14206865"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -55,6 +55,22 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             manifestPlaceholders["appName"] = "$baseAppName (Debug)"
+        }
+    }
+
+    flavorDimensions.add("store")
+
+    productFlavors {
+        create("play") {
+            dimension = "store"
+        }
+
+        create("apk") {
+            dimension = "store"
+        }
+
+        create("fdroid") {
+            dimension = "store"
         }
     }
 
@@ -127,4 +143,9 @@ dependencies {
 
     // KAML
     implementation(libs.kaml)
+
+    // Play Store In-App Updates
+    "playImplementation"(libs.app.update)
+    "playImplementation"(libs.app.update.ktx)
+    "playImplementation"(libs.kotlinx.coroutines.play.services)
 }

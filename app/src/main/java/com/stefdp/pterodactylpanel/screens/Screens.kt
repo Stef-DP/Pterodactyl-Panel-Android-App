@@ -18,7 +18,10 @@ object BiometricAuthScreen : AppScreen
 object ClientServersScreen : AppScreen
 
 @Serializable
-object AccountSettingsScreen : AppScreen
+data class AccountSettingsScreen(
+    val update: Boolean = false,
+    val updateSwitchCategory: Boolean = false
+) : AppScreen
 
 @Serializable
 data class ClientServerScreen(

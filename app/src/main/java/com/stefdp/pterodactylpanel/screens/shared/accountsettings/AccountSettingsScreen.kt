@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.waterfallPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -40,7 +41,9 @@ fun AccountSettingsScreen(
     context: Context,
     activity: FragmentActivity,
     innerPadding: PaddingValues,
-    viewModel: AccountSettingsViewModel = viewModel()
+    viewModel: AccountSettingsViewModel = viewModel(),
+    update: Boolean,
+    updateSwitchCategory: Boolean,
 ) {
     val localLoggedUser = LocalLoggedUser.current
 
@@ -69,6 +72,12 @@ fun AccountSettingsScreen(
                     )
                 }
             }
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.init(
+            updateSwitchCategory = updateSwitchCategory
         )
     }
 
@@ -160,6 +169,7 @@ fun AccountSettingsScreen(
                                 navController = navController,
                                 context = context,
                                 activity = activity,
+                                update = update,
                             )
                         }
                     }

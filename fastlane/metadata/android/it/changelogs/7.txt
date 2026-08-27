@@ -1,0 +1,2 @@
+Aggiunto un check degli aggiornamenti
+Aggiunta un'animazione su certe transizioni come lo stato di caricamento del menù di login

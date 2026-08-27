@@ -24,6 +24,17 @@ class AccountSettingsViewModel : ViewModel() {
     private var _state: MutableStateFlow<AccountSettingsUiState> = MutableStateFlow(AccountSettingsUiState())
     val state: StateFlow<AccountSettingsUiState> = _state.asStateFlow()
 
+    fun init(
+        updateSwitchCategory: Boolean,
+    ) {
+        _state.update {
+            it.copy(
+                currentTab = if (updateSwitchCategory) AccountTab.APP
+                else it.currentTab
+            )
+        }
+    }
+
     fun reloadUser(
         context: Context,
         updateUser: suspend (context: Context) -> Result<User>,

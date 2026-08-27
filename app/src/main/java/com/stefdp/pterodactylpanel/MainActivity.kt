@@ -303,12 +303,16 @@ fun AppNavigation(
             )
         }
 
-        composable<AccountSettingsScreen> {
+        composable<AccountSettingsScreen> { backStackEntry ->
+            val accountSettingsScreen = backStackEntry.toRoute<AccountSettingsScreen>()
+
             AccountSettingsScreen(
                 navController = navController,
                 activity = activity,
                 context = context,
-                innerPadding = innerPadding
+                innerPadding = innerPadding,
+                update = accountSettingsScreen.update,
+                updateSwitchCategory = accountSettingsScreen.updateSwitchCategory
             )
         }
 
