@@ -1,6 +1,7 @@
 package com.stefdp.pterodactylpanel.screens.application.node.tabs.allocations.popups
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -133,14 +134,18 @@ fun BulkDeleteAllocationsPopup(
                 buttonType = ButtonType.ERROR,
                 enabled = !state.isLoading
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp)
-                    )
+                AnimatedVisibility(
+                    visible = state.isLoading
+                ) {
+                    Row {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp)
+                        )
 
-                    Spacer(
-                        modifier = Modifier.width(8.dp)
-                    )
+                        Spacer(
+                            modifier = Modifier.width(8.dp)
+                        )
+                    }
                 }
 
                 Text("Delete")

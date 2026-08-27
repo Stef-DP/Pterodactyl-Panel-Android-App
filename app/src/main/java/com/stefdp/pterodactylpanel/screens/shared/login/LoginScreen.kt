@@ -271,16 +271,20 @@ fun LoginScreen(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp,
-                                color = LocalContentColor.current,
-                            )
+                        AnimatedVisibility(
+                            visible = state.isLoading
+                        ) {
+                            Row {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = LocalContentColor.current,
+                                )
 
-                            Spacer(
-                                modifier = Modifier.size(16.dp)
-                            )
+                                Spacer(
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
                         }
 
                         Text(
