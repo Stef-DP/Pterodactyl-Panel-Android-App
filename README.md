@@ -15,10 +15,17 @@ An Android app to manage your [Pterodactyl Panel](https://pterodactyl.io) server
 
 # Download
 
-The app will be available on the following platofrms:
-- Google Play Store
-- Forgejo Releases
-- (maybe F-Droid, but idk since my last app is taking way too long, still in review after 3 months)
+The app will be available on the following platforms:
+- Google Play Store: Currently in alpha testing, you can partecipate by joining [this](https://groups.google.com/g/pterodactyl-panel-testers) group and then downloading the app from [here](https://play.google.com/store/apps/details?id=com.stefdp.pterodactylpanel)
+- [Forgejo Releases](https://git.stefdp.com/Stef/Pterodactyl-Panel-Android-App)
+- (maybe F-Droid, but not really sure)
+
+<a href="https://git.stefdp.com/Stef/Zipline-Android-App/releases/download/latest/app-fdroid-release-signed.apk">
+  <img
+    src="https://git.stefdp.com/Stef/Zipline-Android-App/raw/branch/native/assets/forgejo.png" 
+    alt="Get on Forgejo"
+  />
+</a>
 
 # Creating a development build
 
