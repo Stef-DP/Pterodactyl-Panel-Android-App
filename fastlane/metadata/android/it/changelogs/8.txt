@@ -1,0 +1,1 @@
+Corretto un crash che avveniva solo se si installava l'app tramite APK
