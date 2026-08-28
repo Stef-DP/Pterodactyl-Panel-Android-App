@@ -1,4 +1,4 @@
-package com.stefdp.pterodactylpanel.network
+package com.stefdp.pterodactylpanel.network.updatemanager
 
 import com.google.gson.GsonBuilder
 import com.stefdp.pterodactylpanel.DEBUG_NETWORK

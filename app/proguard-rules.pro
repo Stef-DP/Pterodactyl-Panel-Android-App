@@ -32,6 +32,9 @@
 -keep class com.stefdp.pterodactylpanel.network.websocket.** { *; }
 -keep class com.stefdp.pterodactylpanel.network.websocket.models.** { *; }
 
+-keep class com.stefdp.pterodactylpanel.network.updatemanager.** { *; }
+-keep class com.stefdp.pterodactylpanel.network.updatemanager.models.** { *; }
+
 -keep class com.stefdp.pterodactylpanel.screens.** { *; }
 -keep interface com.stefdp.pterodactylpanel.screens.** { *; }
 

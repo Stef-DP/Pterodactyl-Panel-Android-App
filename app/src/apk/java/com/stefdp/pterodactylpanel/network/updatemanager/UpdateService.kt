@@ -1,6 +1,6 @@
-package com.stefdp.pterodactylpanel.network
+package com.stefdp.pterodactylpanel.network.updatemanager
 
-import com.stefdp.pterodactylpanel.network.models.ForgejoRelease
+import com.stefdp.pterodactylpanel.network.updatemanager.models.ForgejoRelease
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

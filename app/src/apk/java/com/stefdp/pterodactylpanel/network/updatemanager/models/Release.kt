@@ -1,4 +1,4 @@
-package com.stefdp.pterodactylpanel.network.models
+package com.stefdp.pterodactylpanel.network.updatemanager.models
 
 import com.google.gson.annotations.SerializedName
 

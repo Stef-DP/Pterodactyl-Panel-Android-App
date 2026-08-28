@@ -2,13 +2,12 @@ package com.stefdp.pterodactylpanel.updatemanager
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import com.stefdp.pterodactylpanel.BuildConfig
-import com.stefdp.pterodactylpanel.network.requests.getLatestRelease
+import com.stefdp.pterodactylpanel.network.updatemanager.requests.getLatestRelease
 import io.github.z4kn4fein.semver.toVersionOrNull
 
 class UpdateManager(

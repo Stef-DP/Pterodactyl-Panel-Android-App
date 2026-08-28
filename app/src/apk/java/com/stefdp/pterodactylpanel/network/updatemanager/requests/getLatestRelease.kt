@@ -1,11 +1,11 @@
-package com.stefdp.pterodactylpanel.network.requests
+package com.stefdp.pterodactylpanel.network.updatemanager.requests
 
 import android.content.Context
 import com.google.gson.Gson
 import com.stefdp.pterodactylpanel.Logger
-import com.stefdp.pterodactylpanel.network.UpdateClient
-import com.stefdp.pterodactylpanel.network.models.ErrorResponse
-import com.stefdp.pterodactylpanel.network.models.ForgejoRelease
+import com.stefdp.pterodactylpanel.network.updatemanager.UpdateClient
+import com.stefdp.pterodactylpanel.network.updatemanager.models.ErrorResponse
+import com.stefdp.pterodactylpanel.network.updatemanager.models.ForgejoRelease
 
 private const val TAG = "Update[getLatestRelease]"
 
